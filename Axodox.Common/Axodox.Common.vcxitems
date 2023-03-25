@@ -1,0 +1,70 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Label="Globals">
+    <MSBuildAllProjects Condition="'$(MSBuildVersion)' == '' Or '$(MSBuildVersion)' &lt; '16.0'">$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <ItemsProjectGuid>{e13522b3-7530-4cbe-b5d3-cce94136e40f}</ItemsProjectGuid>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)</AdditionalIncludeDirectories>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ProjectCapability Include="SourceItemsFromImports" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Buffers\ConstantBuffer.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Buffers\GraphicsBuffer.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Buffers\IndexBuffer.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Buffers\StructuredBuffer.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Buffers\VertexBuffer.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Devices\GraphicsDevice.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Devices\GraphicsDeviceContext.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Devices\GraphicsResource.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Devices\GraphicsTypes.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Helpers.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Meshes\IndexedMesh.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Meshes\Mesh.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Meshes\Primitives.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Meshes\SimpleMesh.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Shaders\ComputeShader.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Shaders\DomainShader.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Shaders\GeometryShader.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Shaders\HullShader.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Shaders\VertexShader.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\States\BlendState.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\States\DepthStencilState.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Shaders\PixelShader.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\States\RasterizerState.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\States\SamplerState.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Meshes\VertexDefinitions.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Infrastructure\BitwiseOperations.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)pch.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Buffers\ConstantBuffer.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Buffers\GraphicsBuffer.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Buffers\IndexBuffer.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Buffers\StructuredBuffer.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Buffers\VertexBuffer.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Devices\GraphicsDevice.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Devices\GraphicsDeviceContext.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Devices\GraphicsResource.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Helpers.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Meshes\IndexedMesh.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Meshes\Primitives.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Meshes\SimpleMesh.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Shaders\ComputeShader.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Shaders\DomainShader.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Shaders\GeometryShader.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Shaders\HullShader.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Shaders\VertexShader.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\States\BlendState.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\States\DepthStencilState.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Shaders\PixelShader.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\States\RasterizerState.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\States\SamplerState.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Meshes\VertexDefinitions.cpp" />
+  </ItemGroup>
+</Project>
