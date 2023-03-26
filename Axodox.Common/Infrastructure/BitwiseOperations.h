@@ -27,6 +27,12 @@ namespace Axodox::Infrastructure
   }
 
   template<typename T>
+  inline constexpr bool has_any_flag(const T a, const T b)
+  {
+    return bitwise_and(a, b) != T(0);
+  }
+
+  template<typename T>
   inline void add_flag(T& a, const T b, const bool value = true)
   {
     if (value)

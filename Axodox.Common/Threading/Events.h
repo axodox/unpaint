@@ -33,9 +33,6 @@ namespace Axodox::Threading
   template<bool CIsManual>
   struct reset_event
   {
-  private:
-    std::shared_ptr<winrt::handle> _event;
-
   public:
     reset_event(bool isReady = false)
     {
@@ -77,6 +74,9 @@ namespace Axodox::Threading
     {
       return wait(event_timeout::zero());
     }
+
+  private:
+    std::shared_ptr<winrt::handle> _event;
   };
 
   struct manual_reset_event : public reset_event<true>

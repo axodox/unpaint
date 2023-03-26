@@ -25,5 +25,18 @@ namespace Axodox::Graphics
     explicit operator bool() const;
 
     static TextureData FromBuffer(std::span<const uint8_t> buffer);
+
+    template<typename T>
+    T* Row(uint32_t row)
+    {
+      return reinterpret_cast<T*>(Buffer.data() + row * Stride);
+    }
+
+    template<typename T>
+    std::span<T> Cast()
+    {
+      if (Stride != Width * sizeof(T)) throw std::bad_cast();
+      return std::span{ reinterpret_cast<T*>(Buffer.data()), Buffer.size() / sizeof(T) };
+    }
   };
 }

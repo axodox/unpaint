@@ -6,6 +6,7 @@
 #include <functional>
 #include <future>
 #include <shared_mutex>
+#include <filesystem>
 
 #define NOMINMAX
 #include <DirectXMath.h>
