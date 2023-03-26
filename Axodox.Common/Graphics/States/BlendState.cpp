@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "BlendState.h"
-#include "Infrastructure\BitwiseOperations.h"
+#include "Infrastructure/BitwiseOperations.h"
 
 using namespace Axodox::Infrastructure;
 using namespace std;

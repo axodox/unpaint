@@ -41,12 +41,22 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\States\RasterizerState.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\States\SamplerState.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Meshes\VertexDefinitions.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Swap Chains\CoreSwapChain.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Swap Chains\HwndSwapChain.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Swap Chains\XamlSwapChain.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Textures\DepthStencil2D.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Textures\RenderTarget2D.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Textures\RenderTargetWithDepthStencil2D.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Textures\StagingTexture2D.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Swap Chains\SwapChain.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Textures\Texture2D.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Textures\Texture2DDefinition.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Textures\TextureData.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Infrastructure\BitwiseOperations.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)pch.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Storage\ComHelpers.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Threading\ManualDispatcher.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Threading\UwpThreading.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Buffers\ConstantBuffer.cpp" />
@@ -72,9 +82,19 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\States\RasterizerState.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\States\SamplerState.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Meshes\VertexDefinitions.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Swap Chains\CoreSwapChain.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Swap Chains\HwndSwapChain.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Swap Chains\XamlSwapChain.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Textures\DepthStencil2D.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Textures\RenderTarget2D.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Textures\RenderTargetWithDepthStencil2D.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Textures\StagingTexture2D.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Swap Chains\SwapChain.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Textures\Texture2D.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Textures\Texture2DDefinition.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Textures\TextureData.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Storage\ComHelpers.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Threading\ManualDispatcher.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Threading\UwpThreading.cpp" />
   </ItemGroup>
 </Project>

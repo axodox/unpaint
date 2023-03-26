@@ -42,7 +42,7 @@ namespace Axodox::Graphics
 
   GraphicsDeviceContext* GraphicsDevice::ImmediateContext()
   {
-    return &_context;
+    return _context.get();
   }
 
   com_ptr<IDXGIFactoryT> GraphicsDevice::InitializeFactory()
@@ -155,7 +155,7 @@ namespace Axodox::Graphics
 
     //Cast results
     _device = device.as<ID3D11DeviceT>();
-    _context = GraphicsDeviceContext(context.as<ID3D11DeviceContextT>());
+    _context = make_shared<GraphicsDeviceContext>(context.as<ID3D11DeviceContextT>());
   }
   
   GraphicsCapabilities GraphicsDevice::CheckCapabilties() const

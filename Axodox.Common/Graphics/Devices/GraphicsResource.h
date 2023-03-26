@@ -7,8 +7,9 @@ namespace Axodox::Graphics
   {
   public:
     GraphicsResource(const GraphicsDevice& device);
-
     virtual ~GraphicsResource() = default;
+
+    GraphicsDevice* Owner();
 
   protected:
     GraphicsDevice _device;

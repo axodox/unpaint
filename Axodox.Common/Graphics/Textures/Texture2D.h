@@ -1,8 +1,8 @@
 #pragma once
-#include "Graphics\Devices\GraphicsResource.h"
+#include "Graphics/Devices/GraphicsResource.h"
 #include "Texture2DDefinition.h"
 #include "TextureData.h"
-#include "Collections\Hasher.h"
+#include "Collections/Hasher.h"
 
 namespace Axodox::Graphics
 {
@@ -33,17 +33,22 @@ namespace Axodox::Graphics
     void BindUnorderedAccessView(uint32_t slot = 0, DXGI_FORMAT format = DXGI_FORMAT_UNKNOWN, uint32_t mip = ~0u, GraphicsDeviceContext* context = nullptr);
     void UnbindUnorderedAccessView(uint32_t mip = ~0u, GraphicsDeviceContext* context = nullptr);
 
-    void Unbind(GraphicsDeviceContext* context = nullptr);
+    virtual void Unbind(GraphicsDeviceContext* context = nullptr);
 
     void Update(const TextureData& texture, uint32_t subresourceIndex = 0, GraphicsDeviceContext* context = nullptr);
     void GenerateMips(GraphicsDeviceContext* context = nullptr);
 
     void Copy(Texture2D* target, uint32_t mip = ~0u, GraphicsDeviceContext* context = nullptr);
 
-  protected:
-    winrt::com_ptr<ID3D11Texture2D> _texture;
-    Texture2DDefinition _definition;
+    const winrt::com_ptr<ID3D11Texture2D>& operator*() const;
+    ID3D11Texture2D* operator->() const;
+    ID3D11Texture2D* get() const;
 
+  protected:
+    Texture2DDefinition _definition;
+    winrt::com_ptr<ID3D11Texture2D> _texture;
+
+  private:
     std::vector<winrt::com_ptr<ID3D11ShaderResourceView>> _resourceViews;
     std::unordered_map<ResourceViewKey, winrt::com_ptr<ID3D11ShaderResourceView>, Collections::trivial_hasher<ResourceViewKey>, Collections::trivial_comparer<ResourceViewKey>> _alternateResourceViews;
 

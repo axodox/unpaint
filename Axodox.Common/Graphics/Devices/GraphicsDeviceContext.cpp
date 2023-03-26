@@ -1,11 +1,14 @@
 #include "pch.h"
 #include "GraphicsDeviceContext.h"
 
-#include "Graphics\Shaders\VertexShader.h"
-#include "Graphics\Shaders\HullShader.h"
-#include "Graphics\Shaders\DomainShader.h"
-#include "Graphics\Shaders\GeometryShader.h"
-#include "Graphics\Shaders\PixelShader.h"
+#include "Graphics/Shaders/VertexShader.h"
+#include "Graphics/Shaders/HullShader.h"
+#include "Graphics/Shaders/DomainShader.h"
+#include "Graphics/Shaders/GeometryShader.h"
+#include "Graphics/Shaders/PixelShader.h"
+
+#include "Graphics/Textures/RenderTarget2D.h"
+#include "Graphics/Textures/DepthStencil2D.h"
 
 using namespace std;
 
@@ -13,7 +16,9 @@ namespace Axodox::Graphics
 {
   GraphicsDeviceContext::GraphicsDeviceContext(const winrt::com_ptr<ID3D11DeviceContextT>& context) :
     _context(context)
-  { }
+  {
+    _boundRenderTargetViews.fill(nullptr);
+  }
 
   const winrt::com_ptr<ID3D11DeviceContextT>& GraphicsDeviceContext::operator*() const
   {
@@ -29,7 +34,7 @@ namespace Axodox::Graphics
   {
     return _context.get();
   }
-  
+
   void GraphicsDeviceContext::BindShaderResourceView(ID3D11ShaderResourceView* view, ShaderStage stage, uint32_t slot)
   {
     _boundShaderResourceViews[stage][slot] = view;
@@ -61,8 +66,8 @@ namespace Axodox::Graphics
 
   void GraphicsDeviceContext::UnbindShaderResourceView(ID3D11ShaderResourceView* view)
   {
-    if (!view) return; 
-    
+    if (!view) return;
+
     for (auto& [shaderStage, shaderResourceViews] : _boundShaderResourceViews)
     {
       for (auto& [slot, shaderResourceView] : shaderResourceViews)
@@ -94,6 +99,62 @@ namespace Axodox::Graphics
         BindUnorderedAccessView(nullptr, slot);
       }
     }
+  }
+
+  void GraphicsDeviceContext::BindRenderTargetView(ID3D11RenderTargetView* view)
+  {
+    _boundRenderTargetViews.fill(nullptr);
+    _boundRenderTargetViews[0] = view;
+    _boundDepthStencilView = nullptr;
+
+    _context->OMSetRenderTargets(uint32_t(_boundRenderTargetViews.size()), _boundRenderTargetViews.data(), _boundDepthStencilView);
+  }
+
+  void GraphicsDeviceContext::UnbindRenderTargetView(ID3D11RenderTargetView* view)
+  {
+    bool changed = false;
+    for (auto& boundView : _boundRenderTargetViews)
+    {
+      if (boundView == view)
+      {
+        boundView = nullptr;
+        changed = true;
+      }
+    }
+
+    if (changed)
+    {
+      _context->OMSetRenderTargets(uint32_t(_boundRenderTargetViews.size()), _boundRenderTargetViews.data(), _boundDepthStencilView);
+    }
+  }
+
+  void GraphicsDeviceContext::BindDepthStencilView(ID3D11DepthStencilView* view)
+  {
+    _boundRenderTargetViews.fill(nullptr);
+    _boundDepthStencilView = view;
+
+    _context->OMSetRenderTargets(uint32_t(_boundRenderTargetViews.size()), _boundRenderTargetViews.data(), _boundDepthStencilView);
+  }
+
+  void GraphicsDeviceContext::UnbindDepthStencilView(ID3D11DepthStencilView* view)
+  {
+    if (view != _boundDepthStencilView) return;
+
+    _boundDepthStencilView = nullptr;
+    _context->OMSetRenderTargets(uint32_t(_boundRenderTargetViews.size()), _boundRenderTargetViews.data(), _boundDepthStencilView);
+  }
+
+  void GraphicsDeviceContext::BindRenderTargets(std::span<RenderTarget2D> renderTargets, DepthStencil2D* depthStencil)
+  {
+    _boundRenderTargetViews.fill(nullptr);
+    for (auto index = 0; auto& renderTarget : renderTargets)
+    {
+      _boundRenderTargetViews[index++] = renderTarget.get();
+    }
+    _boundDepthStencilView = depthStencil ? depthStencil->get() : nullptr;
+
+    _context->OMSetRenderTargets(uint32_t(_boundRenderTargetViews.size()), _boundRenderTargetViews.data(), _boundDepthStencilView);
+    _context->RSSetViewports(1, &renderTargets[0].Viewport());
   }
 
   void GraphicsDeviceContext::BindShaders(VertexShader* vertexShader, PixelShader* pixelShader)

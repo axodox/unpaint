@@ -12,7 +12,8 @@ namespace Axodox::Graphics
     DepthStencil = 8,
     Array = 16,
     Cube = 32,
-    GenerateMips = 64
+    GenerateMips = 64,
+    Staging = 128
   };
 
   struct Texture2DDefinition

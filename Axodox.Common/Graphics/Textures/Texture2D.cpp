@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "Texture2D.h"
-#include "Infrastructure\BitwiseOperations.h"
+#include "Infrastructure/BitwiseOperations.h"
 
 using namespace Axodox::Infrastructure;
 using namespace std;
@@ -15,11 +15,16 @@ namespace Axodox::Graphics
     auto description = definition.ToDescription();
     check_hresult(_device->CreateTexture2D(&description, nullptr, _texture.put()));
 
+    //No views for staging textures
+    if (has_flag(definition.Flags, Texture2DFlags::Staging)) return;
+
+    //Create shader resource views
     auto viewFormat = definition.ViewFormat == DXGI_FORMAT_UNKNOWN ? _definition.Format : definition.ViewFormat;
     auto isArray = has_flag(definition.Flags, Texture2DFlags::Array) || _definition.TextureCount > 1u;
     auto isCube = has_flag(definition.Flags, Texture2DFlags::Cube);
     InitializeShaderResourceViews(viewFormat, isCube, isArray);
 
+    //Create unordered access views
     if (has_flag(definition.Flags, Texture2DFlags::Unordered))
     {
       auto uavFormat = definition.UnorderedFormat == DXGI_FORMAT_UNKNOWN ? viewFormat : definition.UnorderedFormat;
@@ -172,6 +177,9 @@ namespace Axodox::Graphics
     if (this == target) return;
     if (!context) context = _device.ImmediateContext();
 
+    Unbind(context);
+    target->Unbind(context);
+
     auto textureCount = min(_definition.TextureCount, target->_definition.TextureCount);
     auto mipCount = min(_definition.MipCount, target->_definition.MipCount);
     for (auto textureIndex = 0u; textureIndex < textureCount; textureIndex++)
@@ -201,6 +209,21 @@ namespace Axodox::Graphics
         }        
       }
     }
+  }
+
+  const winrt::com_ptr<ID3D11Texture2D>& Texture2D::operator*() const
+  {
+    return _texture;
+  }
+
+  ID3D11Texture2D* Texture2D::operator->() const
+  {
+    return _texture.get();
+  }
+
+  ID3D11Texture2D* Texture2D::get() const
+  {
+    return _texture.get();
   }
 
   void Texture2D::InitializeShaderResourceViews(DXGI_FORMAT format, bool isCube, bool isArray)
@@ -282,6 +305,8 @@ namespace Axodox::Graphics
 
   std::vector<ID3D11ShaderResourceView*> Axodox::Graphics::Texture2D::GetResourceViews(ResourceViewKey key)
   {
+    if (has_flag(_definition.Flags, Texture2DFlags::Staging)) throw logic_error("Staging textures cannot be bound.");
+
     vector<ID3D11ShaderResourceView*> _views;
     if (is_default(key))
     {
@@ -332,6 +357,8 @@ namespace Axodox::Graphics
 
   ID3D11UnorderedAccessView* Texture2D::GetUnorderedView(UnorderedViewKey key)
   {
+    if (has_flag(_definition.Flags, Texture2DFlags::Staging)) throw logic_error("Staging textures cannot be bound.");
+
     if (is_default(key))
     {
       if (!_unorderedView)

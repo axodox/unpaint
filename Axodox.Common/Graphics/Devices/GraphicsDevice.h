@@ -36,7 +36,7 @@ namespace Axodox::Graphics
   private:
     static const D3D_FEATURE_LEVEL _featureLevels[];
     winrt::com_ptr<ID3D11DeviceT> _device;
-    GraphicsDeviceContext _context;
+    std::shared_ptr<GraphicsDeviceContext> _context;
     GraphicsCapabilities _capabilities;
     
     static winrt::com_ptr<IDXGIFactoryT> InitializeFactory();

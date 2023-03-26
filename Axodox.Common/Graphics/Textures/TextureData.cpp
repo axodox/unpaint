@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "TextureData.h"
-#include "Graphics\Helpers.h"
-#include "Storage\ComHelpers.h"
+#include "Graphics/Helpers.h"
+#include "Storage/ComHelpers.h"
 
 using namespace Axodox::Storage;
 using namespace std;
