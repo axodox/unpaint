@@ -21,6 +21,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Buffers\IndexBuffer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Buffers\StructuredBuffer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Buffers\VertexBuffer.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Devices\DrawingController.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Devices\GraphicsDevice.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Devices\GraphicsDeviceContext.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Devices\GraphicsResource.h" />
@@ -45,6 +46,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Swap Chains\HwndSwapChain.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Swap Chains\XamlSwapChain.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Textures\DepthStencil2D.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Textures\DrawingTarget2D.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Textures\RenderTarget2D.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Textures\RenderTargetWithDepthStencil2D.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Textures\StagingTexture2D.h" />
@@ -64,6 +66,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Buffers\IndexBuffer.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Buffers\StructuredBuffer.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Buffers\VertexBuffer.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Devices\DrawingController.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Devices\GraphicsDevice.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Devices\GraphicsDeviceContext.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Devices\GraphicsResource.cpp" />
@@ -86,6 +89,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Swap Chains\HwndSwapChain.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Swap Chains\XamlSwapChain.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Textures\DepthStencil2D.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Textures\DrawingTarget2D.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Textures\RenderTarget2D.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Textures\RenderTargetWithDepthStencil2D.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Textures\StagingTexture2D.cpp" />

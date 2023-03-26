@@ -11,4 +11,9 @@ namespace Axodox::Graphics
   {
     return &_device;
   }
+
+  const GraphicsDevice* GraphicsResource::Owner() const
+  {
+    return &_device;
+  }
 }

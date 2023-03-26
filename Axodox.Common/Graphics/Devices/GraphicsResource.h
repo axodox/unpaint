@@ -10,6 +10,7 @@ namespace Axodox::Graphics
     virtual ~GraphicsResource() = default;
 
     GraphicsDevice* Owner();
+    const GraphicsDevice* Owner() const;
 
   protected:
     GraphicsDevice _device;
