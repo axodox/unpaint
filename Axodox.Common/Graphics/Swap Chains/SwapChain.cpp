@@ -16,11 +16,7 @@ namespace Axodox::Graphics
     auto size = GetSize();
     check_hresult(_swapChain->ResizeBuffers(2, size.x, size.y, DXGI_FORMAT_UNKNOWN, has_flag(_flags, SwapChainFlags::IsTearingAllowed) ? DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING : 0));
 
-    auto swapChain3 = _swapChain.as<IDXGISwapChain3>();
-    auto swapChainTransform = GetTransformation();
-    check_hresult(swapChain3->SetMatrixTransform(&swapChainTransform));
-
-    check_hresult(swapChain3->SetColorSpace1(DXGI_COLOR_SPACE_RGB_FULL_G22_NONE_P709));
+    InitializeSwapChain(_swapChain);
   }
 
   void SwapChain::Present()
@@ -78,11 +74,21 @@ namespace Axodox::Graphics
 
   void SwapChain::InitializeSwapChain(const winrt::com_ptr<IDXGISwapChain>& swapChain)
   {
-    _swapChain = swapChain;
+    if (_swapChain != swapChain)
+    {
+      _swapChain = swapChain;
+    }
+
+    auto swapChain3 = swapChain.as<IDXGISwapChain3>();
 
     //Set transform
-    auto swapChain2 = swapChain.as<IDXGISwapChain2>();
     auto swapChainTransform = GetTransformation();
-    check_hresult(swapChain2->SetMatrixTransform(&swapChainTransform));
+    if (!is_default(swapChainTransform))
+    {
+      check_hresult(swapChain3->SetMatrixTransform(&swapChainTransform));
+    }
+
+    //Set color space
+    check_hresult(swapChain3->SetColorSpace1(DXGI_COLOR_SPACE_RGB_FULL_G22_NONE_P709));
   }
 }

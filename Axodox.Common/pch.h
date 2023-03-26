@@ -5,6 +5,7 @@
 #include <ranges>
 #include <functional>
 #include <future>
+#include <shared_mutex>
 
 #define NOMINMAX
 #include <DirectXMath.h>

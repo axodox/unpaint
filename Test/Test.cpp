@@ -4,18 +4,32 @@
 #include "pch.h"
 #include <iostream>
 
+#include "UI/Window.h"
+#include "Infrastructure/Events.h"
+#include "Graphics/Swap Chains/HwndSwapChain.h"
+
+using namespace Axodox::Graphics;
+using namespace Axodox::Infrastructure;
+using namespace Axodox::UI;
+
 int main()
 {
-    std::cout << "Hello World!\n";
+  std::cout << "Hello World!\n";
+  
+  Window myWindow{ L"Hello world!" };
+
+  GraphicsDevice device{};
+  HwndSwapChain swapChain{ device, *myWindow };
+
+  myWindow.Painting(no_revoke, [&](Window*) {
+    swapChain.BackBuffer()->Clear();
+    swapChain.Present();
+    });
+
+  myWindow.Resized(no_revoke, [&](Window*) {
+    swapChain.Resize();
+    });
+
+  myWindow.Show();
+  myWindow.Run();
 }
-
-// Run program: Ctrl + F5 or Debug > Start Without Debugging menu
-// Debug program: F5 or Debug > Start Debugging menu
-
-// Tips for Getting Started: 
-//   1. Use the Solution Explorer window to add/manage files
-//   2. Use the Team Explorer window to connect to source control
-//   3. Use the Output window to see build output and other messages
-//   4. Use the Error List window to view errors
-//   5. Go to Project > Add New Item to create new code files, or Project > Add Existing Item to add existing code files to the project
-//   6. In the future, to open this project again, go to File > Open > Project and select the .sln file

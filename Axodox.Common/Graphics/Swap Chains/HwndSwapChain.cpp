@@ -30,4 +30,14 @@ namespace Axodox::Graphics
     //Initialize swap chain
     InitializeSwapChain(swapChain);
   }
+
+  DirectX::XMUINT2 HwndSwapChain::GetSize() const
+  {
+    return { 0, 0 };
+  }
+
+  DXGI_MATRIX_3X2_F HwndSwapChain::GetTransformation() const
+  {
+    return { 0.f, 0.f, 0.f, 0.f, 0.f, 0.f };
+  }
 }

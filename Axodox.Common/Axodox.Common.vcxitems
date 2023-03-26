@@ -55,10 +55,14 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Textures\Texture2DDefinition.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Textures\TextureData.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Infrastructure\BitwiseOperations.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Infrastructure\Events.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Infrastructure\Win32.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)pch.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Storage\ComHelpers.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Threading\Events.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Threading\ManualDispatcher.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Threading\UwpThreading.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)UI\Window.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Buffers\ConstantBuffer.cpp" />
@@ -100,5 +104,6 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Storage\ComHelpers.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Threading\ManualDispatcher.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Threading\UwpThreading.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)UI\Window.cpp" />
   </ItemGroup>
 </Project>
