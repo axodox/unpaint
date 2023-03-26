@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "IndexBuffer.h"
-#include "../Helpers.h"
+#include "Graphics/Helpers.h"
 
 namespace Axodox::Graphics
 {

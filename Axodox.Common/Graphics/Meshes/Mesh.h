@@ -1,6 +1,6 @@
 #pragma once
 #include "VertexDefinitions.h"
-#include "..\Devices\GraphicsResource.h"
+#include "Graphics\Devices\GraphicsResource.h"
 
 namespace Axodox::Graphics
 {

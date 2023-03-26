@@ -1,5 +1,6 @@
 #pragma once
 #include "GraphicsTypes.h"
+#include "Collections\Hasher.h"
 
 namespace Axodox::Graphics
 {
@@ -30,6 +31,10 @@ namespace Axodox::Graphics
     ID3D11DeviceContextT* get() const;
 
     void BindShaderResourceView(ID3D11ShaderResourceView* view, ShaderStage stage, uint32_t slot);
+    void UnbindShaderResourceView(ID3D11ShaderResourceView* view);
+
+    void BindUnorderedAccessView(ID3D11UnorderedAccessView* view, uint32_t slot);
+    void UnbindUnorderedAccessView(ID3D11UnorderedAccessView* view);
 
     void BindShaders(VertexShader* vertexShader, PixelShader* pixelShader);
     void BindShaders(VertexShader* vertexShader, GeometryShader* geometryShader, PixelShader* pixelShader);
@@ -38,5 +43,7 @@ namespace Axodox::Graphics
 
   private:
     winrt::com_ptr<ID3D11DeviceContextT> _context;
+    std::map<ShaderStage, std::map<uint32_t, ID3D11ShaderResourceView*>> _boundShaderResourceViews;
+    std::map<uint32_t, ID3D11UnorderedAccessView*> _boundUnorderedAccessViews;
   };
 }

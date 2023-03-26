@@ -1,11 +1,11 @@
 #include "pch.h"
 #include "GraphicsDeviceContext.h"
 
-#include "..\Shaders\VertexShader.h"
-#include "..\Shaders\HullShader.h"
-#include "..\Shaders\DomainShader.h"
-#include "..\Shaders\GeometryShader.h"
-#include "..\Shaders\PixelShader.h"
+#include "Graphics\Shaders\VertexShader.h"
+#include "Graphics\Shaders\HullShader.h"
+#include "Graphics\Shaders\DomainShader.h"
+#include "Graphics\Shaders\GeometryShader.h"
+#include "Graphics\Shaders\PixelShader.h"
 
 using namespace std;
 
@@ -32,6 +32,8 @@ namespace Axodox::Graphics
   
   void GraphicsDeviceContext::BindShaderResourceView(ID3D11ShaderResourceView* view, ShaderStage stage, uint32_t slot)
   {
+    _boundShaderResourceViews[stage][slot] = view;
+
     switch (stage)
     {
     case ShaderStage::Vertex:
@@ -54,6 +56,43 @@ namespace Axodox::Graphics
       break;
     default:
       throw logic_error("Shader stage not implemented!");
+    }
+  }
+
+  void GraphicsDeviceContext::UnbindShaderResourceView(ID3D11ShaderResourceView* view)
+  {
+    if (!view) return; 
+    
+    for (auto& [shaderStage, shaderResourceViews] : _boundShaderResourceViews)
+    {
+      for (auto& [slot, shaderResourceView] : shaderResourceViews)
+      {
+        if (shaderResourceView == view)
+        {
+          BindShaderResourceView(nullptr, shaderStage, slot);
+        }
+      }
+    }
+  }
+
+  void GraphicsDeviceContext::BindUnorderedAccessView(ID3D11UnorderedAccessView* view, uint32_t slot)
+  {
+    _boundUnorderedAccessViews[slot] = view;
+
+    auto uavInitialCount = 0u;
+    _context->CSSetUnorderedAccessViews(slot, 1, &view, &uavInitialCount);
+  }
+
+  void GraphicsDeviceContext::UnbindUnorderedAccessView(ID3D11UnorderedAccessView* view)
+  {
+    if (!view) return;
+
+    for (auto& [slot, unorderedAccessView] : _boundUnorderedAccessViews)
+    {
+      if (unorderedAccessView == view)
+      {
+        BindUnorderedAccessView(nullptr, slot);
+      }
     }
   }
 

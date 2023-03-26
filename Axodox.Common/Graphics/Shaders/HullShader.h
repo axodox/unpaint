@@ -1,5 +1,5 @@
 #pragma once
-#include "..\Devices\GraphicsResource.h"
+#include "Graphics\Devices\GraphicsResource.h"
 
 namespace Axodox::Graphics
 {

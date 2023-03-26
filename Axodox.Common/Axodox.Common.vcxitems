@@ -14,6 +14,8 @@
     <ProjectCapability Include="SourceItemsFromImports" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)Collections\AlignedAllocator.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Collections\Hasher.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Buffers\ConstantBuffer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Buffers\GraphicsBuffer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Buffers\IndexBuffer.h" />
@@ -39,8 +41,12 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\States\RasterizerState.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\States\SamplerState.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Meshes\VertexDefinitions.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Textures\Texture2D.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Textures\Texture2DDefinition.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Textures\TextureData.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Infrastructure\BitwiseOperations.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)pch.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Storage\ComHelpers.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Buffers\ConstantBuffer.cpp" />
@@ -66,5 +72,9 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\States\RasterizerState.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\States\SamplerState.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Meshes\VertexDefinitions.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Textures\Texture2D.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Textures\Texture2DDefinition.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Textures\TextureData.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Storage\ComHelpers.cpp" />
   </ItemGroup>
 </Project>

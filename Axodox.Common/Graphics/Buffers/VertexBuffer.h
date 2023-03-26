@@ -1,6 +1,6 @@
 #pragma once
 #include "GraphicsBuffer.h"
-#include "..\Meshes\VertexDefinitions.h"
+#include "Graphics\Meshes\VertexDefinitions.h"
 
 namespace Axodox::Graphics
 {

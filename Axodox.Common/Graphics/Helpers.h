@@ -4,4 +4,6 @@
 namespace Axodox::Graphics
 {
   size_t BitsPerPixel(DXGI_FORMAT format);
+
+  IWICImagingFactory* WicFactory();
 }

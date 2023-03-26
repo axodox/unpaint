@@ -1,6 +1,5 @@
 #include "pch.h"
 #include "GraphicsDevice.h"
-
 #include "Infrastructure/BitwiseOperations.h"
 
 using namespace Axodox::Infrastructure;

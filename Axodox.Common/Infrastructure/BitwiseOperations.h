@@ -55,4 +55,39 @@ namespace Axodox::Infrastructure
 
     memset(&value, 0, sizeof(T));
   }
+
+  template <typename T>
+  bool are_equal(const T& a, const T& b)
+  {
+    if constexpr (std::is_trivially_copyable_v<T>)
+    {
+      return memcmp(&a, &b, sizeof(T)) == 0;
+    }
+    else
+    {
+      return a == b;
+    }
+  }
+
+  template <typename T>
+  bool are_equal(std::span<const T> a, std::span<const T> b)
+  {
+    static_assert(std::is_trivially_copyable<T>::value);
+
+    if (a.size() != b.size()) return false;
+    return memcmp(a.data(), b.data(), sizeof(T) * a.size()) == 0;
+  }
+
+  template<typename U, typename V, std::enable_if_t<std::conjunction_v<std::is_trivially_copyable<U>, std::is_trivially_copyable<V>>> = true>
+  constexpr bool are_equal(const U& a, const V& b)
+  {
+    static_assert(sizeof(U) == sizeof(V));
+    return memcmp(&a, &b, sizeof(U)) == 0;
+  }
+
+  template <typename T>
+  bool is_default(const T& value)
+  {
+    return are_equal<T>(value, T{});
+  }
 }

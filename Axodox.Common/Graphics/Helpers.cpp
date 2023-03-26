@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "Helpers.h"
 
+using namespace winrt;
+
 namespace Axodox::Graphics
 {
   size_t BitsPerPixel(DXGI_FORMAT format)
@@ -147,5 +149,19 @@ namespace Axodox::Graphics
     default:
       return 0;
     }
+  }
+  
+  IWICImagingFactory* WicFactory()
+  {
+    static com_ptr<IWICImagingFactory> wicFactory;
+
+    if (!wicFactory)
+    {
+      check_hresult(CoCreateInstance(
+        CLSID_WICImagingFactory, nullptr,
+        CLSCTX_INPROC_SERVER, __uuidof(IWICImagingFactory), wicFactory.put_void()));
+    }
+
+    return wicFactory.get();
   }
 }

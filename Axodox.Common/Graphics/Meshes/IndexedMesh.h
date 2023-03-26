@@ -1,6 +1,6 @@
 #pragma once
 #include "SimpleMesh.h"
-#include "..\Buffers\IndexBuffer.h"
+#include "Graphics\Buffers\IndexBuffer.h"
 
 namespace Axodox::Graphics
 {
