@@ -27,9 +27,9 @@ namespace Axodox::Graphics
   TextureData::TextureData(uint32_t width, uint32_t height, DXGI_FORMAT format) :
     Width(width),
     Height(height),
-    Stride((uint32_t)ceil(BitsPerPixel(format) * width / 8.f)),
+    Stride((uint32_t)ceil(BitsPerPixel(format)* width / 8.f)),
     Format(format),
-    Buffer(Stride * Height)
+    Buffer(Stride* Height)
   { }
 
   TextureData::TextureData(TextureData&& other) noexcept
@@ -50,7 +50,7 @@ namespace Axodox::Graphics
     other.Stride = 0;
     other.Format = DXGI_FORMAT_UNKNOWN;
   }
-  
+
   uint32_t TextureData::MainDimension() const
   {
     return max(Width, Height);
@@ -84,41 +84,86 @@ namespace Axodox::Graphics
     auto wicFactory = WicFactory();
 
     //Load data to WIC bitmap
-    com_ptr<IWICBitmapSource> bitmap;
+    com_ptr<IWICBitmapSource> wicBitmap;
     {
       auto stream = to_stream(buffer);
 
-      com_ptr<IWICBitmapDecoder> bitmapDecoder;
+      com_ptr<IWICBitmapDecoder> wicBitmapDecoder;
       check_hresult(wicFactory->CreateDecoderFromStream(
         stream.get(),
         NULL,
         WICDecodeMetadataCacheOnDemand,
-        bitmapDecoder.put()
+        wicBitmapDecoder.put()
       ));
 
-      check_hresult(bitmapDecoder->GetFrame(0, reinterpret_cast<IWICBitmapFrameDecode**>(bitmap.put())));
+      check_hresult(wicBitmapDecoder->GetFrame(0, reinterpret_cast<IWICBitmapFrameDecode**>(wicBitmap.put())));
     }
 
     //Covert data to BGRA
     {
-      com_ptr<IWICFormatConverter> converter;
-      check_hresult(wicFactory->CreateFormatConverter(converter.put()));
-      check_hresult(converter->Initialize(
-        bitmap.get(), GUID_WICPixelFormat32bppBGRA,
+      com_ptr<IWICFormatConverter> wicFormatConverter;
+      check_hresult(wicFactory->CreateFormatConverter(wicFormatConverter.put()));
+      check_hresult(wicFormatConverter->Initialize(
+        wicBitmap.get(), GUID_WICPixelFormat32bppBGRA,
         WICBitmapDitherTypeNone, nullptr, 0.f,
         WICBitmapPaletteTypeMedianCut));
-      bitmap = move(converter);
+      wicBitmap = move(wicFormatConverter);
     }
 
     //Define result
     TextureData result;
-    check_hresult(bitmap->GetSize(&result.Width, &result.Height));
+    check_hresult(wicBitmap->GetSize(&result.Width, &result.Height));
     result.Stride = result.Width * 4;
     result.Buffer.resize(result.ByteCount());
     result.Format = DXGI_FORMAT_B8G8R8A8_UNORM_SRGB;
 
     WICRect rect = { 0, 0, int32_t(result.Width), int32_t(result.Height) };
-    check_hresult(bitmap->CopyPixels(&rect, result.Stride, uint32_t(result.Buffer.size()), result.Buffer.data()));
+    check_hresult(wicBitmap->CopyPixels(&rect, result.Stride, uint32_t(result.Buffer.size()), result.Buffer.data()));
+
+    return result;
+  }
+
+  std::vector<uint8_t> TextureData::ToBuffer() const
+  {
+    if (Format != DXGI_FORMAT_B8G8R8A8_UNORM_SRGB && Format != DXGI_FORMAT_B8G8R8A8_UNORM)
+    {
+      throw bad_cast();
+    }
+
+    auto wicFactory = WicFactory();
+
+    com_ptr<IStream> stream;
+    check_hresult(CreateStreamOnHGlobal(nullptr, true, stream.put()));
+
+    com_ptr<IWICStream> wicStream;
+    check_hresult(wicFactory->CreateStream(wicStream.put()));
+    check_hresult(wicStream->InitializeFromIStream(stream.get()));
+
+    com_ptr<IWICBitmapEncoder> wicBitmapEncoder;
+    check_hresult(wicFactory->CreateEncoder(GUID_ContainerFormatPng, nullptr, wicBitmapEncoder.put()));
+
+    wicBitmapEncoder->Initialize(wicStream.get(), WICBitmapEncoderNoCache);
+
+    com_ptr<IWICBitmapFrameEncode> wicBitmapFrameEncode;
+    check_hresult(wicBitmapEncoder->CreateNewFrame(wicBitmapFrameEncode.put(), nullptr));
+
+    auto pixelFormat = GUID_WICPixelFormat32bppBGRA;
+    check_hresult(wicBitmapFrameEncode->Initialize(nullptr));
+    check_hresult(wicBitmapFrameEncode->SetPixelFormat(&pixelFormat));
+    check_hresult(wicBitmapFrameEncode->SetSize(Width, Height));
+    check_hresult(wicBitmapFrameEncode->WritePixels(Height, Stride, ByteCount(), const_cast<uint8_t*>(Buffer.data())));
+    check_hresult(wicBitmapFrameEncode->Commit());
+
+    check_hresult(wicBitmapEncoder->Commit());
+
+    STATSTG streamStats;
+    check_hresult(stream->Stat(&streamStats, STATFLAG_DEFAULT));
+
+    vector<uint8_t> result;
+    result.resize(size_t(streamStats.cbSize.QuadPart));
+
+    check_hresult(stream->Seek(LARGE_INTEGER{ 0 }, STREAM_SEEK_SET, nullptr));
+    check_hresult(stream->Read(result.data(), ULONG(result.size()), nullptr));
 
     return result;
   }

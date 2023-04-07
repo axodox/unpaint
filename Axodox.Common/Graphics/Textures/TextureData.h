@@ -25,6 +25,7 @@ namespace Axodox::Graphics
     explicit operator bool() const;
 
     static TextureData FromBuffer(std::span<const uint8_t> buffer);
+    std::vector<uint8_t> ToBuffer() const;
 
     template<typename T>
     T* Row(uint32_t row)
