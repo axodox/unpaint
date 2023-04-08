@@ -58,6 +58,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Infrastructure\Events.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Infrastructure\Traits.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Infrastructure\Win32.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)common_pch.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)pch.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Storage\ArrayStream.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Storage\ComHelpers.h" />
