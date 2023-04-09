@@ -86,6 +86,26 @@ namespace Axodox::MachineLearning
     return result;
   }
 
+  Tensor Tensor::CreateRandom(shape_t shape, std::minstd_rand& random, float scale)
+  {
+    static uniform_real_distribution<float> floatDistribution(0.f, 1.f);
+
+    Tensor result{ TensorType::Single, shape };
+
+    for (auto& value : result.AsSpan<float>())
+    {
+      auto u1 = floatDistribution(random);
+      auto u2 = floatDistribution(random);
+      auto radius = sqrt(-2.f * log(u1));
+      auto theta = 2.f * XM_PI * u2;
+      auto standardNormalRand = radius * cos(theta);
+
+      value = standardNormalRand * scale;
+    }
+
+    return result;
+  }
+
   Tensor Tensor::FromOrtValue(const Ort::Value& value)
   {
     Tensor result;
@@ -143,8 +163,8 @@ namespace Axodox::MachineLearning
       {
         for (size_t x = 0u; x < Shape[3]; x++)
         {
-          auto result = XMVectorSaturate(XMVectorSet(*bSource++, *gSource++, *rSource++, 1.f) / 2.f + XMVectorReplicate(0.5f));
-          XMStoreUByteN4(pTarget++, result);
+          auto color = XMVectorSaturate(XMVectorSet(*bSource++, *gSource++, *rSource++, 1.f) / 2.f + XMVectorReplicate(0.5f));
+          XMStoreUByteN4(pTarget++, color);
         }
       }
 

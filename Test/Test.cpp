@@ -76,6 +76,7 @@ int main()
   winrt::init_apartment();
 
   OnnxEnvironment onnxEnvironment{ L"C:/dev/ai/realistic_vision_v1.4-fp16-vram" };
+  //OnnxEnvironment onnxEnvironment{ L"C:/dev/StableDiffusion/StableDiffusion" };
 
   //Create text embeddings
   Tensor textEmbeddings{ TensorType::Single, 2, 77, 768 };
@@ -87,7 +88,7 @@ int main()
     auto tokenizedBlank = textTokenizer.GetUnconditionalTokens();
     auto encodedBlank = textEncoder.EncodeText(tokenizedBlank);
 
-    auto tokenizedText = textTokenizer.TokenizeText("a stag standing in a misty forest at dawn");
+    auto tokenizedText = textTokenizer.TokenizeText("a stag standing in a misty forest at dawn, closeup");
     auto encodedText = textEncoder.EncodeText(tokenizedText);
 
     auto pSourceBlank = encodedBlank.AsPointer<float>();
@@ -106,10 +107,10 @@ int main()
     StableDiffusionInferer stableDiffusion{ onnxEnvironment };
 
     StableDiffusionOptions options{
-      .StepCount = 15,
+      .StepCount = 20,
       .Width = 768,
       .Height = 768,
-      .Seed = 50,
+      .Seed = 60,
       .TextEmbeddings = textEmbeddings
     };
 

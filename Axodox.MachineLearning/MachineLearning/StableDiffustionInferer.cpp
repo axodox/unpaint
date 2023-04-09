@@ -11,8 +11,7 @@ namespace Axodox::MachineLearning
 {
   StableDiffusionInferer::StableDiffusionInferer(OnnxEnvironment& environment) :
     _environment(environment),
-    _session(nullptr),
-    _floatDistribution(0.f, 1.f)
+    _session(nullptr)
   {
     _session = { _environment.Environment(), (_environment.RootPath() / L"unet/model.onnx").c_str(), _environment.DefaultSessionOptions() };
     OnnxPrintStatistics(_environment, _session);
@@ -55,7 +54,7 @@ namespace Axodox::MachineLearning
       auto guidedNoise = blankNoise.BinaryOperation<float>(textNoise, [guidanceScale = options.GuidanceScale](float a, float b) 
         { return a + guidanceScale * (b - a); });
 
-      latentSample = steps.ApplyStep(latentSample, guidedNoise, derivatives, i);
+      latentSample = steps.ApplyStep(latentSample, guidedNoise, derivatives, context.Random, i);
     }
 
     latentSample = latentSample * (1.0f / 0.18215f);
@@ -64,20 +63,7 @@ namespace Axodox::MachineLearning
   
   Tensor StableDiffusionInferer::GenerateLatentSample(StableDiffusionContext& context)
   {
-    Tensor result{ TensorType::Single, context.Options.BatchSize, 4, context.Options.Height / 8, context.Options.Width / 8 };
-    
-    auto initialNoiseSigma = context.Scheduler.InitialNoiseSigma();
-    for (auto& value : result.AsSpan<float>())
-    {
-      auto u1 = _floatDistribution(context.Random);
-      auto u2 = _floatDistribution(context.Random);
-      auto radius = sqrt(-2.f * log(u1));
-      auto theta = 2.f * XM_PI * u2;
-      auto standardNormalRand = radius * cos(theta);
-
-      value = standardNormalRand * initialNoiseSigma;
-    }
-
-    return result;
+    Tensor::shape_t shape{ context.Options.BatchSize, 4, context.Options.Height / 8, context.Options.Width / 8 };
+    return Tensor::CreateRandom(shape, context.Random, context.Scheduler.InitialNoiseSigma());
   }
 }

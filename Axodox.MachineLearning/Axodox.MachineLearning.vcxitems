@@ -14,7 +14,7 @@
     <ProjectCapability Include="SourceItemsFromImports" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\LMSDiscreteScheduler.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\StableDiffusionScheduler.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\OnnxEnvironment.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\OnnxExtensions.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\OnnxModelStatistics.h" />
@@ -28,7 +28,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)pch.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\LMSDiscreteScheduler.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\StableDiffusionScheduler.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\OnnxEnvironment.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\OnnxModelStatistics.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\StableDiffustionInferer.cpp" />

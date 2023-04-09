@@ -12,8 +12,9 @@ namespace Axodox::MachineLearning
   {
     _environment.UpdateEnvWithCustomLogLevel(ORT_LOGGING_LEVEL_WARNING);
     
-    _defaultSessionOptions.SetExecutionMode(ExecutionMode::ORT_PARALLEL);
-    _defaultSessionOptions.SetGraphOptimizationLevel(ORT_ENABLE_ALL);
+    _defaultSessionOptions.DisableMemPattern();
+    _defaultSessionOptions.SetExecutionMode(ExecutionMode::ORT_SEQUENTIAL);
+    //_defaultSessionOptions.SetGraphOptimizationLevel(ORT_ENABLE_ALL);
 
     //OrtSessionOptionsAppendExecutionProvider_CUDA(_defaultSessionOptions, 0);
     OrtSessionOptionsAppendExecutionProvider_DML(_defaultSessionOptions, 0);

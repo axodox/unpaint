@@ -1,7 +1,7 @@
 #pragma once
 #include "Tensor.h"
 #include "OnnxEnvironment.h"
-#include "LMSDiscreteScheduler.h"
+#include "StableDiffusionScheduler.h"
 
 namespace Axodox::MachineLearning
 {
@@ -21,7 +21,7 @@ namespace Axodox::MachineLearning
     struct StableDiffusionContext
     {
       StableDiffusionOptions Options;
-      LmsDiscreteScheduler Scheduler;
+      StableDiffusionScheduler Scheduler;
       std::minstd_rand Random;
     };
 
@@ -33,8 +33,6 @@ namespace Axodox::MachineLearning
   private:
     OnnxEnvironment& _environment;
     Ort::Session _session;
-
-    std::uniform_real_distribution<float> _floatDistribution;
 
     Tensor GenerateLatentSample(StableDiffusionContext& context);
   };

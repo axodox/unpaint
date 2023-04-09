@@ -128,5 +128,7 @@ namespace Axodox::MachineLearning
     }
 
     static std::pair<TensorType, Tensor::shape_t> ToTypeAndShape(const Ort::TensorTypeAndShapeInfo& info);
+
+    static Tensor CreateRandom(shape_t shape, std::minstd_rand& random, float scale = 1.f);
   };
 }
