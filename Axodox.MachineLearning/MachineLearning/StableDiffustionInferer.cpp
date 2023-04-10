@@ -27,18 +27,18 @@ namespace Axodox::MachineLearning
     list<Tensor> derivatives;
 
     auto latentSample = GenerateLatentSample(context);
-    auto textEmbeddings = options.TextEmbeddings.ToOrtValue(_environment.MemoryInfo());
+    auto textEmbeddings = options.TextEmbeddings.Duplicate(options.BatchSize);
 
     auto steps = context.Scheduler.GetSteps(options.StepCount);
 
     IoBinding binding{ _session };
     binding.BindOutput("out_sample", _environment.MemoryInfo());
-    binding.BindInput("encoder_hidden_states", textEmbeddings);
+    binding.BindInput("encoder_hidden_states", textEmbeddings.ToOrtValue(_environment.MemoryInfo()));
 
     for (size_t i = 0; i < steps.Timesteps.size(); i++)
     {
       printf("Step %zd\n", i);
-      auto scaledSample = latentSample.Duplicate() / sqrt(steps.Sigmas[i] * steps.Sigmas[i] + 1);
+      auto scaledSample = latentSample.Duplicate().Swizzle(options.BatchSize) / sqrt(steps.Sigmas[i] * steps.Sigmas[i] + 1);
 
       binding.BindInput("sample", scaledSample.ToOrtValue(_environment.MemoryInfo()));
       binding.BindInput("timestep", Tensor(steps.Timesteps[i]).ToOrtValue(_environment.MemoryInfo()));
@@ -47,7 +47,8 @@ namespace Axodox::MachineLearning
 
       auto outputs = binding.GetOutputValues();
       auto output = Tensor::FromOrtValue(outputs[0]);
-      auto outputComponents = output.Split();
+
+      auto outputComponents = output.Swizzle().Split();
 
       auto& blankNoise = outputComponents[0];
       auto& textNoise = outputComponents[1];

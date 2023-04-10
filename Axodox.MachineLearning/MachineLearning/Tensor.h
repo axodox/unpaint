@@ -25,6 +25,14 @@ namespace Axodox::MachineLearning
       *AsPointer<T>() = value;
     }
 
+    Tensor(const Tensor&) = default;
+    Tensor& operator=(const Tensor&) = default;
+
+    Tensor(Tensor&& other);
+    Tensor& operator=(Tensor&& other);
+
+    void Reset();
+
     void AllocateBuffer();
 
     size_t ByteCount() const;
@@ -72,6 +80,24 @@ namespace Axodox::MachineLearning
     }
 
     template<typename T>
+    std::span<const T> AsSubSpan(size_t x = ~0u, size_t y = ~0u, size_t z = ~0u, size_t w = ~0u) const
+    {
+      if (ToTensorType<T>() != Type) throw std::bad_cast();
+
+      auto dimension = GetDimensionFromIndex(x, y, z, w);
+      return std::span<const T>(AsPointer<T>(x, y, z, w), Size(dimension));
+    }
+
+    template<typename T>
+    std::span<T> AsSubSpan(size_t x = ~0u, size_t y = ~0u, size_t z = ~0u, size_t w = ~0u)
+    {
+      if (ToTensorType<T>() != Type) throw std::bad_cast();
+
+      auto dimension = GetDimensionFromIndex(x, y, z, w);
+      return std::span<T>(AsPointer<T>(x, y, z, w), Size(dimension));
+    }
+
+    template<typename T>
     Tensor operator*(T value) const
     {
       Tensor result{ *this };
@@ -89,6 +115,8 @@ namespace Axodox::MachineLearning
     }
 
     Tensor Duplicate(size_t instances = 2) const;
+
+    Tensor Swizzle(size_t blockCount = 2) const;
 
     std::vector<Tensor> Split(size_t instances = 2) const;
 
@@ -130,5 +158,11 @@ namespace Axodox::MachineLearning
     static std::pair<TensorType, Tensor::shape_t> ToTypeAndShape(const Ort::TensorTypeAndShapeInfo& info);
 
     static Tensor CreateRandom(shape_t shape, std::minstd_rand& random, float scale = 1.f);
+
+    bool operator==(const Tensor& other) const;
+    bool operator!=(const Tensor& other) const;
+
+  private:
+    static size_t GetDimensionFromIndex(size_t& x, size_t& y, size_t& z, size_t& w);
   };
 }

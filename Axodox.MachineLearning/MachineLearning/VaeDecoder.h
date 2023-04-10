@@ -9,7 +9,7 @@ namespace Axodox::MachineLearning
   public:
     VaeDecoder(OnnxEnvironment& environment);
 
-    Tensor DecodeVae(Tensor text);
+    Tensor DecodeVae(const Tensor& text);
 
   private:
     OnnxEnvironment& _environment;

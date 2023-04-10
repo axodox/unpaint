@@ -9,7 +9,7 @@ namespace Axodox::MachineLearning
   public:
     TextEncoder(OnnxEnvironment& environment);
 
-    Tensor EncodeText(Tensor text);
+    Tensor EncodeText(const Tensor& text);
 
   private:
     static const size_t _maxTokenCount;

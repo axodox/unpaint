@@ -16,7 +16,7 @@ namespace Axodox::MachineLearning
 
   Tensor::Tensor(TensorType type, size_t x, size_t y, size_t z, size_t w) :
     Type(type),
-    Shape({x, y, z, w})
+    Shape({ x, y, z, w })
   {
     AllocateBuffer();
   }
@@ -26,6 +26,29 @@ namespace Axodox::MachineLearning
     Shape(shape)
   {
     AllocateBuffer();
+  }
+
+  Tensor::Tensor(Tensor&& other)
+  {
+    *this == move(other);
+  }
+
+  Tensor& Tensor::operator=(Tensor&& other)
+  {
+    Buffer = move(other.Buffer);
+    Type = other.Type;
+    Shape = other.Shape;
+
+    other.Reset();
+
+    return *this;
+  }
+
+  void Tensor::Reset()
+  {
+    Type = TensorType::Unknown;
+    Shape = { 0, 0, 0, 0 };
+    Buffer.clear();
   }
 
   void Tensor::AllocateBuffer()
@@ -106,6 +129,48 @@ namespace Axodox::MachineLearning
     return result;
   }
 
+  bool Tensor::operator==(const Tensor& other) const
+  {
+    return Type == other.Type && Shape == other.Shape &&
+      0 == memcmp(AsPointer(), other.AsPointer(), ByteCount());
+  }
+
+  bool Tensor::operator!=(const Tensor& other) const
+  {
+    return !(*this == other);
+  }
+
+  size_t Tensor::GetDimensionFromIndex(size_t& x, size_t& y, size_t& z, size_t& w)
+  {
+    auto dimension = 4;
+
+    if (w == ~0u)
+    {
+      dimension = 3;
+      w = 0;
+    }
+
+    if (z == ~0u)
+    {
+      dimension = 2;
+      z = 0;
+    }
+
+    if (y == ~0u)
+    {
+      dimension = 1;
+      y = 0;
+    }
+
+    if (x == ~0u)
+    {
+      dimension = 0;
+      x = 0;
+    }
+
+    return dimension;
+  }
+
   Tensor Tensor::FromOrtValue(const Ort::Value& value)
   {
     Tensor result;
@@ -137,7 +202,7 @@ namespace Axodox::MachineLearning
   {
     auto info = ToTypeAndShape(value.GetTensorTypeAndShapeInfo());
     if (info.first != Type || info.second != Shape) throw bad_cast();
-    
+
     auto data = value.GetTensorMutableRawData();
     memcpy(data, AsPointer(), ByteCount());
   }
@@ -154,7 +219,7 @@ namespace Axodox::MachineLearning
     for (size_t i = 0u; i < Shape[0]; i++)
     {
       TextureData result{ width, height, DXGI_FORMAT_B8G8R8A8_UNORM_SRGB };
-      
+
       auto pTarget = result.Row<XMUBYTEN4>(0);
       auto rSource = AsPointer<float>(i, 0);
       auto gSource = AsPointer<float>(i, 1);
@@ -194,19 +259,36 @@ namespace Axodox::MachineLearning
   {
     return const_cast<uint8_t*>(static_cast<const Tensor*>(this)->AsPointer(x, y, z, w));
   }
-  
+
   Tensor Tensor::Duplicate(size_t instances) const
   {
     Tensor tensor{ Type, Shape[0] * instances, Shape[1], Shape[2], Shape[3] };
-    
-    for (auto i = 0; i < instances; i++)
+
+    for (size_t i = 0; i < instances; i++)
     {
-      memcpy(tensor.AsPointer(i), AsPointer(), ByteCount());
+      memcpy(tensor.AsPointer(i * Shape[0]), AsPointer(), ByteCount());
     }
 
     return tensor;
   }
-  
+
+  Tensor Tensor::Swizzle(size_t blockCount) const
+  {
+    Tensor result{ Type, Shape };
+
+    auto blockByteCount = ByteCount() / Shape[0];
+    auto blockSize = Shape[0] / blockCount;
+    for (size_t i = 0; i < blockCount; i++)
+    {
+      for (size_t j = 0; j < blockSize; j++)
+      {
+        memcpy(result.AsPointer(i * blockSize + j), AsPointer(j * blockCount + i), blockByteCount);
+      }
+    }
+
+    return result;
+  }
+
   std::vector<Tensor> Tensor::Split(size_t instances) const
   {
     if (Shape[0] % instances != 0) throw invalid_argument("instances");
@@ -219,7 +301,9 @@ namespace Axodox::MachineLearning
     for (size_t i = 0; auto & result : results)
     {
       result = Tensor(Type, newShape);
-      memcpy(result.AsPointer(), AsPointer(i++), result.ByteCount());
+      memcpy(result.AsPointer(), AsPointer(i), result.ByteCount());
+
+      i += newShape[0];
     }
 
     return results;

@@ -19,7 +19,7 @@ namespace Axodox::MachineLearning
     _session = { _environment.Environment(), (_environment.RootPath() / L"text_tokenizer/custom_op_cliptok.onnx").c_str(), _sessionOptions};
   }
 
-  Tensor TextTokenizer::TokenizeText(const std::string_view text)
+  Tensor TextTokenizer::TokenizeText(std::string_view text)
   {
     //Load inputs
     Allocator allocator{ _session, _environment.MemoryInfo() };

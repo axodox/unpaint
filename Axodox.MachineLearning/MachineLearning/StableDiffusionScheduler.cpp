@@ -240,7 +240,8 @@ namespace Axodox::MachineLearning
       lmsDerivativeProduct.reserve(derivatives.size());
       for (auto i = 0; auto & derivative : ranges::reverse_view(derivatives))
       {
-        lmsDerivativeProduct.push_back(derivative * derivativeCoefficients[i++]);
+        auto scaledDerivative = derivative * derivativeCoefficients[i++];
+        lmsDerivativeProduct.push_back(scaledDerivative);
       }
 
       latentDelta = { TensorType::Single, currentDerivative.Shape };

@@ -15,7 +15,7 @@ namespace Axodox::MachineLearning
     _session = { _environment.Environment(), (_environment.RootPath() / L"text_encoder/model.onnx").c_str(), _environment.DefaultSessionOptions() };
   }
 
-  Tensor TextEncoder::EncodeText(Tensor text)
+  Tensor TextEncoder::EncodeText(const Tensor& text)
   {
     //Load inputs
     auto inputValue = text.ToOrtValue(_environment.MemoryInfo());

@@ -9,7 +9,7 @@ namespace Axodox::MachineLearning
   public:
     TextTokenizer(OnnxEnvironment& environment);
 
-    Tensor TokenizeText(const std::string_view text);
+    Tensor TokenizeText(std::string_view text);
     Tensor GetUnconditionalTokens();
 
   private:

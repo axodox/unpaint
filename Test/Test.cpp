@@ -85,20 +85,19 @@ int main()
     TextTokenizer textTokenizer{ onnxEnvironment };
     TextEncoder textEncoder{ onnxEnvironment };
 
-    auto tokenizedBlank = textTokenizer.GetUnconditionalTokens();
-    auto encodedBlank = textEncoder.EncodeText(tokenizedBlank);
+    auto tokenizedNegativePrompt = textTokenizer.TokenizeText("blurry");//textTokenizer.GetUnconditionalTokens();
+    auto encodedNegativePrompt = textEncoder.EncodeText(tokenizedNegativePrompt);
 
-    auto tokenizedText = textTokenizer.TokenizeText("a stag standing in a misty forest at dawn, closeup");
-    auto encodedText = textEncoder.EncodeText(tokenizedText);
+    auto tokenizedPositivePrompt = textTokenizer.TokenizeText("a stag standing in a misty forest at dawn, closeup");
+    auto encodedPositivePrompt = textEncoder.EncodeText(tokenizedPositivePrompt);
 
-    auto pSourceBlank = encodedBlank.AsPointer<float>();
-    auto pSourceText = encodedText.AsPointer<float>();
-    auto pTargetBlank = textEmbeddings.AsPointer<float>(0);
-    auto pTargetText = textEmbeddings.AsPointer<float>(1);
+    auto pSourceNegativePrompt = encodedNegativePrompt.AsSpan<float>();
+    auto pSourcePositivePrompt = encodedPositivePrompt.AsSpan<float>();
+    auto pTargetNegativePrompt = textEmbeddings.AsPointer<float>(0);
+    auto pTargetPositivePrompt = textEmbeddings.AsPointer<float>(1);
 
-    auto size = encodedText.Size();
-    memcpy(pTargetBlank, pSourceBlank, size * 4);
-    memcpy(pTargetText, pSourceText, size * 4);
+    ranges::copy(pSourceNegativePrompt, pTargetNegativePrompt);
+    ranges::copy(pSourcePositivePrompt, pTargetPositivePrompt);
   }
 
   //Run stable diffusion
@@ -108,8 +107,9 @@ int main()
 
     StableDiffusionOptions options{
       .StepCount = 20,
-      .Width = 768,
-      .Height = 768,
+      .BatchSize = 3,
+      .Width = 512,
+      .Height = 512,
       .Seed = 60,
       .TextEmbeddings = textEmbeddings
     };
@@ -122,9 +122,13 @@ int main()
     VaeDecoder vaeDecoder{ onnxEnvironment };
     auto imageTensor = vaeDecoder.DecodeVae(latentResult);
 
-    auto imageTexture = imageTensor.ToTextureData();
-    auto pngBuffer = imageTexture[0].ToBuffer();
-    write_file(L"bin/test.png", pngBuffer);
+    auto imageTextures = imageTensor.ToTextureData();
+
+    for (auto i = 0; auto & imageTexture : imageTextures)
+    {
+      auto pngBuffer = imageTexture.ToBuffer();
+      write_file(format(L"bin/test{}.png", i++), pngBuffer);
+    }
   }
 
   //Done
