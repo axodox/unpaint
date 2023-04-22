@@ -6,7 +6,8 @@ namespace Axodox::MachineLearning
 {
   struct Tensor
   {
-    typedef std::array<size_t, 4> shape_t;
+    static const size_t shape_dimension = 4;
+    typedef std::array<size_t, shape_dimension> shape_t;
 
     TensorType Type;
     shape_t Shape;
@@ -157,12 +158,15 @@ namespace Axodox::MachineLearning
 
     static std::pair<TensorType, Tensor::shape_t> ToTypeAndShape(const Ort::TensorTypeAndShapeInfo& info);
 
-    static Tensor CreateRandom(shape_t shape, std::minstd_rand& random, float scale = 1.f);
+    static Tensor CreateRandom(shape_t shape, std::span<std::minstd_rand> randoms, float scale = 1.f);
+
+    Tensor Concat(const Tensor& tensor) const;
 
     bool operator==(const Tensor& other) const;
     bool operator!=(const Tensor& other) const;
 
   private:
     static size_t GetDimensionFromIndex(size_t& x, size_t& y, size_t& z, size_t& w);
+    static bool AreShapesEqual(shape_t a, shape_t b, size_t startDimension = 0);
   };
 }

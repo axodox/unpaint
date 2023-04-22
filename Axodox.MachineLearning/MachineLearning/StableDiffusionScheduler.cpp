@@ -215,7 +215,7 @@ namespace Axodox::MachineLearning
     };
   }
   
-  Tensor StableDiffusionSchedulerSteps::ApplyStep(const Tensor& sample, const Tensor& output, list<Tensor>& derivatives, std::minstd_rand& random, size_t step)
+  Tensor StableDiffusionSchedulerSteps::ApplyStep(const Tensor& sample, const Tensor& output, list<Tensor>& derivatives, std::span<std::minstd_rand> randoms, size_t step)
   {
     auto sigma = Sigmas[step];
 
@@ -257,7 +257,7 @@ namespace Axodox::MachineLearning
       auto& eulerCoefficient = get<EulerCoefficients>(Coefficients[step]);
 
       auto dt = eulerCoefficient.SigmaDown - sigma;
-      auto randomNoise = Tensor::CreateRandom(sample.Shape, random, eulerCoefficient.SigmaUp);
+      auto randomNoise = Tensor::CreateRandom(sample.Shape, randoms, eulerCoefficient.SigmaUp);
       latentDelta = randomNoise.BinaryOperation<float>(currentDerivative, [dt](float a, float b) { return a + dt * b; });
       break;
     }

@@ -44,29 +44,29 @@ namespace Axodox::MachineLearning
     {
     case TensorType::Unknown:
       return ONNX_TENSOR_ELEMENT_DATA_TYPE_UNDEFINED;
-    case Axodox::MachineLearning::TensorType::Bool:
+    case TensorType::Bool:
       return ONNX_TENSOR_ELEMENT_DATA_TYPE_BOOL;
-    case Axodox::MachineLearning::TensorType::UInt8:
+    case TensorType::UInt8:
       return ONNX_TENSOR_ELEMENT_DATA_TYPE_UINT8;
-    case Axodox::MachineLearning::TensorType::UInt16:
+    case TensorType::UInt16:
       return ONNX_TENSOR_ELEMENT_DATA_TYPE_UINT16;
-    case Axodox::MachineLearning::TensorType::UInt32:
+    case TensorType::UInt32:
       return ONNX_TENSOR_ELEMENT_DATA_TYPE_UINT32;
-    case Axodox::MachineLearning::TensorType::UInt64:
+    case TensorType::UInt64:
       return ONNX_TENSOR_ELEMENT_DATA_TYPE_UINT64;
-    case Axodox::MachineLearning::TensorType::Int8:
+    case TensorType::Int8:
       return ONNX_TENSOR_ELEMENT_DATA_TYPE_INT8;
-    case Axodox::MachineLearning::TensorType::Int16:
+    case TensorType::Int16:
       return ONNX_TENSOR_ELEMENT_DATA_TYPE_INT16;
-    case Axodox::MachineLearning::TensorType::Int32:
+    case TensorType::Int32:
       return ONNX_TENSOR_ELEMENT_DATA_TYPE_INT32;
-    case Axodox::MachineLearning::TensorType::Int64:
+    case TensorType::Int64:
       return ONNX_TENSOR_ELEMENT_DATA_TYPE_INT64;
-    case Axodox::MachineLearning::TensorType::Half:
+    case TensorType::Half:
       return ONNX_TENSOR_ELEMENT_DATA_TYPE_FLOAT16;
-    case Axodox::MachineLearning::TensorType::Single:
+    case TensorType::Single:
       return ONNX_TENSOR_ELEMENT_DATA_TYPE_FLOAT;
-    case Axodox::MachineLearning::TensorType::Double:
+    case TensorType::Double:
       return ONNX_TENSOR_ELEMENT_DATA_TYPE_DOUBLE;
     default:
       throw logic_error("Tensor type not implemented.");

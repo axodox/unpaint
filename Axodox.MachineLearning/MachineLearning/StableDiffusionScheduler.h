@@ -51,7 +51,7 @@ namespace Axodox::MachineLearning
     coefficients_t Coefficients;
     StableDiffusionSchedulerKind SchedulerType;
 
-    Tensor ApplyStep(const Tensor& latents, const Tensor& noise, std::list<Tensor>& derivatives, std::minstd_rand& random, size_t step);
+    Tensor ApplyStep(const Tensor& latents, const Tensor& noise, std::list<Tensor>& derivatives, std::span<std::minstd_rand> randoms, size_t step);
   };
 
   class StableDiffusionScheduler

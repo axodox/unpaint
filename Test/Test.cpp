@@ -76,10 +76,13 @@ int main()
   winrt::init_apartment();
 
   OnnxEnvironment onnxEnvironment{ L"C:/dev/ai/realistic_vision_v1.4-fp16-vram" };
+  //OnnxEnvironment onnxEnvironment{ L"D:/dev/Stable-Diffusion-ONNX-FP16/model/safetensors-sd15-fp16" };
+  //OnnxEnvironment onnxEnvironment{ L"D:/dev/Stable-Diffusion-ONNX-FP16/model/safetensors-protogenX53Photorealism_10-fp16" };
   //OnnxEnvironment onnxEnvironment{ L"C:/dev/StableDiffusion/StableDiffusion" };
+  //OnnxEnvironment onnxEnvironment{ L"D:/dev/stable-diffusion-2-1-fp16-onnx" };
 
   //Create text embeddings
-  Tensor textEmbeddings{ TensorType::Single, 2, 77, 768 };
+  Tensor textEmbeddings;
   {
     //Encode text
     TextTokenizer textTokenizer{ onnxEnvironment };
@@ -91,13 +94,7 @@ int main()
     auto tokenizedPositivePrompt = textTokenizer.TokenizeText("a stag standing in a misty forest at dawn, closeup");
     auto encodedPositivePrompt = textEncoder.EncodeText(tokenizedPositivePrompt);
 
-    auto pSourceNegativePrompt = encodedNegativePrompt.AsSpan<float>();
-    auto pSourcePositivePrompt = encodedPositivePrompt.AsSpan<float>();
-    auto pTargetNegativePrompt = textEmbeddings.AsPointer<float>(0);
-    auto pTargetPositivePrompt = textEmbeddings.AsPointer<float>(1);
-
-    ranges::copy(pSourceNegativePrompt, pTargetNegativePrompt);
-    ranges::copy(pSourcePositivePrompt, pTargetPositivePrompt);
+    textEmbeddings = encodedNegativePrompt.Concat(encodedPositivePrompt);
   }
 
   //Run stable diffusion
@@ -107,9 +104,9 @@ int main()
 
     StableDiffusionOptions options{
       .StepCount = 20,
-      .BatchSize = 3,
-      .Width = 512,
-      .Height = 512,
+      .BatchSize = 1,
+      .Width = 768,
+      .Height = 768,
       .Seed = 60,
       .TextEmbeddings = textEmbeddings
     };

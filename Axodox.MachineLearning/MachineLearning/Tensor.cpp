@@ -109,24 +109,46 @@ namespace Axodox::MachineLearning
     return result;
   }
 
-  Tensor Tensor::CreateRandom(shape_t shape, std::minstd_rand& random, float scale)
+  Tensor Tensor::CreateRandom(shape_t shape, std::span<std::minstd_rand> randoms, float scale)
   {
     static uniform_real_distribution<float> floatDistribution(0.f, 1.f);
 
     Tensor result{ TensorType::Single, shape };
 
-    for (auto& value : result.AsSpan<float>())
+    for (size_t i = 0; i < shape[0]; i++)
     {
-      auto u1 = floatDistribution(random);
-      auto u2 = floatDistribution(random);
-      auto radius = sqrt(-2.f * log(u1));
-      auto theta = 2.f * XM_PI * u2;
-      auto standardNormalRand = radius * cos(theta);
+      for (auto& value : result.AsSubSpan<float>(i))
+      {
+        auto u1 = floatDistribution(randoms[i]);
+        auto u2 = floatDistribution(randoms[i]);
+        auto radius = sqrt(-2.f * log(u1));
+        auto theta = 2.f * XM_PI * u2;
+        auto standardNormalRand = radius * cos(theta);
 
-      value = standardNormalRand * scale;
+        value = standardNormalRand * scale;
+      }
     }
 
     return result;
+  }
+
+  Tensor Tensor::Concat(const Tensor& other) const
+  {
+    if (!AreShapesEqual(Shape, other.Shape, 1)) throw invalid_argument("other");
+    if (Type != other.Type) throw invalid_argument("other");
+
+    auto shape = Shape;
+    shape[0] += other.Shape[0];
+
+    Tensor tensor{ Type, shape };
+
+    auto baseByteCount = ByteCount();
+
+    auto pTarget = tensor.AsPointer();
+    memcpy(pTarget, AsPointer(), baseByteCount);
+    memcpy(pTarget + baseByteCount, other.AsPointer(), other.ByteCount());
+
+    return tensor;
   }
 
   bool Tensor::operator==(const Tensor& other) const
@@ -169,6 +191,16 @@ namespace Axodox::MachineLearning
     }
 
     return dimension;
+  }
+
+  bool Tensor::AreShapesEqual(shape_t a, shape_t b, size_t startDimension)
+  {
+    for (size_t i = startDimension; i < shape_dimension; i++)
+    {
+      if (a[i] != b[i]) return false;
+    }
+
+    return true;
   }
 
   Tensor Tensor::FromOrtValue(const Ort::Value& value)

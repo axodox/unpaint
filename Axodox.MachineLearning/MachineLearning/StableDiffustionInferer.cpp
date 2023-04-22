@@ -20,20 +20,23 @@ namespace Axodox::MachineLearning
   Tensor StableDiffusionInferer::RunInference(const StableDiffusionOptions& options)
   {
     StableDiffusionContext context{
-      .Options = options,
-      .Random = minstd_rand{options.Seed}
+      .Options = options
     };
+
+    context.Randoms.reserve(options.BatchSize);
+    for (size_t i = 0; i < options.BatchSize; i++)
+    {
+      context.Randoms.push_back(minstd_rand{ options.Seed + uint32_t(i) });
+    }
 
     list<Tensor> derivatives;
 
     auto latentSample = GenerateLatentSample(context);
-    auto textEmbeddings = options.TextEmbeddings.Duplicate(options.BatchSize);
-
     auto steps = context.Scheduler.GetSteps(options.StepCount);
 
     IoBinding binding{ _session };
     binding.BindOutput("out_sample", _environment.MemoryInfo());
-    binding.BindInput("encoder_hidden_states", textEmbeddings.ToOrtValue(_environment.MemoryInfo()));
+    binding.BindInput("encoder_hidden_states", options.TextEmbeddings.ToOrtValue(_environment.MemoryInfo()));
 
     for (size_t i = 0; i < steps.Timesteps.size(); i++)
     {
@@ -55,7 +58,7 @@ namespace Axodox::MachineLearning
       auto guidedNoise = blankNoise.BinaryOperation<float>(textNoise, [guidanceScale = options.GuidanceScale](float a, float b) 
         { return a + guidanceScale * (b - a); });
 
-      latentSample = steps.ApplyStep(latentSample, guidedNoise, derivatives, context.Random, i);
+      latentSample = steps.ApplyStep(latentSample, guidedNoise, derivatives, context.Randoms, i);
     }
 
     latentSample = latentSample * (1.0f / 0.18215f);
@@ -65,6 +68,6 @@ namespace Axodox::MachineLearning
   Tensor StableDiffusionInferer::GenerateLatentSample(StableDiffusionContext& context)
   {
     Tensor::shape_t shape{ context.Options.BatchSize, 4, context.Options.Height / 8, context.Options.Width / 8 };
-    return Tensor::CreateRandom(shape, context.Random, context.Scheduler.InitialNoiseSigma());
+    return Tensor::CreateRandom(shape, context.Randoms, context.Scheduler.InitialNoiseSigma());
   }
 }

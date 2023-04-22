@@ -22,7 +22,7 @@ namespace Axodox::MachineLearning
     {
       StableDiffusionOptions Options;
       StableDiffusionScheduler Scheduler;
-      std::minstd_rand Random;
+      std::vector<std::minstd_rand> Randoms;
     };
 
   public:
