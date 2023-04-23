@@ -37,7 +37,7 @@ namespace Axodox::Graphics
     *this = move(other);
   }
 
-  void TextureData::operator=(TextureData&& other) noexcept
+  TextureData& TextureData::operator=(TextureData&& other) noexcept
   {
     Width = other.Width;
     Height = other.Height;
@@ -49,6 +49,8 @@ namespace Axodox::Graphics
     other.Height = 0;
     other.Stride = 0;
     other.Format = DXGI_FORMAT_UNKNOWN;
+
+    return *this;
   }
 
   uint32_t TextureData::MainDimension() const

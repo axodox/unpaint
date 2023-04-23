@@ -14,8 +14,10 @@ namespace Axodox::Graphics
     TextureData(uint32_t width, uint32_t height, uint32_t stride, DXGI_FORMAT format, Collections::aligned_vector<uint8_t>&& buffer);
     TextureData(uint32_t width, uint32_t height, DXGI_FORMAT format);
 
+    explicit TextureData(const TextureData&) = default;
+
     TextureData(TextureData&&) noexcept;
-    void operator=(TextureData&&) noexcept;
+    TextureData& operator=(TextureData&&) noexcept;
 
     uint32_t MainDimension() const;
     uint32_t PixelCount() const;
@@ -31,6 +33,12 @@ namespace Axodox::Graphics
     T* Row(uint32_t row)
     {
       return reinterpret_cast<T*>(Buffer.data() + row * Stride);
+    }
+
+    template<typename T>
+    const T* Row(uint32_t row) const
+    {
+      return reinterpret_cast<const T*>(Buffer.data() + row * Stride);
     }
 
     template<typename T>

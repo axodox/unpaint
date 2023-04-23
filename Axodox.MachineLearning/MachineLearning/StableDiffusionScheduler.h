@@ -62,6 +62,7 @@ namespace Axodox::MachineLearning
     StableDiffusionSchedulerSteps GetSteps(size_t count) const;
 
     float InitialNoiseSigma() const;
+    std::span<const float> CumulativeAlphas() const;
 
   private:
     StableDiffusionSchedulerOptions _options;

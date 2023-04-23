@@ -28,12 +28,12 @@ namespace Axodox::MachineLearning
     AllocateBuffer();
   }
 
-  Tensor::Tensor(Tensor&& other)
+  Tensor::Tensor(Tensor&& other) noexcept
   {
-    *this == move(other);
+    *this = move(other);
   }
 
-  Tensor& Tensor::operator=(Tensor&& other)
+  Tensor& Tensor::operator=(Tensor&& other) noexcept
   {
     Buffer = move(other.Buffer);
     Type = other.Type;
@@ -44,7 +44,7 @@ namespace Axodox::MachineLearning
     return *this;
   }
 
-  void Tensor::Reset()
+  void Tensor::Reset() noexcept
   {
     Type = TensorType::Unknown;
     Shape = { 0, 0, 0, 0 };
@@ -76,6 +76,11 @@ namespace Axodox::MachineLearning
   void Tensor::ThrowIfInvalid() const
   {
     if (IsValid()) throw runtime_error("The tensor is invalid.");
+  }
+
+  Tensor::operator bool() const
+  {
+    return IsValid();
   }
 
   size_t Tensor::Size(size_t index) const
@@ -239,6 +244,35 @@ namespace Axodox::MachineLearning
     memcpy(data, AsPointer(), ByteCount());
   }
 
+  Tensor Tensor::FromTextureData(const Graphics::TextureData& texture)
+  {
+    Tensor result(TensorType::Single, 1, 3, texture.Width, texture.Height);
+
+    {
+      if (texture.Width != result.Shape[2] || texture.Height != result.Shape[3] || texture.Format != DXGI_FORMAT_B8G8R8A8_UNORM_SRGB) throw invalid_argument("textures");
+
+      auto rTarget = result.AsPointer<float>(0, 0);
+      auto gTarget = result.AsPointer<float>(0, 1);
+      auto bTarget = result.AsPointer<float>(0, 2);
+
+      XMFLOAT4A color;
+      for (uint32_t y = 0u; y < texture.Height; y++)
+      {
+        auto pSource = texture.Row<XMUBYTEN4>(y);
+        for (uint32_t x = 0u; x < texture.Width; x++)
+        {
+          XMStoreFloat4A(&color, XMVectorScale(XMLoadUByteN4(pSource++) - XMVectorReplicate(0.5f), 2.f));
+
+          *rTarget++ = color.z;
+          *gTarget++ = color.y;
+          *bTarget++ = color.x;
+        }
+      }
+    }
+
+    return result;
+  }
+
   std::vector<Graphics::TextureData> Tensor::ToTextureData() const
   {
     if (Type != TensorType::Single) throw bad_cast();
@@ -252,13 +286,13 @@ namespace Axodox::MachineLearning
     {
       TextureData result{ width, height, DXGI_FORMAT_B8G8R8A8_UNORM_SRGB };
 
-      auto pTarget = result.Row<XMUBYTEN4>(0);
       auto rSource = AsPointer<float>(i, 0);
       auto gSource = AsPointer<float>(i, 1);
       auto bSource = AsPointer<float>(i, 2);
-      for (size_t y = 0u; y < Shape[2]; y++)
+      for (uint32_t y = 0u; y < height; y++)
       {
-        for (size_t x = 0u; x < Shape[3]; x++)
+        auto pTarget = result.Row<XMUBYTEN4>(y);
+        for (uint32_t x = 0u; x < width; x++)
         {
           auto color = XMVectorSaturate(XMVectorSet(*bSource++, *gSource++, *rSource++, 1.f) / 2.f + XMVectorReplicate(0.5f));
           XMStoreUByteN4(pTarget++, color);

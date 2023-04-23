@@ -14,6 +14,7 @@
 #include "MachineLearning/TextEncoder.h"
 #include "MachineLearning/StableDiffustionInferer.h"
 #include "MachineLearning/VaeDecoder.h"
+#include "MachineLearning/VaeEncoder.h"
 
 using namespace Axodox::Graphics;
 using namespace Axodox::Infrastructure;
@@ -81,6 +82,17 @@ int main()
   //OnnxEnvironment onnxEnvironment{ L"C:/dev/StableDiffusion/StableDiffusion" };
   //OnnxEnvironment onnxEnvironment{ L"D:/dev/stable-diffusion-2-1-fp16-onnx" };
 
+  //Load source image
+  Tensor latentInput;
+  {
+    auto pngBuffer = read_file(L"bin/input.png");
+    auto imageTexture = TextureData::FromBuffer(pngBuffer);
+    Tensor imageTensor = Tensor::FromTextureData(imageTexture);
+
+    VaeEncoder vaeEncoder{ onnxEnvironment };
+    latentInput = vaeEncoder.EncodeVae(imageTensor);
+  }
+
   //Create text embeddings
   Tensor textEmbeddings;
   {
@@ -88,10 +100,10 @@ int main()
     TextTokenizer textTokenizer{ onnxEnvironment };
     TextEncoder textEncoder{ onnxEnvironment };
 
-    auto tokenizedNegativePrompt = textTokenizer.TokenizeText("blurry");//textTokenizer.GetUnconditionalTokens();
+    auto tokenizedNegativePrompt = textTokenizer.TokenizeText("blurry, render");//textTokenizer.GetUnconditionalTokens();
     auto encodedNegativePrompt = textEncoder.EncodeText(tokenizedNegativePrompt);
 
-    auto tokenizedPositivePrompt = textTokenizer.TokenizeText("a stag standing in a misty forest at dawn, closeup");
+    auto tokenizedPositivePrompt = textTokenizer.TokenizeText("a stag standing in a snowy winter forest at noon, closeup");
     auto encodedPositivePrompt = textEncoder.EncodeText(tokenizedPositivePrompt);
 
     textEmbeddings = encodedNegativePrompt.Concat(encodedPositivePrompt);
@@ -107,8 +119,10 @@ int main()
       .BatchSize = 1,
       .Width = 768,
       .Height = 768,
-      .Seed = 60,
-      .TextEmbeddings = textEmbeddings
+      .Seed = 88,
+      .TextEmbeddings = textEmbeddings,
+      .LatentInput = latentInput,
+      .DenoisingStrength = 0.6f
     };
 
     latentResult = stableDiffusion.RunInference(options);

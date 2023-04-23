@@ -19,6 +19,8 @@ namespace Axodox::MachineLearning
 
   Tensor StableDiffusionInferer::RunInference(const StableDiffusionOptions& options)
   {
+    if (options.LatentInput && options.LatentInput.Shape[0] != options.BatchSize) throw invalid_argument("options.BatchSize");
+
     StableDiffusionContext context{
       .Options = options
     };
@@ -31,16 +33,17 @@ namespace Axodox::MachineLearning
 
     list<Tensor> derivatives;
 
-    auto latentSample = GenerateLatentSample(context);
-    auto steps = context.Scheduler.GetSteps(options.StepCount);
+    auto initialStep = clamp(options.StepCount - size_t(options.StepCount * options.DenoisingStrength) - 1, size_t(0), options.StepCount);
+    auto latentSample = options.LatentInput ? PrepareLatentSample(context, options.LatentInput, initialStep) : GenerateLatentSample(context);
 
     IoBinding binding{ _session };
     binding.BindOutput("out_sample", _environment.MemoryInfo());
     binding.BindInput("encoder_hidden_states", options.TextEmbeddings.ToOrtValue(_environment.MemoryInfo()));
-
-    for (size_t i = 0; i < steps.Timesteps.size(); i++)
+        
+    auto steps = context.Scheduler.GetSteps(options.StepCount);
+    for (size_t i = initialStep; i < steps.Timesteps.size(); i++)
     {
-      printf("Step %zd\n", i);
+      printf("Step %zd\n", i + 1);
       auto scaledSample = latentSample.Duplicate().Swizzle(options.BatchSize) / sqrt(steps.Sigmas[i] * steps.Sigmas[i] + 1);
 
       binding.BindInput("sample", scaledSample.ToOrtValue(_environment.MemoryInfo()));
@@ -64,8 +67,19 @@ namespace Axodox::MachineLearning
     latentSample = latentSample * (1.0f / 0.18215f);
     return latentSample;
   }
+
+  Tensor StableDiffusionInferer::PrepareLatentSample(StableDiffusionContext& context, const Tensor& latents, size_t initialStep) const
+  {
+    auto cumulativeAlpha = context.Scheduler.CumulativeAlphas()[initialStep];
+    auto inputFactor = sqrt(cumulativeAlpha) * 0.18215f;
+    auto noiseFactor = sqrt(1 - cumulativeAlpha);
+
+    auto result = Tensor::CreateRandom(latents.Shape, context.Randoms);
+    result.UnaryOperation<float>(latents, [=](float a, float b) { return a * noiseFactor + b * inputFactor; });
+    return result;
+  }
   
-  Tensor StableDiffusionInferer::GenerateLatentSample(StableDiffusionContext& context)
+  Tensor StableDiffusionInferer::GenerateLatentSample(StableDiffusionContext& context) const
   {
     Tensor::shape_t shape{ context.Options.BatchSize, 4, context.Options.Height / 8, context.Options.Width / 8 };
     return Tensor::CreateRandom(shape, context.Randoms, context.Scheduler.InitialNoiseSigma());

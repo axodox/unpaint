@@ -14,11 +14,11 @@ namespace Axodox::MachineLearning
     std::vector<uint8_t> Buffer;
 
     Tensor();
-    Tensor(TensorType type, size_t x = 0, size_t y = 0, size_t z = 0, size_t w = 0);
+    explicit Tensor(TensorType type, size_t x = 0, size_t y = 0, size_t z = 0, size_t w = 0);
     Tensor(TensorType type, shape_t shape);
 
     template<typename T>
-    Tensor(T value) :
+    explicit Tensor(T value) :
       Type(ToTensorType<T>()),
       Shape(1, 0, 0, 0)
     {
@@ -29,16 +29,18 @@ namespace Axodox::MachineLearning
     Tensor(const Tensor&) = default;
     Tensor& operator=(const Tensor&) = default;
 
-    Tensor(Tensor&& other);
-    Tensor& operator=(Tensor&& other);
+    Tensor(Tensor&& other) noexcept;
+    Tensor& operator=(Tensor&& other) noexcept;
 
-    void Reset();
+    void Reset() noexcept;
 
     void AllocateBuffer();
 
     size_t ByteCount() const;
     bool IsValid() const;
     void ThrowIfInvalid() const;
+
+    explicit operator bool() const;
 
     size_t Size(size_t dimension = 0) const;
 
@@ -47,7 +49,8 @@ namespace Axodox::MachineLearning
 
     void UpdateOrtValue(Ort::Value& value);
 
-    std::vector<Graphics::TextureData> ToTextureData() const;
+    static Tensor FromTextureData(const Graphics::TextureData& texture);
+    std::vector<Graphics::TextureData> ToTextureData() const;    
 
     const uint8_t* AsPointer(size_t x = 0, size_t y = 0, size_t z = 0, size_t w = 0) const;
     uint8_t* AsPointer(size_t x = 0, size_t y = 0, size_t z = 0, size_t w = 0);
@@ -101,7 +104,7 @@ namespace Axodox::MachineLearning
     template<typename T>
     Tensor operator*(T value) const
     {
-      Tensor result{ *this };
+      Tensor result(*this);
       for (auto& item : result.AsSpan<T>())
       {
         item *= value;

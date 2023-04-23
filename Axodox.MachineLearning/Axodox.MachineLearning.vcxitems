@@ -24,6 +24,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\TextEncoder.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\TextTokenizer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\VaeDecoder.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\VaeEncoder.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)ml_pch.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)pch.h" />
   </ItemGroup>
@@ -37,5 +38,6 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\TextEncoder.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\TextTokenizer.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\VaeDecoder.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\VaeEncoder.cpp" />
   </ItemGroup>
 </Project>

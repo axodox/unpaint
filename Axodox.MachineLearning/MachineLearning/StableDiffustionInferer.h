@@ -14,6 +14,8 @@ namespace Axodox::MachineLearning
     float GuidanceScale = 7.f;    
     uint32_t Seed = 0;
     Tensor TextEmbeddings;
+    Tensor LatentInput;
+    float DenoisingStrength = 1.f;
   };
 
   class StableDiffusionInferer
@@ -34,6 +36,7 @@ namespace Axodox::MachineLearning
     OnnxEnvironment& _environment;
     Ort::Session _session;
 
-    Tensor GenerateLatentSample(StableDiffusionContext& context);
+    Tensor GenerateLatentSample(StableDiffusionContext& context) const;
+    Tensor PrepareLatentSample(StableDiffusionContext& context, const Tensor& latents, size_t initialStep) const;
   };
 }

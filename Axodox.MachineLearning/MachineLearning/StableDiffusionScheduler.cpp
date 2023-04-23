@@ -112,6 +112,11 @@ namespace Axodox::MachineLearning
     return _initialNoiseSigma;
   }
 
+  std::span<const float> StableDiffusionScheduler::CumulativeAlphas() const
+  {
+    return _cumulativeAlphas;
+  }
+
   std::vector<float> StableDiffusionScheduler::GetLinearBetas() const
   {
     vector<float> results;
@@ -240,8 +245,7 @@ namespace Axodox::MachineLearning
       lmsDerivativeProduct.reserve(derivatives.size());
       for (auto i = 0; auto & derivative : ranges::reverse_view(derivatives))
       {
-        auto scaledDerivative = derivative * derivativeCoefficients[i++];
-        lmsDerivativeProduct.push_back(scaledDerivative);
+        lmsDerivativeProduct.push_back(derivative * derivativeCoefficients[i++]);
       }
 
       latentDelta = { TensorType::Single, currentDerivative.Shape };
