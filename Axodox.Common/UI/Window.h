@@ -2,6 +2,8 @@
 #include "Infrastructure/Win32.h"
 #include "Infrastructure/Events.h"
 
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
+
 namespace Axodox::UI
 {
   class Window
@@ -27,3 +29,5 @@ namespace Axodox::UI
     static LRESULT CALLBACK HandleMessage(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
   };
 }
+
+#endif

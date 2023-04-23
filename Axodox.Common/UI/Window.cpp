@@ -2,6 +2,8 @@
 #include "Window.h"
 #include "Infrastructure/BitwiseOperations.h"
 
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
+
 using namespace Axodox::Infrastructure;
 using namespace winrt;
 
@@ -87,3 +89,5 @@ namespace Axodox::UI
     return DefWindowProcW(window, message, wParam, lParam);
   }
 }
+
+#endif
