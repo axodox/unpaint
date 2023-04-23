@@ -208,6 +208,52 @@ namespace Axodox::MachineLearning
     return true;
   }
 
+  Tensor Tensor::FromTextureDataRgba8(const Graphics::TextureData& texture)
+  {
+    Tensor result(TensorType::Single, 1, 3, texture.Width, texture.Height);
+
+    if (texture.Format != DXGI_FORMAT_B8G8R8A8_UNORM && texture.Format != DXGI_FORMAT_B8G8R8A8_UNORM_SRGB) throw logic_error("Unsupported texture format.");
+
+    auto rTarget = result.AsPointer<float>(0, 0);
+    auto gTarget = result.AsPointer<float>(0, 1);
+    auto bTarget = result.AsPointer<float>(0, 2);
+
+    XMFLOAT4A color;
+    for (uint32_t y = 0u; y < texture.Height; y++)
+    {
+      auto pSource = texture.Row<XMUBYTEN4>(y);
+      for (uint32_t x = 0u; x < texture.Width; x++)
+      {
+        XMStoreFloat4A(&color, XMVectorScale(XMLoadUByteN4(pSource++) - XMVectorReplicate(0.5f), 2.f));
+
+        *rTarget++ = color.z;
+        *gTarget++ = color.y;
+        *bTarget++ = color.x;
+      }
+    }
+
+    return result;
+  }
+
+  Tensor Tensor::FromTextureDataGray8(const Graphics::TextureData& texture)
+  {
+    Tensor result(TensorType::Single, 1, 1, texture.Width, texture.Height);
+
+    if (texture.Format != DXGI_FORMAT_R8_UNORM) throw logic_error("Unsupported texture format.");
+
+    auto pTarget = result.AsPointer<float>();
+    for (uint32_t y = 0u; y < texture.Height; y++)
+    {
+      auto pSource = texture.Row<uint8_t>(y);
+      for (uint32_t x = 0u; x < texture.Width; x++)
+      {
+        *pTarget++ = *pSource++ / 255.f;
+      }
+    }
+
+    return result;
+  }
+
   Tensor Tensor::FromOrtValue(const Ort::Value& value)
   {
     Tensor result;
@@ -246,31 +292,16 @@ namespace Axodox::MachineLearning
 
   Tensor Tensor::FromTextureData(const Graphics::TextureData& texture)
   {
-    Tensor result(TensorType::Single, 1, 3, texture.Width, texture.Height);
-
+    switch (texture.Format)
     {
-      if (texture.Width != result.Shape[2] || texture.Height != result.Shape[3] || texture.Format != DXGI_FORMAT_B8G8R8A8_UNORM_SRGB) throw invalid_argument("textures");
-
-      auto rTarget = result.AsPointer<float>(0, 0);
-      auto gTarget = result.AsPointer<float>(0, 1);
-      auto bTarget = result.AsPointer<float>(0, 2);
-
-      XMFLOAT4A color;
-      for (uint32_t y = 0u; y < texture.Height; y++)
-      {
-        auto pSource = texture.Row<XMUBYTEN4>(y);
-        for (uint32_t x = 0u; x < texture.Width; x++)
-        {
-          XMStoreFloat4A(&color, XMVectorScale(XMLoadUByteN4(pSource++) - XMVectorReplicate(0.5f), 2.f));
-
-          *rTarget++ = color.z;
-          *gTarget++ = color.y;
-          *bTarget++ = color.x;
-        }
-      }
+    case DXGI_FORMAT_B8G8R8A8_UNORM:
+    case DXGI_FORMAT_B8G8R8A8_UNORM_SRGB:
+      return FromTextureDataRgba8(texture);
+    case DXGI_FORMAT_R8_UNORM:
+      return FromTextureDataGray8(texture);
+    default:
+      throw logic_error("Unsupported texture format");
     }
-
-    return result;
   }
 
   std::vector<Graphics::TextureData> Tensor::ToTextureData() const

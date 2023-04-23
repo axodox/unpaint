@@ -4,6 +4,13 @@
 
 namespace Axodox::Graphics
 {
+  enum class TextureImageFormat
+  {
+    Unknown,
+    Rgba8,
+    Gray8
+  };
+
   struct TextureData
   {
     uint32_t Width, Height, Stride;
@@ -26,7 +33,7 @@ namespace Axodox::Graphics
 
     explicit operator bool() const;
 
-    static TextureData FromBuffer(std::span<const uint8_t> buffer);
+    static TextureData FromBuffer(std::span<const uint8_t> buffer, TextureImageFormat format = TextureImageFormat::Rgba8);
     std::vector<uint8_t> ToBuffer() const;
 
     template<typename T>

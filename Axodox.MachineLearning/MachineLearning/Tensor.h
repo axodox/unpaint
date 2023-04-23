@@ -171,5 +171,9 @@ namespace Axodox::MachineLearning
   private:
     static size_t GetDimensionFromIndex(size_t& x, size_t& y, size_t& z, size_t& w);
     static bool AreShapesEqual(shape_t a, shape_t b, size_t startDimension = 0);
+
+    static Tensor FromTextureDataRgba8(const Graphics::TextureData& texture);
+    static Tensor FromTextureDataGray8(const Graphics::TextureData& texture);
+
   };
 }

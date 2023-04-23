@@ -81,7 +81,7 @@ namespace Axodox::Graphics
     return !Buffer.empty();
   }
 
-  TextureData TextureData::FromBuffer(std::span<const uint8_t> buffer)
+  TextureData TextureData::FromBuffer(std::span<const uint8_t> buffer, TextureImageFormat format)
   {
     auto wicFactory = WicFactory();
 
@@ -101,12 +101,29 @@ namespace Axodox::Graphics
       check_hresult(wicBitmapDecoder->GetFrame(0, reinterpret_cast<IWICBitmapFrameDecode**>(wicBitmap.put())));
     }
 
-    //Covert data to BGRA
+    //Select format
+    WICPixelFormatGUID wicFormat;
+    DXGI_FORMAT dxgiFormat;
+    switch (format)
+    {
+    case TextureImageFormat::Rgba8:
+      wicFormat = GUID_WICPixelFormat32bppBGRA;
+      dxgiFormat = DXGI_FORMAT_B8G8R8A8_UNORM_SRGB;
+      break;
+    case TextureImageFormat::Gray8:
+      wicFormat = GUID_WICPixelFormat8bppGray;
+      dxgiFormat = DXGI_FORMAT_R8_UNORM;
+      break;
+    default:
+      throw logic_error("Texture image format not implemented.");
+    }
+
+    //Covert data to target format
     {
       com_ptr<IWICFormatConverter> wicFormatConverter;
       check_hresult(wicFactory->CreateFormatConverter(wicFormatConverter.put()));
       check_hresult(wicFormatConverter->Initialize(
-        wicBitmap.get(), GUID_WICPixelFormat32bppBGRA,
+        wicBitmap.get(), wicFormat,
         WICBitmapDitherTypeNone, nullptr, 0.f,
         WICBitmapPaletteTypeMedianCut));
       wicBitmap = move(wicFormatConverter);
@@ -115,9 +132,9 @@ namespace Axodox::Graphics
     //Define result
     TextureData result;
     check_hresult(wicBitmap->GetSize(&result.Width, &result.Height));
-    result.Stride = result.Width * 4;
+    result.Stride = result.Width * uint32_t(BitsPerPixel(dxgiFormat));
     result.Buffer.resize(result.ByteCount());
-    result.Format = DXGI_FORMAT_B8G8R8A8_UNORM_SRGB;
+    result.Format = dxgiFormat;
 
     WICRect rect = { 0, 0, int32_t(result.Width), int32_t(result.Height) };
     check_hresult(wicBitmap->CopyPixels(&rect, result.Stride, uint32_t(result.Buffer.size()), result.Buffer.data()));

@@ -93,6 +93,14 @@ int main()
     latentInput = vaeEncoder.EncodeVae(imageTensor);
   }
 
+  //Load mask image
+  Tensor maskInput;
+  {
+    auto pngBuffer = read_file(L"bin/mask.png");
+    auto imageTexture = TextureData::FromBuffer(pngBuffer, TextureImageFormat::Gray8);
+    maskInput = Tensor::FromTextureData(imageTexture);
+  }
+
   //Create text embeddings
   Tensor textEmbeddings;
   {
@@ -122,6 +130,7 @@ int main()
       .Seed = 88,
       .TextEmbeddings = textEmbeddings,
       .LatentInput = latentInput,
+      .MaskInput = maskInput,
       .DenoisingStrength = 0.6f
     };
 

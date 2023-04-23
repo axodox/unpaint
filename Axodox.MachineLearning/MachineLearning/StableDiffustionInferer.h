@@ -15,6 +15,7 @@ namespace Axodox::MachineLearning
     uint32_t Seed = 0;
     Tensor TextEmbeddings;
     Tensor LatentInput;
+    Tensor MaskInput;
     float DenoisingStrength = 1.f;
   };
 
@@ -36,7 +37,8 @@ namespace Axodox::MachineLearning
     OnnxEnvironment& _environment;
     Ort::Session _session;
 
-    Tensor GenerateLatentSample(StableDiffusionContext& context) const;
-    Tensor PrepareLatentSample(StableDiffusionContext& context, const Tensor& latents, size_t initialStep) const;
+    static Tensor GenerateLatentSample(StableDiffusionContext& context);
+    static Tensor PrepareLatentSample(StableDiffusionContext& context, const Tensor& latents, size_t initialStep);
+    static Tensor BlendLatentSamples(const Tensor& a, const Tensor& b, const Tensor& weights);
   };
 }
