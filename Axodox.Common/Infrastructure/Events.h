@@ -28,6 +28,8 @@ namespace Axodox::Infrastructure
   class [[nodiscard]] event_subscription
   {
   public:
+    event_subscription() = default;
+
     event_subscription& operator=(event_subscription&& other) noexcept
     {
       _handlers = std::move(other._handlers);

@@ -7,8 +7,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Axodox.Common", "Axodox.Com
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Test", "Test\Test.vcxproj", "{A323E4B7-A310-4293-8650-6CBB9B5D0D8E}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Axodox.MachineLearning", "Axodox.MachineLearning\Axodox.MachineLearning.vcxitems", "{04793D6E-1D0A-44C2-81C0-055B40C8E389}"
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Axodox.UniversalDiffusion", "Axodox.UniversalDiffusion\Axodox.UniversalDiffusion.vcxproj", "{F6C53BD9-FE3F-4938-8527-D13BF200A4AF}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "WinRtTest", "WinRtTest\WinRtTest.vcxproj", "{B1B5D372-D782-40E3-8E58-733025964852}"
@@ -89,9 +87,7 @@ Global
 		SolutionGuid = {CEE3C5F7-16BB-4E97-ADE8-DC445980E503}
 	EndGlobalSection
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
-		Axodox.MachineLearning\Axodox.MachineLearning.vcxitems*{04793d6e-1d0a-44c2-81c0-055b40c8e389}*SharedItemsImports = 9
 		Axodox.Common\Axodox.Common.vcxitems*{b1b5d372-d782-40e3-8e58-733025964852}*SharedItemsImports = 4
-		Axodox.MachineLearning\Axodox.MachineLearning.vcxitems*{b1b5d372-d782-40e3-8e58-733025964852}*SharedItemsImports = 4
 		Axodox.Common\Axodox.Common.vcxitems*{e13522b3-7530-4cbe-b5d3-cce94136e40f}*SharedItemsImports = 9
 		Axodox.Common\Axodox.Common.vcxitems*{f6c53bd9-fe3f-4938-8527-d13bf200a4af}*SharedItemsImports = 4
 		Axodox.MachineLearning\Axodox.MachineLearning.vcxitems*{f6c53bd9-fe3f-4938-8527-d13bf200a4af}*SharedItemsImports = 4

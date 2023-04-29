@@ -1,4 +1,5 @@
 #pragma once
+#ifdef ONNX
 #include "OnnxEnvironment.h"
 #include "Tensor.h"
 
@@ -21,3 +22,4 @@ namespace Axodox::MachineLearning
     Ort::Session _session;
   };
 }
+#endif

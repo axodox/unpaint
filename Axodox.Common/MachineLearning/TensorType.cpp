@@ -5,6 +5,7 @@ using namespace std;
 
 namespace Axodox::MachineLearning
 {
+#ifdef ONNX
   TensorType ToTensorType(ONNXTensorElementDataType type)
   {
     switch (type)
@@ -72,6 +73,7 @@ namespace Axodox::MachineLearning
       throw logic_error("Tensor type not implemented.");
     }
   }
+#endif
 
   size_t GetElementSize(TensorType type)
   {

@@ -1,4 +1,5 @@
 #include "pch.h"
+#ifdef ONNX
 #include "OnnxModelStatistics.h"
 
 using namespace Ort;
@@ -113,3 +114,4 @@ namespace Axodox::MachineLearning
     }
   }
 }
+#endif

@@ -1,4 +1,5 @@
 #pragma once
+#ifdef ONNX
 #include "pch.h"
 
 namespace Axodox::MachineLearning
@@ -18,3 +19,4 @@ namespace Axodox::MachineLearning
     return { data, size };
   }
 }
+#endif

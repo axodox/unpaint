@@ -1,3 +1,4 @@
+#pragma once
 #include "Json/JsonSerializer.h"
 
 namespace Axodox::Web

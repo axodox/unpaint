@@ -58,6 +58,17 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Infrastructure\Events.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Infrastructure\Traits.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Infrastructure\Win32.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\OnnxEnvironment.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\OnnxExtensions.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\OnnxModelStatistics.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\StableDiffusionScheduler.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\StableDiffustionInferer.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\Tensor.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\TensorType.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\TextEncoder.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\TextTokenizer.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\VaeDecoder.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\VaeEncoder.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)pch.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Json\JsonArray.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Json\JsonBoolean.h" />
@@ -73,10 +84,13 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Storage\FileStream.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Storage\MemoryStream.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Storage\Stream.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Threading\AsyncOperation.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Threading\Events.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Threading\ManualDispatcher.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Threading\UwpThreading.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)UI\Window.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Web\HuggingFaceClient.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Web\HuggingFaceSchema.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Buffers\ConstantBuffer.cpp" />
@@ -124,14 +138,27 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Json\JsonSerializer.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Json\JsonString.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Json\JsonValue.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\OnnxEnvironment.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\OnnxModelStatistics.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\StableDiffusionScheduler.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\StableDiffustionInferer.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\Tensor.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\TensorType.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\TextEncoder.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\TextTokenizer.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\VaeDecoder.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\VaeEncoder.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Storage\ArrayStream.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Storage\ComHelpers.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Storage\FileIO.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Storage\FileStream.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Storage\MemoryStream.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Storage\Stream.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Threading\AsyncOperation.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Threading\ManualDispatcher.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Threading\UwpThreading.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)UI\Window.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Web\HuggingFaceClient.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Web\HuggingFaceSchema.cpp" />
   </ItemGroup>
 </Project>

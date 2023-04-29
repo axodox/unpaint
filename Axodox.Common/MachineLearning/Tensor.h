@@ -44,11 +44,6 @@ namespace Axodox::MachineLearning
 
     size_t Size(size_t dimension = 0) const;
 
-    static Tensor FromOrtValue(const Ort::Value& value);
-    Ort::Value ToOrtValue(Ort::MemoryInfo& memoryInfo) const;
-
-    void UpdateOrtValue(Ort::Value& value);
-
     static Tensor FromTextureData(const Graphics::TextureData& texture);
     std::vector<Graphics::TextureData> ToTextureData() const;    
 
@@ -159,14 +154,21 @@ namespace Axodox::MachineLearning
       }
     }
 
-    static std::pair<TensorType, Tensor::shape_t> ToTypeAndShape(const Ort::TensorTypeAndShapeInfo& info);
-
     static Tensor CreateRandom(shape_t shape, std::span<std::minstd_rand> randoms, float scale = 1.f);
 
     Tensor Concat(const Tensor& tensor) const;
 
     bool operator==(const Tensor& other) const;
     bool operator!=(const Tensor& other) const;
+
+#ifdef ONNX
+    static Tensor FromOrtValue(const Ort::Value& value);
+    Ort::Value ToOrtValue(Ort::MemoryInfo& memoryInfo) const;
+
+    void UpdateOrtValue(Ort::Value& value);
+
+    static std::pair<TensorType, Tensor::shape_t> ToTypeAndShape(const Ort::TensorTypeAndShapeInfo& info);
+#endif
 
   private:
     static size_t GetDimensionFromIndex(size_t& x, size_t& y, size_t& z, size_t& w);

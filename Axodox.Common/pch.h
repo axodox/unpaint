@@ -9,6 +9,9 @@
 #include <filesystem>
 #include <type_traits>
 #include <chrono>
+#include <span>
+#include <random>
+#include <sstream>
 
 #define NOMINMAX
 #include <DirectXMath.h>
@@ -22,13 +25,25 @@
 #include <wincodec.h>
 #include <winrt/base.h>
 
-#ifdef UWP_UI
 #include <winrt/windows.foundation.h>
+#include <winrt/windows.web.http.h>
+#include <winrt/windows.web.http.filters.h>
+#include <winrt/windows.web.http.headers.h>
+#include <winrt/windows.security.cryptography.h>
+#include <winrt/Windows.Storage.h>
+#include <winrt/Windows.Storage.Streams.h>
+
+#ifdef UWP_UI
 #include <winrt/windows.ui.core.h>
 #include <winrt/windows.ui.xaml.h>
 #include <winrt/windows.ui.xaml.controls.h>
 #include <windows.ui.xaml.media.dxinterop.h>
 #endif // UWP_UI
+
+#ifdef ONNX
+#include "onnxruntime_cxx_api.h"
+#include "dml_provider_factory.h"
+#endif
 
 #pragma comment(lib, "dxgi.lib")
 #pragma comment(lib, "d3d11.lib")

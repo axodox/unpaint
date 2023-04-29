@@ -52,6 +52,16 @@ namespace Axodox::Json
       return _value;
     }
 
+    value_t* operator->()
+    {
+      return &_value;
+    }
+
+    const value_t* operator->() const
+    {
+      return &_value;
+    }
+
     virtual std::unique_ptr<json_value> to_json() const override
     {
       return json_serializer<value_t>::to_json(_value);

@@ -1,18 +1,20 @@
 #pragma once
+#ifdef ONNX
 #include "OnnxEnvironment.h"
 #include "Tensor.h"
 
 namespace Axodox::MachineLearning
 {
-  class VaeEncoder
+  class VaeDecoder
   {
   public:
-    VaeEncoder(OnnxEnvironment& environment);
+    VaeDecoder(OnnxEnvironment& environment);
 
-    Tensor EncodeVae(const Tensor& text);
+    Tensor DecodeVae(const Tensor& text);
 
   private:
     OnnxEnvironment& _environment;
     Ort::Session _session;
   };
 }
+#endif

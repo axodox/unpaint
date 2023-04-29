@@ -1,19 +1,20 @@
 #include "pch.h"
-#include "VaeEncoder.h"
+#ifdef ONNX
+#include "VaeDecoder.h"
 
 using namespace Ort;
 using namespace std;
 
 namespace Axodox::MachineLearning
 {
-  VaeEncoder::VaeEncoder(OnnxEnvironment& environment) :
+  VaeDecoder::VaeDecoder(OnnxEnvironment& environment) :
     _environment(environment),
     _session(nullptr)
   {
-    _session = { _environment.Environment(), (_environment.RootPath() / L"vae_encoder/model.onnx").c_str(), _environment.DefaultSessionOptions() };
+    _session = { _environment.Environment(), (_environment.RootPath() / L"vae_decoder/model.onnx").c_str(), _environment.DefaultSessionOptions() };
   }
 
-  Tensor VaeEncoder::EncodeVae(const Tensor& image)
+  Tensor VaeDecoder::DecodeVae(const Tensor& image)
   {
     //Load inputs
     auto inputValues = image.Split(image.Shape[0]);
@@ -23,8 +24,8 @@ namespace Axodox::MachineLearning
     {
       //Bind values
       IoBinding bindings{ _session };
-      bindings.BindInput("sample", inputValues[i].ToOrtValue(_environment.MemoryInfo()));
-      bindings.BindOutput("latent_sample", _environment.MemoryInfo());
+      bindings.BindInput("latent_sample", inputValues[i].ToOrtValue(_environment.MemoryInfo()));
+      bindings.BindOutput("sample", _environment.MemoryInfo());
 
       //Run inference
       _session.Run({}, bindings);
@@ -46,3 +47,4 @@ namespace Axodox::MachineLearning
     return results;
   }
 }
+#endif

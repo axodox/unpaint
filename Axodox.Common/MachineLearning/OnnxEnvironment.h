@@ -1,4 +1,5 @@
 #pragma once
+#ifdef ONNX
 #include "pch.h"
 
 namespace Axodox::MachineLearning
@@ -20,3 +21,4 @@ namespace Axodox::MachineLearning
     Ort::SessionOptions _defaultSessionOptions;
   };
 }
+#endif
