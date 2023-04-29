@@ -20,4 +20,6 @@ namespace Axodox::Infrastructure
   };
 
   using window_handle = winrt::handle_type<win32_handle_traits<HWND>>;
+
+  std::wstring to_wstring(std::string_view text);
 }

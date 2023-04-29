@@ -11,6 +11,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Axodox.MachineLearning", "A
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Axodox.UniversalDiffusion", "Axodox.UniversalDiffusion\Axodox.UniversalDiffusion.vcxproj", "{F6C53BD9-FE3F-4938-8527-D13BF200A4AF}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "WinRtTest", "WinRtTest\WinRtTest.vcxproj", "{B1B5D372-D782-40E3-8E58-733025964852}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|ARM = Debug|ARM
@@ -63,6 +65,22 @@ Global
 		{F6C53BD9-FE3F-4938-8527-D13BF200A4AF}.Release|x86.ActiveCfg = Release|Win32
 		{F6C53BD9-FE3F-4938-8527-D13BF200A4AF}.Release|x86.Build.0 = Release|Win32
 		{F6C53BD9-FE3F-4938-8527-D13BF200A4AF}.Release|x86.Deploy.0 = Release|Win32
+		{B1B5D372-D782-40E3-8E58-733025964852}.Debug|ARM.ActiveCfg = Debug|x64
+		{B1B5D372-D782-40E3-8E58-733025964852}.Debug|ARM.Build.0 = Debug|x64
+		{B1B5D372-D782-40E3-8E58-733025964852}.Debug|ARM64.ActiveCfg = Debug|x64
+		{B1B5D372-D782-40E3-8E58-733025964852}.Debug|ARM64.Build.0 = Debug|x64
+		{B1B5D372-D782-40E3-8E58-733025964852}.Debug|x64.ActiveCfg = Debug|x64
+		{B1B5D372-D782-40E3-8E58-733025964852}.Debug|x64.Build.0 = Debug|x64
+		{B1B5D372-D782-40E3-8E58-733025964852}.Debug|x86.ActiveCfg = Debug|Win32
+		{B1B5D372-D782-40E3-8E58-733025964852}.Debug|x86.Build.0 = Debug|Win32
+		{B1B5D372-D782-40E3-8E58-733025964852}.Release|ARM.ActiveCfg = Release|x64
+		{B1B5D372-D782-40E3-8E58-733025964852}.Release|ARM.Build.0 = Release|x64
+		{B1B5D372-D782-40E3-8E58-733025964852}.Release|ARM64.ActiveCfg = Release|x64
+		{B1B5D372-D782-40E3-8E58-733025964852}.Release|ARM64.Build.0 = Release|x64
+		{B1B5D372-D782-40E3-8E58-733025964852}.Release|x64.ActiveCfg = Release|x64
+		{B1B5D372-D782-40E3-8E58-733025964852}.Release|x64.Build.0 = Release|x64
+		{B1B5D372-D782-40E3-8E58-733025964852}.Release|x86.ActiveCfg = Release|Win32
+		{B1B5D372-D782-40E3-8E58-733025964852}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -72,8 +90,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		Axodox.MachineLearning\Axodox.MachineLearning.vcxitems*{04793d6e-1d0a-44c2-81c0-055b40c8e389}*SharedItemsImports = 9
-		Axodox.Common\Axodox.Common.vcxitems*{a323e4b7-a310-4293-8650-6cbb9b5d0d8e}*SharedItemsImports = 4
-		Axodox.MachineLearning\Axodox.MachineLearning.vcxitems*{a323e4b7-a310-4293-8650-6cbb9b5d0d8e}*SharedItemsImports = 4
+		Axodox.Common\Axodox.Common.vcxitems*{b1b5d372-d782-40e3-8e58-733025964852}*SharedItemsImports = 4
+		Axodox.MachineLearning\Axodox.MachineLearning.vcxitems*{b1b5d372-d782-40e3-8e58-733025964852}*SharedItemsImports = 4
 		Axodox.Common\Axodox.Common.vcxitems*{e13522b3-7530-4cbe-b5d3-cce94136e40f}*SharedItemsImports = 9
 		Axodox.Common\Axodox.Common.vcxitems*{f6c53bd9-fe3f-4938-8527-d13bf200a4af}*SharedItemsImports = 4
 		Axodox.MachineLearning\Axodox.MachineLearning.vcxitems*{f6c53bd9-fe3f-4938-8527-d13bf200a4af}*SharedItemsImports = 4

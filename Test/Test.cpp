@@ -147,7 +147,7 @@ int main()
     for (auto i = 0; auto & imageTexture : imageTextures)
     {
       auto pngBuffer = imageTexture.ToBuffer();
-      write_file(format(L"bin/test{}.png", i++), pngBuffer);
+      write_file(std::format(L"bin/test{}.png", i++), pngBuffer);
     }
   }
 

@@ -25,8 +25,9 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\TextTokenizer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\VaeDecoder.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\VaeEncoder.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)ml_pch.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)pch.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Web\HuggingFaceClient.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Web\HuggingFaceSchema.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\StableDiffusionScheduler.cpp" />
@@ -39,5 +40,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\TextTokenizer.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\VaeDecoder.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\VaeEncoder.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Web\HuggingFaceClient.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Web\HuggingFaceSchema.cpp" />
   </ItemGroup>
 </Project>
