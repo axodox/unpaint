@@ -9,6 +9,12 @@ namespace Unpaint
   }
 
   [default_interface]
+  runtimeclass WelcomeView : Windows.UI.Xaml.Controls.Page
+  {
+    WelcomeView();
+  }
+
+  [default_interface]
   runtimeclass ModelsView : Windows.UI.Xaml.Controls.Page
   {
     ModelsView();

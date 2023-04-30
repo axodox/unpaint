@@ -10,10 +10,13 @@ namespace winrt::Unpaint::implementation
     Windows::Foundation::Collections::IObservableVector<ModelViewModel> AvailableModels();
     fire_and_forget UpdateAvailableModelsAsync();
 
+    Windows::Foundation::Collections::IObservableVector<ModelViewModel> InstalledModels();
+
   private:
     static const char* const _modelFilter;
 
     Windows::Foundation::Collections::IObservableVector<ModelViewModel> _availableModels;
+    Windows::Foundation::Collections::IObservableVector<ModelViewModel> _installedModels;
   };
 }
 

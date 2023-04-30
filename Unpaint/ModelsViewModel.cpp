@@ -11,7 +11,8 @@ namespace winrt::Unpaint::implementation
   const char* const ModelsViewModel::_modelFilter = "unpaint,stable_diffusion_model";
 
   ModelsViewModel::ModelsViewModel() :
-    _availableModels(single_threaded_observable_vector<ModelViewModel>())
+    _availableModels(single_threaded_observable_vector<ModelViewModel>()),
+    _installedModels(single_threaded_observable_vector<ModelViewModel>())
   {
     UpdateAvailableModelsAsync();
   }
@@ -42,5 +43,10 @@ namespace winrt::Unpaint::implementation
 
       _availableModels.Append(viewModel);
     }
+  }
+
+  Windows::Foundation::Collections::IObservableVector<ModelViewModel> ModelsViewModel::InstalledModels()
+  {
+    return _installedModels;
   }
 }

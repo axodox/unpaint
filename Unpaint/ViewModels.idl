@@ -12,5 +12,6 @@ namespace Unpaint
     ModelsViewModel();
 
     IObservableVector<ModelViewModel> AvailableModels{ get; };
+    IObservableVector<ModelViewModel> InstalledModels{ get; };
   }
 }

@@ -7,10 +7,13 @@
     <Page Include="MainView.xaml">
       <Filter>Views</Filter>
     </Page>
+    <Page Include="CommonResources.xaml" />
+    <Page Include="WelcomeView.xaml">
+      <Filter>Views</Filter>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Midl Include="App.idl" />
-    <Midl Include="MainPage.idl" />
     <Midl Include="Views.idl">
       <Filter>Views</Filter>
     </Midl>
@@ -20,7 +23,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="App.cpp" />
-    <ClCompile Include="MainPage.cpp" />
     <ClCompile Include="$(GeneratedFilesDir)module.g.cpp">
       <Filter>Config</Filter>
     </ClCompile>

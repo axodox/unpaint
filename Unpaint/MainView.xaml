@@ -5,7 +5,27 @@
   xmlns:local="using:Unpaint"
   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+  Background="{StaticResource SystemControlAcrylicWindowBrush}"
   mc:Ignorable="d">
 
-  <local:ModelsView />
+  <Grid>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="*"/>
+    </Grid.RowDefinitions>
+    
+    <!-- Title bar -->
+    <Grid x:Name="TitleBar" Background="Transparent">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition x:Name="TitleBarLeftPaddingColumn" Width="0"/>
+        <ColumnDefinition/>
+        <ColumnDefinition x:Name="TitleBarRightPaddingColumn" Width="0"/>
+      </Grid.ColumnDefinitions>
+
+      <TextBlock Grid.Column="1" TextAlignment="Center" VerticalAlignment="Center" Text="Unpaint"/>
+    </Grid>
+
+    <!-- Content -->
+    <local:ModelsView Grid.Row="1"/>
+  </Grid>
 </Page>

@@ -1,14 +1,14 @@
-﻿<Application
-  x:Class="Unpaint.App"
+<_0:Application xmlns:_0="using:XSurfUwp"
+  
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:wux="using:Windows.UI.Xaml"
   xmlns:controls="using:Microsoft.UI.Xaml.Controls">
-  <Application.Resources>
+  <_0:Application.Resources>
     <controls:XamlControlsResources xmlns="using:Microsoft.UI.Xaml.Controls">
       <controls:XamlControlsResources.MergedDictionaries>
-        <wux:ResourceDictionary Source="ms-appx:///CommonResources.xaml"/>
+        <wux:ResourceDictionary _0:DT.ResourceDictionarySource="ms-appx:///~vs]~2943~CommonResources.xaml"/>
       </controls:XamlControlsResources.MergedDictionaries>
     </controls:XamlControlsResources>
-  </Application.Resources>
-</Application>
+  </_0:Application.Resources>
+</_0:Application>

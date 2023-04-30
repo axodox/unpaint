@@ -5,7 +5,13 @@ namespace winrt::Unpaint::implementation
 {
   struct MainView : MainViewT<MainView>
   {
-    MainView() = default;
+    MainView();
+
+  private:
+    Windows::ApplicationModel::Core::CoreApplicationViewTitleBar::LayoutMetricsChanged_revoker _titleBarLayoutMetricsChangedRevoker;
+
+    void InitializeTitleBar();
+    void UpdateTitleBar();
   };
 }
 
