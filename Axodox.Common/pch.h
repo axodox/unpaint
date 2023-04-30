@@ -13,6 +13,7 @@
 #include <random>
 #include <sstream>
 #include <set>
+#include <typeindex>
 
 #define NOMINMAX
 #include <DirectXMath.h>

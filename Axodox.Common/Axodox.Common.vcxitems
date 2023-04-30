@@ -55,6 +55,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Textures\Texture2DDefinition.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Textures\TextureData.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Infrastructure\BitwiseOperations.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Infrastructure\DependencyContainer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Infrastructure\Events.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Infrastructure\Traits.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Infrastructure\Win32.h" />
@@ -129,6 +130,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Textures\Texture2D.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Textures\Texture2DDefinition.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Textures\TextureData.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Infrastructure\DependencyContainer.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Infrastructure\Win32.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Json\JsonArray.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Json\JsonBoolean.cpp" />

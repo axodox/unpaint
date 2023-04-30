@@ -1,0 +1,18 @@
+import "ViewModels.idl";
+
+namespace Unpaint
+{
+  [default_interface]
+  runtimeclass MainView : Windows.UI.Xaml.Controls.Page
+  {
+    MainView();
+  }
+
+  [default_interface]
+  runtimeclass ModelsView : Windows.UI.Xaml.Controls.Page
+  {
+    ModelsView();
+
+    ModelsViewModel ViewModel{ get; };
+  }
+}

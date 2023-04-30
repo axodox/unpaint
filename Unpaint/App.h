@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include "App.xaml.g.h"
 
-namespace winrt::Axodox_UniversalDiffusion::implementation
+namespace winrt::Unpaint::implementation
 {
     struct App : AppT<App>
     {

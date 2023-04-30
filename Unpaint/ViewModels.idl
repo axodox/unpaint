@@ -1,0 +1,16 @@
+namespace Unpaint
+{
+  struct ModelViewModel
+  {
+    String Id;
+    String Uri;
+  };
+
+  [default_interface]
+  runtimeclass ModelsViewModel
+  {
+    ModelsViewModel();
+
+    IObservableVector<ModelViewModel> AvailableModels{ get; };
+  }
+}
