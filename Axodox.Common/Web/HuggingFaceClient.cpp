@@ -46,7 +46,7 @@ namespace Axodox::Web
     return try_parse_json<HuggingFaceModelDetails>(result);
   }
 
-  bool HuggingFaceClient::TryDownloadModel(std::string_view modelId, const std::filesystem::path& targetPath, Threading::async_operation& operation)
+  bool HuggingFaceClient::TryDownloadModel(std::string_view modelId, const std::set<std::string>& fileset, const std::filesystem::path& targetPath, Threading::async_operation& operation)
   {
     async_operation_source async;
     operation.set_source(async);
@@ -56,6 +56,12 @@ namespace Axodox::Web
     if (!modelInfo)
     {
       async.update_state(async_operation_state::failed, "Failed to fetch model metadata.");
+      return false;
+    }
+
+    if (!modelInfo->IsValidModel(fileset))
+    {
+      async.update_state(async_operation_state::failed, "Model is missing required files.");
       return false;
     }
 
@@ -75,16 +81,16 @@ namespace Axodox::Web
     {
       auto fileCount = modelInfo->Files->size();
       size_t fileIndex = 0;
-      for (auto& file : *modelInfo->Files)
+      for (auto& file : fileset)
       {
         //Update state
-        async.update_state(float(fileIndex) / (fileCount - 1), format("Downloading {} ({}/{})...", *file.FilePath, fileIndex + 1, fileCount));
+        async.update_state(float(fileIndex) / (fileCount - 1), format("Downloading {} ({}/{})...", file, fileIndex + 1, fileCount));
         
         //Execute
-        auto requestResult = _httpClient.TryGetInputStreamAsync(Uri{ _baseUri + to_wstring(format("{}/resolve/main/{}", modelId, *file.FilePath)) }).get();
+        auto requestResult = _httpClient.TryGetInputStreamAsync(Uri{ _baseUri + to_wstring(format("{}/resolve/main/{}", modelId, file)) }).get();
         if (!requestResult.Succeeded())
         {
-          async.update_state(async_operation_state::failed, format("Failed to download {}.", *file.FilePath));
+          async.update_state(async_operation_state::failed, format("Failed to download {}.", file));
           return false;
         }
         
@@ -92,12 +98,12 @@ namespace Axodox::Web
         auto response = requestResult.ResponseMessage();
         if (response.StatusCode() != HttpStatusCode::Ok)
         {
-          async.update_state(async_operation_state::failed, format("Failed to download {}.", *file.FilePath));
+          async.update_state(async_operation_state::failed, format("Failed to download {}.", file));
           return false;
         }
 
         //Ensure folder
-        auto targetFilePath = (targetPath / *file.FilePath).make_preferred();
+        auto targetFilePath = (targetPath / file).make_preferred();
         auto targetFolderPath = targetFilePath.parent_path();
         if (!filesystem::exists(targetFolderPath, ec))
         {
@@ -129,7 +135,7 @@ namespace Axodox::Web
           auto bufferRead = sourceStream.ReadAsync(buffer, buffer.Capacity(), InputStreamOptions::None).get();
           
           position += bufferRead.Length();
-          async.update_state(format("Downloading {}: {}/{} MB.", *file.FilePath, position / 1024 / 1024, length / 1024 / 1024));
+          async.update_state(format("Downloading {}: {}/{} MB.", file, position / 1024 / 1024, length / 1024 / 1024));
           
           if (bufferRead.Length() == 0) break;
 
@@ -143,6 +149,11 @@ namespace Axodox::Web
 
       async.update_state(async_operation_state::succeeded, 1.f, "Done.");
       return true;
+    }
+    catch (const hresult_error& error)
+    {
+      async.update_state(async_operation_state::failed, to_string(error.message()));
+      return false;
     }
     catch (...)
     {

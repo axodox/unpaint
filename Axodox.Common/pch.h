@@ -12,6 +12,7 @@
 #include <span>
 #include <random>
 #include <sstream>
+#include <set>
 
 #define NOMINMAX
 #include <DirectXMath.h>

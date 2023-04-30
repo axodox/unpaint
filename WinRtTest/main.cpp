@@ -21,7 +21,7 @@ int main()
     printf("%s\n", info.status_message.c_str());
   });
 
-  auto z = huggingFaceClient.TryDownloadModel("axodoxian/realistic_vision_onnx", "D:\\Downloads\\onnx_test", operation);
+  auto z = huggingFaceClient.TryDownloadModel("axodoxian/realistic_vision_onnx", HuggingFaceModelDetails::StableDiffusionOnnxFileset, "D:\\Downloads\\onnx_test", operation);
 
   Uri uri(L"http://aka.ms/cppwinrt");
   printf("Hello, %ls!\n", uri.AbsoluteUri().c_str());

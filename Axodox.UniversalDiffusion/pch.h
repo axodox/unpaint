@@ -1,6 +1,7 @@
 ﻿#pragma once
-#include "common_pch.h"
-#include "ml_pch.h"
+#define UWP_UI
+
+#include "..\Axodox.Common\pch.h"
 
 #include <windows.h>
 #include <unknwn.h>

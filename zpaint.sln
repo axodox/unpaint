@@ -90,6 +90,5 @@ Global
 		Axodox.Common\Axodox.Common.vcxitems*{b1b5d372-d782-40e3-8e58-733025964852}*SharedItemsImports = 4
 		Axodox.Common\Axodox.Common.vcxitems*{e13522b3-7530-4cbe-b5d3-cce94136e40f}*SharedItemsImports = 9
 		Axodox.Common\Axodox.Common.vcxitems*{f6c53bd9-fe3f-4938-8527-d13bf200a4af}*SharedItemsImports = 4
-		Axodox.MachineLearning\Axodox.MachineLearning.vcxitems*{f6c53bd9-fe3f-4938-8527-d13bf200a4af}*SharedItemsImports = 4
 	EndGlobalSection
 EndGlobal

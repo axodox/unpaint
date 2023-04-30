@@ -19,6 +19,8 @@ namespace Axodox::Web
 
   struct HuggingFaceModelDetails : public Json::json_object_base
   {
+    static const std::set<std::string> StableDiffusionOnnxFileset;
+
     Json::json_property<std::string> Id;
     Json::json_property<std::string> Author;
     Json::json_property<uint32_t> Downloads;
@@ -27,5 +29,7 @@ namespace Axodox::Web
     Json::json_property<std::vector<HuggingFaceFileRef>> Files;
 
     HuggingFaceModelDetails();
+
+    bool IsValidModel(const std::set<std::string>& fileset);
   };
 }
