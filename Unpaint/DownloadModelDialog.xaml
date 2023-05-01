@@ -1,0 +1,34 @@
+﻿<ContentDialog
+  x:Class="Unpaint.DownloadModelDialog"
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:local="using:Unpaint"
+  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+  mc:Ignorable="d"
+  Title="Installing model"
+  IsPrimaryButtonEnabled="{x:Bind ViewModel.IsInProgress, Mode=OneWay}"
+  PrimaryButtonText="Cancel"
+  PrimaryButtonClick="{x:Bind ViewModel.Cancel}"
+  IsSecondaryButtonEnabled="{x:Bind ViewModel.IsFinished, Mode=OneWay}"
+  SecondaryButtonText="Ok">
+  <ContentDialog.Resources>
+    <Style TargetType="local:DownloadModelDialog" BasedOn="{StaticResource DefaultContentDialogStyle}"/>
+  </ContentDialog.Resources>
+
+  <Grid RowSpacing="6" Width="480">
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="Auto"/>
+      <ColumnDefinition Width="*"/>
+    </Grid.ColumnDefinitions>
+    
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="Auto"/>
+    </Grid.RowDefinitions>
+
+    <FontIcon Grid.Column="0" Grid.RowSpan="2" FontFamily="Segoe Fluent Icons" FontSize="36" Glyph="&#xebd3;" Visibility="{x:Bind ViewModel.IsInProgress, Mode=OneWay}" Margin="0,0,12,0"/>
+    <TextBlock Grid.Column="1" Grid.Row="0" Text="{x:Bind ViewModel.StatusMessage, Mode=OneWay}" VerticalAlignment="Bottom"/>
+    <ProgressBar Grid.Column="1" Grid.Row="1" Value="{x:Bind ViewModel.Progress, Mode=OneWay}" Maximum="1" VerticalAlignment="Top" Visibility="{x:Bind ViewModel.IsInProgress, Mode=OneWay}"/>
+  </Grid>
+</ContentDialog>

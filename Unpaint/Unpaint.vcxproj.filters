@@ -11,6 +11,9 @@
     <Page Include="WelcomeView.xaml">
       <Filter>Views</Filter>
     </Page>
+    <Page Include="DownloadModelDialog.xaml">
+      <Filter>Dialogs</Filter>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Midl Include="App.idl" />
@@ -19,6 +22,9 @@
     </Midl>
     <Midl Include="ViewModels.idl">
       <Filter>View Models</Filter>
+    </Midl>
+    <Midl Include="Dialogs.idl">
+      <Filter>Dialogs</Filter>
     </Midl>
   </ItemGroup>
   <ItemGroup>
@@ -31,6 +37,12 @@
     </ClCompile>
     <ClCompile Include="ModelsViewModel.cpp">
       <Filter>View Models</Filter>
+    </ClCompile>
+    <ClCompile Include="DownloadModelViewModel.cpp">
+      <Filter>View Models</Filter>
+    </ClCompile>
+    <ClCompile Include="ModelRepository.cpp">
+      <Filter>Models</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -69,6 +81,12 @@
     <Filter Include="View Models">
       <UniqueIdentifier>{10809349-87c4-4be7-8f7a-5bbde132e42a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Dialogs">
+      <UniqueIdentifier>{29435cf7-5a13-4993-a038-8a260f21a88c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Models">
+      <UniqueIdentifier>{d623e85b-86a8-4d95-a78e-76ee6c1f811a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config">
@@ -94,6 +112,12 @@
     </ClInclude>
     <ClInclude Include="ModelsViewModel.h">
       <Filter>View Models</Filter>
+    </ClInclude>
+    <ClInclude Include="DownloadModelViewModel.h">
+      <Filter>View Models</Filter>
+    </ClInclude>
+    <ClInclude Include="ModelRepository.h">
+      <Filter>Models</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

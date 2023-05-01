@@ -1,5 +1,5 @@
 #include "pch.h"
-#ifdef UWP_UI
+#ifdef USE_UWP_UI
 #include "UwpThreading.h"
 
 using namespace winrt::Windows::UI::Core;

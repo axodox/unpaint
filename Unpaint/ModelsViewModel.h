@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "ModelsViewModel.g.h"
+#include "ModelRepository.h"
 
 namespace winrt::Unpaint::implementation
 {
@@ -8,15 +9,40 @@ namespace winrt::Unpaint::implementation
     ModelsViewModel();
 
     Windows::Foundation::Collections::IObservableVector<ModelViewModel> AvailableModels();
+    bool AreAvailableModelsEmpty();
     fire_and_forget UpdateAvailableModelsAsync();
+    void OpenAvailableModelWebsite();
+
+    int32_t SelectedAvailableModel();
+    void SelectedAvailableModel(int32_t value);
+    bool IsAvailableModelSelected();
 
     Windows::Foundation::Collections::IObservableVector<ModelViewModel> InstalledModels();
+    bool AreInstalledModelsEmpty();
+    fire_and_forget DownloadModelAsync();
+    void OpenInstalledModelWebsite();
+
+    int32_t SelectedInstalledModel();
+    void SelectedInstalledModel(int32_t value);
+    bool IsInstalledModelSelected();
+
+    event_token PropertyChanged(Windows::UI::Xaml::Data::PropertyChangedEventHandler const& value);
+    void PropertyChanged(event_token const& token);
 
   private:
     static const char* const _modelFilter;
+    std::shared_ptr<ModelRepository> _modelRepository;
+    event<Windows::UI::Xaml::Data::PropertyChangedEventHandler> _propertyChanged;
 
     Windows::Foundation::Collections::IObservableVector<ModelViewModel> _availableModels;
+    int32_t _selectedAvailableModel = -1;
+
     Windows::Foundation::Collections::IObservableVector<ModelViewModel> _installedModels;
+    int32_t _selectedInstalledModel = -1;
+
+    void UpdateInstalledModels();
+
+    static ModelViewModel CreateModelViewModel(const std::string& modelId);
   };
 }
 

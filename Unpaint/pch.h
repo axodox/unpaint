@@ -1,5 +1,6 @@
 ﻿#pragma once
-#define UWP_UI
+#define USE_UWP_UI
+#define USE_GLOBAL_DEPENDENCIES
 #include "..\Axodox.Common\pch.h"
 
 #include <windows.h>
@@ -11,6 +12,7 @@
 #include <winrt/Windows.Foundation.Collections.h>
 #include <winrt/Windows.ApplicationModel.Activation.h>
 #include <winrt/Windows.ApplicationModel.Core.h>
+#include <winrt/Windows.System.h>
 #include <winrt/Windows.UI.ViewManagement.h>
 #include <winrt/Windows.UI.Xaml.h>
 #include <winrt/Windows.UI.Xaml.Controls.h>

@@ -1,0 +1,12 @@
+import "ViewModels.idl";
+
+namespace Unpaint
+{
+  [default_interface]
+  runtimeclass DownloadModelDialog : Windows.UI.Xaml.Controls.ContentDialog
+  {
+    DownloadModelDialog(String modelId);
+
+    DownloadModelViewModel ViewModel{ get; };
+  }
+}

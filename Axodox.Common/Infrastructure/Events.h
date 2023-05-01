@@ -7,8 +7,8 @@ namespace Axodox::Infrastructure
   class event_handler : public std::function<void(TArgs...)>
   {
   public:
-    template<typename TInstance>
-    event_handler(TInstance* instance, void (TInstance::* handler)(TArgs...)) :
+    template<typename TInstance, typename TReturn = void>
+    event_handler(TInstance* instance, TReturn(TInstance::* handler)(TArgs...)) :
       std::function<void(TArgs...)>([=](TArgs&&... args) { (instance->*handler)(std::forward<TArgs>(args)...); })
     { }
 

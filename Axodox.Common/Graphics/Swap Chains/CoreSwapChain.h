@@ -1,5 +1,5 @@
 #pragma once
-#ifdef UWP_UI
+#ifdef USE_UWP_UI
 #include "SwapChain.h"
 
 namespace Axodox::Graphics

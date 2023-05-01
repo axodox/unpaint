@@ -33,14 +33,15 @@
 #include <winrt/windows.web.http.headers.h>
 #include <winrt/windows.security.cryptography.h>
 #include <winrt/Windows.Storage.h>
+#include <winrt/Windows.Storage.Search.h>
 #include <winrt/Windows.Storage.Streams.h>
 
-#ifdef UWP_UI
+#ifdef USE_UWP_UI
 #include <winrt/windows.ui.core.h>
 #include <winrt/windows.ui.xaml.h>
 #include <winrt/windows.ui.xaml.controls.h>
 #include <windows.ui.xaml.media.dxinterop.h>
-#endif // UWP_UI
+#endif // USE_UWP_UI
 
 #ifdef ONNX
 #include "onnxruntime_cxx_api.h"

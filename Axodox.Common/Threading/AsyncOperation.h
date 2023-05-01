@@ -8,7 +8,8 @@ namespace Axodox::Threading
     idle,
     working,
     succeeded,
-    failed
+    failed,
+    cancelled
   };
 
   struct async_operation_info

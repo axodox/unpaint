@@ -7,11 +7,38 @@ namespace Unpaint
   };
 
   [default_interface]
-  runtimeclass ModelsViewModel
+  runtimeclass ModelsViewModel : Windows.UI.Xaml.Data.INotifyPropertyChanged
   {
     ModelsViewModel();
 
     IObservableVector<ModelViewModel> AvailableModels{ get; };
+    Boolean AreAvailableModelsEmpty{ get; };
+    void UpdateAvailableModelsAsync();
+    void OpenAvailableModelWebsite();
+
+    Int32 SelectedAvailableModel;
+    Boolean IsAvailableModelSelected{ get; };
+    
     IObservableVector<ModelViewModel> InstalledModels{ get; };
+    Boolean AreInstalledModelsEmpty{ get; };
+    void OpenInstalledModelWebsite();
+    void DownloadModelAsync();
+
+    Int32 SelectedInstalledModel;
+    Boolean IsInstalledModelSelected{ get; };
+  }
+
+  [default_interface]
+  runtimeclass DownloadModelViewModel : Windows.UI.Xaml.Data.INotifyPropertyChanged
+  {
+    DownloadModelViewModel(String modelId);
+
+    Double Progress{ get; };
+    String StatusMessage{ get; };
+
+    Boolean IsInProgress{ get; };
+    Boolean IsFinished{ get; };
+
+    void Cancel();
   }
 }

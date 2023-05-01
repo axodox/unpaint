@@ -69,7 +69,7 @@ namespace Axodox::Web
     error_code ec;
     if (!filesystem::exists(targetPath, ec))
     {
-      filesystem::create_directory(targetPath, ec);
+      filesystem::create_directories(targetPath, ec);
       if (ec)
       {
         async.update_state(async_operation_state::failed, "Failed to create output directory.");
@@ -83,6 +83,9 @@ namespace Axodox::Web
       size_t fileIndex = 0;
       for (auto& file : fileset)
       {
+        //Exit loop if cancelled
+        if (async.is_cancelled()) break;
+
         //Update state
         async.update_state(float(fileIndex) / (fileCount - 1), format("Downloading {} ({}/{})...", file, fileIndex + 1, fileCount));
         
@@ -130,12 +133,12 @@ namespace Axodox::Web
         auto sourceStream = content.ReadAsInputStreamAsync().get();
         
         Buffer buffer{ 1024 * 1024 };
-        while (true)
+        while (!async.is_cancelled())
         {
           auto bufferRead = sourceStream.ReadAsync(buffer, buffer.Capacity(), InputStreamOptions::None).get();
           
           position += bufferRead.Length();
-          async.update_state(format("Downloading {}: {}/{} MB.", file, position / 1024 / 1024, length / 1024 / 1024));
+          async.update_state(format("Downloading {} ({}/{} MB)...", file, position / 1024 / 1024, length / 1024 / 1024));
           
           if (bufferRead.Length() == 0) break;
 
@@ -147,8 +150,16 @@ namespace Axodox::Web
         fileIndex++;
       }
 
-      async.update_state(async_operation_state::succeeded, 1.f, "Done.");
-      return true;
+      if (!async.is_cancelled())
+      {
+        async.update_state(async_operation_state::succeeded, 1.f, "Model downloaded successfully.");
+      }
+      else
+      {
+        async.update_state(async_operation_state::cancelled, 1.f, "Operation cancelled.");
+      }
+
+      return !async.is_cancelled();
     }
     catch (const hresult_error& error)
     {

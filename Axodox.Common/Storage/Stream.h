@@ -18,25 +18,30 @@ namespace Axodox::Storage
     template<Infrastructure::trivially_copyable T>
     void read(T& value)
     {
-      read(std::span<uint8_t>{ reinterpret_cast<uint8_t*>(&value), sizeof(T) });
-    }
-
-    template<Infrastructure::trivially_copyable T>
-    void write(const T& value)
-    {
-      write(std::span<const uint8_t>{ reinterpret_cast<const uint8_t*>(&value), sizeof(T) });
+      read({ reinterpret_cast<uint8_t*>(&value), sizeof(T) });
     }
 
     template<typename T>
     void read(std::span<T> value)
     {
-      read(std::span<uint8_t>{ reinterpret_cast<uint8_t*>(value.data()), value.size_bytes() });
+      read({ reinterpret_cast<uint8_t*>(value.data()), value.size_bytes() });
     }
 
     template<typename T>
     void write(std::span<const T> value)
     {
-      write(std::span<const uint8_t>{ reinterpret_cast<const uint8_t*>(value.data()), value.size_bytes() });
+      write({ reinterpret_cast<const uint8_t*>(value.data()), value.size_bytes() });
+    }
+
+    template<Infrastructure::trivially_copyable T>
+    void write(const T& value)
+    {
+      write({ reinterpret_cast<const uint8_t*>(&value), sizeof(T) });
+    }
+
+    void write(std::string_view value)
+    {
+      write({ reinterpret_cast<const uint8_t*>(value.data()), value.length() });
     }
 
     std::string read_line();

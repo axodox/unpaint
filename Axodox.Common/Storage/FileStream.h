@@ -15,6 +15,7 @@ namespace Axodox::Storage
   {
   public:
     file_stream(const std::filesystem::path& path, file_mode mode);
+    virtual ~file_stream() override;
 
     file_stream(const file_stream&) = delete;
     file_stream& operator=(const file_stream&) = delete;

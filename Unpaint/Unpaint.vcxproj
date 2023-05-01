@@ -118,6 +118,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="DownloadModelDialog.h">
+      <DependentUpon>DownloadModelDialog.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </ClInclude>
+    <ClInclude Include="DownloadModelViewModel.h" />
+    <ClInclude Include="ModelRepository.h" />
     <ClInclude Include="ModelsView.h">
       <DependentUpon>ModelsView.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -141,6 +147,9 @@
     </ApplicationDefinition>
     <Page Include="CommonResources.xaml">
       <DeploymentContent>true</DeploymentContent>
+    </Page>
+    <Page Include="DownloadModelDialog.xaml">
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="MainView.xaml">
       <SubType>Designer</SubType>
@@ -167,6 +176,12 @@
     <Image Include="Assets\Wide310x150Logo.scale-200.png" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="DownloadModelDialog.cpp">
+      <DependentUpon>DownloadModelDialog.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </ClCompile>
+    <ClCompile Include="DownloadModelViewModel.cpp" />
+    <ClCompile Include="ModelRepository.cpp" />
     <ClCompile Include="ModelsView.cpp">
       <DependentUpon>ModelsView.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -191,6 +206,7 @@
     <Midl Include="App.idl">
       <DependentUpon>App.xaml</DependentUpon>
     </Midl>
+    <Midl Include="Dialogs.idl" />
     <Midl Include="ViewModels.idl" />
     <Midl Include="Views.idl" />
   </ItemGroup>

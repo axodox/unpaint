@@ -1,5 +1,5 @@
 #include "pch.h"
-#ifdef UWP_UI
+#ifdef USE_UWP_UI
 #include "CoreSwapChain.h"
 #include "Threading/UwpThreading.h"
 

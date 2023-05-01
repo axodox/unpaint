@@ -78,4 +78,10 @@ namespace Axodox::Json
       return std::nullopt;
     }
   }
+
+  template<typename value_t>
+  std::string stringify_json(const value_t& value)
+  {
+    return json_serializer<value_t>::to_json(value)->to_string();
+  }
 }

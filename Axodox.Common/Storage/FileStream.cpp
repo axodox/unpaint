@@ -33,6 +33,11 @@ namespace Axodox::Storage
     }
   }
 
+  file_stream::~file_stream()
+  {
+    fclose(_file);
+  }
+
   file_stream::file_stream(file_stream&& other)
   {
     *this = move(other);
