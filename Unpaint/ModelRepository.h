@@ -18,14 +18,15 @@ namespace winrt::Unpaint
     ModelRepository();
 
     bool TryInstallHuggingFaceModel(std::string_view modelId, Axodox::Threading::async_operation& operation);
+    void UninstallModel(std::string_view modelId);
 
     std::filesystem::path Root() const;
-    std::vector<std::string> Models() const;
+    std::set<std::string> Models() const;
     void Refresh();
 
   private:
     mutable std::mutex _mutex;
     std::filesystem::path _root;
-    std::vector<std::string> _models;
+    std::set<std::string> _models;
   };
 }

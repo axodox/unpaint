@@ -11,6 +11,7 @@ namespace winrt::Unpaint::implementation
     Windows::Foundation::Collections::IObservableVector<ModelViewModel> AvailableModels();
     bool AreAvailableModelsEmpty();
     fire_and_forget UpdateAvailableModelsAsync();
+    fire_and_forget DownloadModelAsync();
     void OpenAvailableModelWebsite();
 
     int32_t SelectedAvailableModel();
@@ -19,7 +20,7 @@ namespace winrt::Unpaint::implementation
 
     Windows::Foundation::Collections::IObservableVector<ModelViewModel> InstalledModels();
     bool AreInstalledModelsEmpty();
-    fire_and_forget DownloadModelAsync();
+    fire_and_forget RemoveModelAsync();
     void OpenInstalledModelWebsite();
 
     int32_t SelectedInstalledModel();

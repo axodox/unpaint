@@ -15,6 +15,7 @@ namespace Unpaint
     Boolean AreAvailableModelsEmpty{ get; };
     void UpdateAvailableModelsAsync();
     void OpenAvailableModelWebsite();
+    void DownloadModelAsync();
 
     Int32 SelectedAvailableModel;
     Boolean IsAvailableModelSelected{ get; };
@@ -22,7 +23,7 @@ namespace Unpaint
     IObservableVector<ModelViewModel> InstalledModels{ get; };
     Boolean AreInstalledModelsEmpty{ get; };
     void OpenInstalledModelWebsite();
-    void DownloadModelAsync();
+    void RemoveModelAsync();
 
     Int32 SelectedInstalledModel;
     Boolean IsInstalledModelSelected{ get; };

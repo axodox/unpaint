@@ -2,6 +2,7 @@
 #include "ModelsViewModel.h"
 #include "ModelsViewModel.g.cpp"
 #include "Infrastructure/DependencyContainer.h"
+#include "Infrastructure/Win32.h"
 #include "Web/HuggingFaceClient.h"
 
 using namespace Axodox::Infrastructure;
@@ -10,6 +11,7 @@ using namespace std;
 using namespace winrt;
 using namespace winrt::Windows::Foundation;
 using namespace winrt::Windows::System;
+using namespace winrt::Windows::UI::Xaml::Controls;
 using namespace winrt::Windows::UI::Xaml::Data;
 
 namespace winrt::Unpaint::implementation
@@ -21,8 +23,8 @@ namespace winrt::Unpaint::implementation
     _installedModels(single_threaded_observable_vector<ModelViewModel>()),
     _modelRepository(dependencies.resolve<ModelRepository>())
   {
-    UpdateAvailableModelsAsync();
     UpdateInstalledModels();
+    UpdateAvailableModelsAsync();
   }
 
   Windows::Foundation::Collections::IObservableVector<ModelViewModel> ModelsViewModel::AvailableModels()
@@ -44,16 +46,31 @@ namespace winrt::Unpaint::implementation
 
     HuggingFaceClient client{};
     auto models = client.GetModels(_modelFilter);
+    auto installedModels = _modelRepository->Models();
 
     co_await callerContext;
 
     _availableModels.Clear();
     for (auto& model : models)
     {
+      if (installedModels.contains(model)) continue;
+
       _availableModels.Append(CreateModelViewModel(model));
     }
 
     _propertyChanged(*this, PropertyChangedEventArgs(L"AreAvailableModelsEmpty"));
+  }
+
+  fire_and_forget ModelsViewModel::DownloadModelAsync()
+  {
+    auto modelId = _availableModels.GetAt(_selectedAvailableModel).Id;
+    DownloadModelDialog dialog{ modelId };
+
+    auto lifetime = get_strong();
+    co_await dialog.ShowAsync();
+
+    UpdateInstalledModels();
+    UpdateAvailableModelsAsync();
   }
 
   void ModelsViewModel::OpenAvailableModelWebsite()
@@ -88,15 +105,26 @@ namespace winrt::Unpaint::implementation
     return _installedModels.Size() == 0;
   }
 
-  fire_and_forget ModelsViewModel::DownloadModelAsync()
+  fire_and_forget ModelsViewModel::RemoveModelAsync()
   {
-    auto modelId = _availableModels.GetAt(_selectedAvailableModel).Id;
-    DownloadModelDialog dialog{ modelId };
+    auto modelId = to_string(_installedModels.GetAt(_selectedInstalledModel).Id);
+
+    ContentDialog confirmationDialog{};
+    confirmationDialog.Title(box_value(L"Uninstalling model"));
+    confirmationDialog.Content(box_value(to_wstring(format("Would you like to remove model {}?", modelId))));
+    confirmationDialog.PrimaryButtonText(L"Yes");
+    confirmationDialog.SecondaryButtonText(L"No");
 
     auto lifetime = get_strong();
-    co_await dialog.ShowAsync();
+    auto result = co_await confirmationDialog.ShowAsync();
 
-    _modelRepository->Refresh();
+    if (result == ContentDialogResult::Primary)
+    {
+      _modelRepository->UninstallModel(modelId);
+
+      UpdateInstalledModels();
+      UpdateAvailableModelsAsync();
+    }
   }
 
   void ModelsViewModel::OpenInstalledModelWebsite()
@@ -133,6 +161,8 @@ namespace winrt::Unpaint::implementation
   
   void ModelsViewModel::UpdateInstalledModels()
   {
+    _modelRepository->Refresh();
+
     _installedModels.Clear();
     for (auto& model : _modelRepository->Models())
     {

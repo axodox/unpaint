@@ -33,13 +33,12 @@ namespace winrt::Unpaint
 
   bool ModelRepository::TryInstallHuggingFaceModel(std::string_view modelId, Axodox::Threading::async_operation& operation)
   {
-    auto modelRepository = dependencies.resolve<ModelRepository>();
     auto huggingFaceClient = dependencies.resolve<HuggingFaceClient>();
 
     auto result = huggingFaceClient->TryDownloadModel(
       modelId,
       HuggingFaceModelDetails::StableDiffusionOnnxFileset,
-      modelRepository->Root() / modelId,
+      _root / modelId,
       operation);
 
     if (result)
@@ -47,7 +46,7 @@ namespace winrt::Unpaint
       ModelMetadata metadata;
       *metadata.Id = modelId;
 
-      try_write_text(modelRepository->Root() / modelId / "unpaint.json", stringify_json(metadata));
+      try_write_text(_root / modelId / "unpaint.json", stringify_json(metadata));
     }
 
     Refresh();
@@ -55,12 +54,18 @@ namespace winrt::Unpaint
     return result;
   }
 
+  void ModelRepository::UninstallModel(std::string_view modelId)
+  {
+    error_code ec;
+    filesystem::remove_all(_root / modelId, ec);
+  }
+
   std::filesystem::path ModelRepository::Root() const
   {
     return _root;
   }
 
-  std::vector<std::string> ModelRepository::Models() const
+  std::set<std::string> ModelRepository::Models() const
   {
     lock_guard lock(_mutex);
     return _models;
@@ -68,7 +73,7 @@ namespace winrt::Unpaint
 
   void ModelRepository::Refresh()
   {
-    vector<string> models;
+    set<string> models;
 
     error_code ec;
     for (auto& file : filesystem::recursive_directory_iterator{ _root, ec })
@@ -81,7 +86,7 @@ namespace winrt::Unpaint
       auto metadata = try_parse_json<ModelMetadata>(*text);
       if (!metadata) continue;
 
-      models.push_back(*metadata->Id);
+      models.emplace(*metadata->Id);
     }
 
     lock_guard lock(_mutex);
