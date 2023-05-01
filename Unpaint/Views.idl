@@ -21,4 +21,12 @@ namespace Unpaint
 
     ModelsViewModel ViewModel{ get; };
   }
+
+  [default_interface]
+  runtimeclass InferenceView : Windows.UI.Xaml.Controls.Page
+  {
+    InferenceView();
+
+    InferenceViewModel ViewModel{ get; };
+  }
 }

@@ -26,6 +26,6 @@
     </Grid>
 
     <!-- Content -->
-    <local:ModelsView Grid.Row="1"/>
+    <local:InferenceView Grid.Row="1"/>
   </Grid>
 </Page>

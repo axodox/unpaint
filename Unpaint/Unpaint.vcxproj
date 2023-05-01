@@ -123,6 +123,11 @@
       <SubType>Code</SubType>
     </ClInclude>
     <ClInclude Include="DownloadModelViewModel.h" />
+    <ClInclude Include="InferenceView.h">
+      <DependentUpon>InferenceView.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </ClInclude>
+    <ClInclude Include="InferenceViewModel.h" />
     <ClInclude Include="ModelRepository.h" />
     <ClInclude Include="ModelsView.h">
       <DependentUpon>ModelsView.xaml</DependentUpon>
@@ -149,6 +154,9 @@
       <DeploymentContent>true</DeploymentContent>
     </Page>
     <Page Include="DownloadModelDialog.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="InferenceView.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Include="MainView.xaml">
@@ -181,6 +189,11 @@
       <SubType>Code</SubType>
     </ClCompile>
     <ClCompile Include="DownloadModelViewModel.cpp" />
+    <ClCompile Include="InferenceView.cpp">
+      <DependentUpon>InferenceView.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </ClCompile>
+    <ClCompile Include="InferenceViewModel.cpp" />
     <ClCompile Include="ModelRepository.cpp" />
     <ClCompile Include="ModelsView.cpp">
       <DependentUpon>ModelsView.xaml</DependentUpon>

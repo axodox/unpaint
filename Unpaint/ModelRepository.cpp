@@ -48,6 +48,11 @@ namespace winrt::Unpaint
 
       try_write_text(_root / modelId / "unpaint.json", stringify_json(metadata));
     }
+    else
+    {
+      error_code ec;
+      filesystem::remove_all(_root / modelId, ec);
+    }
 
     Refresh();
 

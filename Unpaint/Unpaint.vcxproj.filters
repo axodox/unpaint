@@ -14,6 +14,9 @@
     <Page Include="DownloadModelDialog.xaml">
       <Filter>Dialogs</Filter>
     </Page>
+    <Page Include="InferenceView.xaml">
+      <Filter>Views</Filter>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Midl Include="App.idl" />
@@ -43,6 +46,9 @@
     </ClCompile>
     <ClCompile Include="ModelRepository.cpp">
       <Filter>Models</Filter>
+    </ClCompile>
+    <ClCompile Include="InferenceViewModel.cpp">
+      <Filter>View Models</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -118,6 +124,9 @@
     </ClInclude>
     <ClInclude Include="ModelRepository.h">
       <Filter>Models</Filter>
+    </ClInclude>
+    <ClInclude Include="InferenceViewModel.h">
+      <Filter>View Models</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -42,4 +42,10 @@ namespace Unpaint
 
     void Cancel();
   }
+
+  [default_interface]
+  runtimeclass InferenceViewModel : Windows.UI.Xaml.Data.INotifyPropertyChanged
+  {
+    InferenceViewModel();
+  }
 }
