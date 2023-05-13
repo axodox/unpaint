@@ -128,12 +128,14 @@
       <SubType>Code</SubType>
     </ClInclude>
     <ClInclude Include="InferenceViewModel.h" />
+    <ClInclude Include="IsNanToBooleanConverter.h" />
     <ClInclude Include="ModelRepository.h" />
     <ClInclude Include="ModelsView.h">
       <DependentUpon>ModelsView.xaml</DependentUpon>
       <SubType>Code</SubType>
     </ClInclude>
     <ClInclude Include="ModelsViewModel.h" />
+    <ClInclude Include="NanToZeroConverter.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="App.h">
       <DependentUpon>App.xaml</DependentUpon>
@@ -195,12 +197,14 @@
       <SubType>Code</SubType>
     </ClCompile>
     <ClCompile Include="InferenceViewModel.cpp" />
+    <ClCompile Include="IsNanToBooleanConverter.cpp" />
     <ClCompile Include="ModelRepository.cpp" />
     <ClCompile Include="ModelsView.cpp">
       <DependentUpon>ModelsView.xaml</DependentUpon>
       <SubType>Code</SubType>
     </ClCompile>
     <ClCompile Include="ModelsViewModel.cpp" />
+    <ClCompile Include="NanToZeroConverter.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>

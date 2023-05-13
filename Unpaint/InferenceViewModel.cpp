@@ -14,7 +14,10 @@ namespace winrt::Unpaint::implementation
     _selectedResolutionIndex(1),
     _samplingSteps(15),
     _randomSeed(0),
-    _isSeedFrozen(false)
+    _isSeedFrozen(false),
+    _status(L""),
+    _progress(0),
+    _outputImage(nullptr)
   { 
     _resolutions.Append(Size{ 1024, 1024 });
     _resolutions.Append(Size{ 768, 768 });
@@ -128,6 +131,21 @@ namespace winrt::Unpaint::implementation
 
     _isSeedFrozen = value;
     _propertyChanged(*this, PropertyChangedEventArgs(L"IsSeedFrozen"));
+  }
+
+  hstring InferenceViewModel::Status()
+  {
+    return _status;
+  }
+
+  float InferenceViewModel::Progress()
+  {
+    return _progress;
+  }
+
+  Windows::UI::Xaml::Media::ImageSource InferenceViewModel::OutputImage()
+  {
+    return _outputImage;
   }
 
   void InferenceViewModel::GenerateImage()

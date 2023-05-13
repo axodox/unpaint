@@ -60,6 +60,11 @@ namespace Unpaint
     UInt32 RandomSeed;
     Boolean IsSeedFrozen;
 
+    String Status{ get; };
+    Single Progress{ get; };
+
+    Windows.UI.Xaml.Media.ImageSource OutputImage{ get; };
+
     void GenerateImage();
   }
 }

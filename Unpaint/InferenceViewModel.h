@@ -32,6 +32,11 @@ namespace winrt::Unpaint::implementation
     bool IsSeedFrozen();
     void IsSeedFrozen(bool value);
 
+    hstring Status();
+    float Progress();
+
+    Windows::UI::Xaml::Media::ImageSource OutputImage();
+
     void GenerateImage();
 
     event_token PropertyChanged(Windows::UI::Xaml::Data::PropertyChangedEventHandler const& value);
@@ -46,6 +51,11 @@ namespace winrt::Unpaint::implementation
     float _guidanceStrength, _denoisingStrength;
     uint32_t _samplingSteps, _randomSeed;
     bool _isSeedFrozen;
+
+    hstring _status;
+    float _progress;
+
+    Windows::UI::Xaml::Media::ImageSource _outputImage;
   };
 }
 

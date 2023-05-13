@@ -4,4 +4,14 @@ namespace Unpaint
   {
     SizeToStringConverter();
   };
+
+  runtimeclass IsNanToBooleanConverter : [default] Windows.UI.Xaml.Data.IValueConverter
+  {
+    IsNanToBooleanConverter();
+  };
+
+  runtimeclass NanToZeroConverter : [default] Windows.UI.Xaml.Data.IValueConverter
+  {
+    NanToZeroConverter();
+  };
 }

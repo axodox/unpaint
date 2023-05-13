@@ -10,129 +10,142 @@
   mc:Ignorable="d">
   <Page.Resources>
     <local:SizeToStringConverter x:Key="SizeToStringConverter"/>
+    <local:IsNanToBooleanConverter x:Key="IsNanToBooleanConverter"/>
+    <local:NanToZeroConverter x:Key="NanToZeroConverter"/>
   </Page.Resources>
 
-  <Grid Margin="6">
+  <Grid>
     <Grid.RowDefinitions>
       <RowDefinition Height="Auto"/>
       <RowDefinition Height="*"/>
       <RowDefinition Height="Auto"/>
     </Grid.RowDefinitions>
     
+    <!-- Status -->
+    <Grid x:Name="StatusBar">
+      <muxc:ProgressBar Value="{x:Bind ViewModel.Progress, Mode=OneWay, Converter={StaticResource NanToZeroConverter}}" IsIndeterminate="{x:Bind ViewModel.Progress, Mode=OneWay, Converter={StaticResource IsNanToBooleanConverter}}" VerticalAlignment="Top" Background="Transparent"/>
+      <TextBlock Text="{x:Bind ViewModel.Status, Mode=OneWay}" HorizontalAlignment="Center" VerticalAlignment="Center" Opacity="0.5"/>
+    </Grid>
+
+    <!-- Output image -->
+    <Image Grid.Row="1" Stretch="Uniform" Source="{x:Bind ViewModel.OutputImage, Mode=OneWay}"/>
+
     <!-- Inference options -->
-    <Grid Grid.Row="2" RowSpacing="6" ColumnSpacing="6" MaxWidth="800">
-      <Grid.ColumnDefinitions>
-        <ColumnDefinition Width="Auto"/>
-        <ColumnDefinition Width="*"/>
-        <ColumnDefinition Width="Auto"/>
-      </Grid.ColumnDefinitions>
+    <Border Grid.Row="2" Background="{ThemeResource LayerFillColorDefaultBrush}" CornerRadius="6,6,0,0" MaxWidth="800">
+      <Grid RowSpacing="6" ColumnSpacing="6" Margin="6">
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="Auto"/>
+          <ColumnDefinition Width="*"/>
+          <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
 
-      <Grid.RowDefinitions>
-        <RowDefinition Height="Auto"/>
-        <RowDefinition Height="Auto"/>
-      </Grid.RowDefinitions>
+        <Grid.RowDefinitions>
+          <RowDefinition Height="Auto"/>
+          <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
 
-      <!-- Inference settings -->
-      <Button Grid.Column="0" Grid.RowSpan="2" FontFamily="Segoe Fluent Icons" FontSize="24" Content="&#xe9e9;" ToolTipService.ToolTip="Inference Options" VerticalAlignment="Stretch">
-        <Button.Flyout>
-          <Flyout Placement="TopEdgeAlignedLeft">
-            <Grid ColumnSpacing="12" RowSpacing="6">
-              <Grid.Resources>
-                <Style x:Key="SettingTextBlockStyle" TargetType="TextBlock">
-                  <Setter Property="VerticalAlignment" Value="Center"/>
-                  <Setter Property="HorizontalAlignment" Value="Right"/>
-                  <Setter Property="Grid.Column" Value="0"/>
-                </Style>
-              </Grid.Resources>
+        <!-- Inference settings -->
+        <Button Grid.Column="0" Grid.RowSpan="2" FontFamily="Segoe Fluent Icons" FontSize="24" Content="&#xe9e9;" ToolTipService.ToolTip="Inference Options" VerticalAlignment="Stretch">
+          <Button.Flyout>
+            <Flyout Placement="TopEdgeAlignedLeft">
+              <Grid ColumnSpacing="12" RowSpacing="6">
+                <Grid.Resources>
+                  <Style x:Key="SettingTextBlockStyle" TargetType="TextBlock">
+                    <Setter Property="VerticalAlignment" Value="Center"/>
+                    <Setter Property="HorizontalAlignment" Value="Right"/>
+                    <Setter Property="Grid.Column" Value="0"/>
+                  </Style>
+                </Grid.Resources>
               
-              <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-              </Grid.RowDefinitions>
+                <Grid.RowDefinitions>
+                  <RowDefinition Height="Auto"/>
+                  <RowDefinition Height="Auto"/>
+                  <RowDefinition Height="Auto"/>
+                  <RowDefinition Height="Auto"/>
+                  <RowDefinition Height="Auto"/>
+                  <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
 
-              <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="160"/>
-              </Grid.ColumnDefinitions>
-
-              <!-- Headers -->
-              <TextBlock Grid.ColumnSpan="2" Text="Inference Options" TextAlignment="Center" Margin="0,0,0,6" Style="{StaticResource SubtitleTextBlockStyle}"/>
-
-              <!-- Resolution -->
-              <TextBlock Grid.Row="1" Text="Resolution" Style="{StaticResource SettingTextBlockStyle}" ToolTipService.ToolTip="Controls the size of the output image. Using higher resolutions will increase memory usage and reduce image generation speed."/>
-              <ComboBox Grid.Row="1" Grid.Column="1"
-                        ItemsSource="{x:Bind ViewModel.Resolutions, Mode=OneWay}"
-                        SelectedIndex="{x:Bind ViewModel.SelectedResolutionIndex, Mode=TwoWay}">
-                <ComboBox.ItemTemplate>
-                  <DataTemplate x:DataType="foundation:Size">
-                    <TextBlock Text="{x:Bind Converter={StaticResource SizeToStringConverter}}"/>
-                  </DataTemplate>
-                </ComboBox.ItemTemplate>
-              </ComboBox>
-
-              <!-- Guidance scale -->
-              <TextBlock Grid.Row="2" Text="Guidance strength" Style="{StaticResource SettingTextBlockStyle}" ToolTipService.ToolTip="Controls the strength of human input when forming the output. Low values can result in more creative results, while higher values will conform to the input more strictly. Selecting values too high or low degrade the quality of the output."/>
-              <Slider Grid.Row="2" Grid.Column="1" Minimum="0" Maximum="20" SmallChange="0.1" LargeChange="1" StepFrequency="0.1"
-                      Value="{x:Bind ViewModel.GuidanceStrength, Mode=TwoWay}"/>
-
-              <!-- Denoising strength -->
-              <TextBlock Grid.Row="3" Text="Denoising strength" Style="{StaticResource SettingTextBlockStyle}" ToolTipService.ToolTip="Controls the amount the output image can change compared to the original."/>
-              <Slider Grid.Row="3" Grid.Column="1" Minimum="0" Maximum="1" SmallChange="0.01" LargeChange="0.1" StepFrequency="0.01"
-                      Value="{x:Bind ViewModel.DenoisingStrength, Mode=TwoWay}"/>
-
-              <!-- Sampling steps -->
-              <TextBlock Grid.Row="4" Text="Sampling steps" Style="{StaticResource SettingTextBlockStyle}" ToolTipService.ToolTip="Reducing this value speeds up image generation time, however it also degrades image quality."/>
-              <muxc:NumberBox Grid.Row="4" Grid.Column="1" Minimum="5" Maximum="100" SmallChange="1" SpinButtonPlacementMode="Inline"
-                              Value="{x:Bind ViewModel.SamplingSteps, Mode=TwoWay}"/>
-              
-              <!-- Random seed -->
-              <TextBlock Grid.Row="5" Text="Random seed" Style="{StaticResource SettingTextBlockStyle}" ToolTipService.ToolTip="Affects random numbers used in the image generation process. Using the same seed number with the same settings will result in the same image being generated. Useful for testing how different settings affect the output image."/>
-              <Grid Grid.Row="5" Grid.Column="1" ColumnSpacing="6">
                 <Grid.ColumnDefinitions>
-                  <ColumnDefinition Width="*"/>
                   <ColumnDefinition Width="Auto"/>
+                  <ColumnDefinition Width="160"/>
                 </Grid.ColumnDefinitions>
 
-                <muxc:NumberBox Value="{x:Bind ViewModel.RandomSeed, Mode=TwoWay}"/>
-                <ToggleButton Grid.Column="1" FontFamily="Segoe Fluent Icons" Content="&#xe72e;" ToolTipService.ToolTip="Freeze seed" VerticalAlignment="Stretch"
-                              IsChecked="{x:Bind ViewModel.IsSeedFrozen, Mode=TwoWay}"/>
+                <!-- Headers -->
+                <TextBlock Grid.ColumnSpan="2" Text="Inference Options" TextAlignment="Center" Margin="0,0,0,6" Style="{StaticResource SubtitleTextBlockStyle}"/>
+
+                <!-- Resolution -->
+                <TextBlock Grid.Row="1" Text="Resolution" Style="{StaticResource SettingTextBlockStyle}" ToolTipService.ToolTip="Controls the size of the output image. Using higher resolutions will increase memory usage and reduce image generation speed."/>
+                <ComboBox Grid.Row="1" Grid.Column="1"
+                          ItemsSource="{x:Bind ViewModel.Resolutions, Mode=OneWay}"
+                          SelectedIndex="{x:Bind ViewModel.SelectedResolutionIndex, Mode=TwoWay}">
+                  <ComboBox.ItemTemplate>
+                    <DataTemplate x:DataType="foundation:Size">
+                      <TextBlock Text="{x:Bind Converter={StaticResource SizeToStringConverter}}"/>
+                    </DataTemplate>
+                  </ComboBox.ItemTemplate>
+                </ComboBox>
+
+                <!-- Guidance scale -->
+                <TextBlock Grid.Row="2" Text="Guidance strength" Style="{StaticResource SettingTextBlockStyle}" ToolTipService.ToolTip="Controls the strength of human input when forming the output. Low values can result in more creative results, while higher values will conform to the input more strictly. Selecting values too high or low degrade the quality of the output."/>
+                <Slider Grid.Row="2" Grid.Column="1" Minimum="0" Maximum="20" SmallChange="0.1" LargeChange="1" StepFrequency="0.1"
+                        Value="{x:Bind ViewModel.GuidanceStrength, Mode=TwoWay}"/>
+
+                <!-- Denoising strength -->
+                <TextBlock Grid.Row="3" Text="Denoising strength" Style="{StaticResource SettingTextBlockStyle}" ToolTipService.ToolTip="Controls the amount the output image can change compared to the original."/>
+                <Slider Grid.Row="3" Grid.Column="1" Minimum="0" Maximum="1" SmallChange="0.01" LargeChange="0.1" StepFrequency="0.01"
+                        Value="{x:Bind ViewModel.DenoisingStrength, Mode=TwoWay}"/>
+
+                <!-- Sampling steps -->
+                <TextBlock Grid.Row="4" Text="Sampling steps" Style="{StaticResource SettingTextBlockStyle}" ToolTipService.ToolTip="Reducing this value speeds up image generation time, however it also degrades image quality."/>
+                <muxc:NumberBox Grid.Row="4" Grid.Column="1" Minimum="5" Maximum="100" SmallChange="1" SpinButtonPlacementMode="Inline"
+                                Value="{x:Bind ViewModel.SamplingSteps, Mode=TwoWay}"/>
+              
+                <!-- Random seed -->
+                <TextBlock Grid.Row="5" Text="Random seed" Style="{StaticResource SettingTextBlockStyle}" ToolTipService.ToolTip="Affects random numbers used in the image generation process. Using the same seed number with the same settings will result in the same image being generated. Useful for testing how different settings affect the output image."/>
+                <Grid Grid.Row="5" Grid.Column="1" ColumnSpacing="6">
+                  <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                  </Grid.ColumnDefinitions>
+
+                  <muxc:NumberBox Value="{x:Bind ViewModel.RandomSeed, Mode=TwoWay}"/>
+                  <ToggleButton Grid.Column="1" FontFamily="Segoe Fluent Icons" Content="&#xe72e;" ToolTipService.ToolTip="Freeze seed" VerticalAlignment="Stretch"
+                                IsChecked="{x:Bind ViewModel.IsSeedFrozen, Mode=TwoWay}"/>
+                </Grid>
               </Grid>
-            </Grid>
-          </Flyout>
-        </Button.Flyout>
-      </Button>
+            </Flyout>
+          </Button.Flyout>
+        </Button>
 
-      <!-- Positive prompt -->
-      <TextBox Grid.Column="1" Grid.Row="0" TextWrapping="Wrap" PlaceholderText="an empty canvas standing in a painter's workshop" Padding="36,4,10,0"
-               Text="{x:Bind ViewModel.PositivePrompt, Mode=TwoWay}">
-        <ToolTipService.ToolTip>
-          <StackPanel>
-            <TextBlock Text="Positive prompt" FontWeight="Bold"/>
-            <TextBlock Text="Describe what you would like to see on the image."/>
-          </StackPanel>
-        </ToolTipService.ToolTip>
-      </TextBox>
-      <FontIcon Grid.Column="1" Grid.Row="0" FontFamily="Segoe Fluent Icons" FontSize="20" Glyph="&#xe948;" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,6,0,0"/>
+        <!-- Positive prompt -->
+        <TextBox Grid.Column="1" Grid.Row="0" TextWrapping="Wrap" PlaceholderText="an empty canvas standing in a painter's workshop" Padding="36,4,10,0"
+                 Text="{x:Bind ViewModel.PositivePrompt, Mode=TwoWay}">
+          <ToolTipService.ToolTip>
+            <StackPanel>
+              <TextBlock Text="Positive prompt" FontWeight="Bold"/>
+              <TextBlock Text="Describe what you would like to see on the image."/>
+            </StackPanel>
+          </ToolTipService.ToolTip>
+        </TextBox>
+        <FontIcon Grid.Column="1" Grid.Row="0" FontFamily="Segoe Fluent Icons" FontSize="20" Glyph="&#xe948;" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,6,0,0"/>
 
-      <!-- Negative prompt -->
-      <TextBox Grid.Column="1" Grid.Row="1" TextWrapping="Wrap" PlaceholderText="blurry, render" Padding="36,4,10,0"
-               Text="{x:Bind ViewModel.NegativePrompt, Mode=TwoWay}">
-        <ToolTipService.ToolTip>
-          <StackPanel>
-            <TextBlock Text="Negative prompt" FontWeight="Bold"/>
-            <TextBlock Text="Describe what you would not like to see on the image."/>
-          </StackPanel>          
-        </ToolTipService.ToolTip>
-      </TextBox>
-      <FontIcon Grid.Column="1" Grid.Row="1" FontFamily="Segoe Fluent Icons" FontSize="20" Glyph="&#xe949;" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,6,0,0"/>
+        <!-- Negative prompt -->
+        <TextBox Grid.Column="1" Grid.Row="1" TextWrapping="Wrap" PlaceholderText="blurry, render" Padding="36,4,10,0"
+                 Text="{x:Bind ViewModel.NegativePrompt, Mode=TwoWay}">
+          <ToolTipService.ToolTip>
+            <StackPanel>
+              <TextBlock Text="Negative prompt" FontWeight="Bold"/>
+              <TextBlock Text="Describe what you would not like to see on the image."/>
+            </StackPanel>          
+          </ToolTipService.ToolTip>
+        </TextBox>
+        <FontIcon Grid.Column="1" Grid.Row="1" FontFamily="Segoe Fluent Icons" FontSize="20" Glyph="&#xe949;" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,6,0,0"/>
 
-      <!-- Execute -->
-      <Button Grid.Column="2" Grid.RowSpan="2" FontFamily="Segoe Fluent Icons" FontSize="24" Content="&#xe768;" ToolTipService.ToolTip="Generate" VerticalAlignment="Stretch"
-              Click="{x:Bind ViewModel.GenerateImage}"/>
-    </Grid>
+        <!-- Execute -->
+        <Button Grid.Column="2" Grid.RowSpan="2" FontFamily="Segoe Fluent Icons" FontSize="24" Content="&#xe768;" ToolTipService.ToolTip="Generate" VerticalAlignment="Stretch"
+                Click="{x:Bind ViewModel.GenerateImage}"/>
+      </Grid>
+    </Border>
   </Grid>
 </Page>
