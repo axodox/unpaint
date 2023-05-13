@@ -35,6 +35,8 @@ namespace Axodox::Graphics
 
     static TextureData FromBuffer(std::span<const uint8_t> buffer, TextureImageFormat format = TextureImageFormat::Rgba8);
     std::vector<uint8_t> ToBuffer() const;
+    
+    winrt::Windows::Graphics::Imaging::SoftwareBitmap ToSoftwareBitmap() const;
 
     template<typename T>
     T* Row(uint32_t row)

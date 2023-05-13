@@ -51,7 +51,10 @@ namespace Unpaint
     String PositivePrompt;
     String NegativePrompt;
 
-    IObservableVector<Windows.Foundation.Size> Resolutions{ get; };
+    IObservableVector<String> Models{ get; };
+    Int32 SelectedModelIndex;
+
+    IObservableVector<Windows.Graphics.SizeInt32> Resolutions{ get; };
     Int32 SelectedResolutionIndex;
 
     Single GuidanceStrength;

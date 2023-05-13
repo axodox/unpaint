@@ -1,16 +1,25 @@
 ﻿#include "pch.h"
 #include "InferenceViewModel.h"
 #include "InferenceViewModel.g.cpp"
+#include "Infrastructure/DependencyContainer.h"
+#include "Threading/AsyncOperation.h"
 
+using namespace Axodox::Infrastructure;
+using namespace Axodox::Threading;
 using namespace winrt::Windows::Foundation;
+using namespace winrt::Windows::Graphics;
 using namespace winrt::Windows::UI::Xaml::Data;
+using namespace winrt::Windows::UI::Xaml::Media::Imaging;
 
 namespace winrt::Unpaint::implementation
 {
   InferenceViewModel::InferenceViewModel() :
+    _modelRepository(dependencies.resolve<ModelRepository>()),
+    _modelExecutor(dependencies.resolve<StableDiffusionModelExecutor>()),
     _guidanceStrength(7.f),
     _denoisingStrength(0.2f),
-    _resolutions(single_threaded_observable_vector<Size>()),
+    _models(single_threaded_observable_vector<hstring>()),
+    _resolutions(single_threaded_observable_vector<SizeInt32>()),
     _selectedResolutionIndex(1),
     _samplingSteps(15),
     _randomSeed(0),
@@ -18,10 +27,15 @@ namespace winrt::Unpaint::implementation
     _status(L""),
     _progress(0),
     _outputImage(nullptr)
-  { 
-    _resolutions.Append(Size{ 1024, 1024 });
-    _resolutions.Append(Size{ 768, 768 });
-    _resolutions.Append(Size{ 512, 512 });
+  {
+    for (auto& model : _modelRepository->Models())
+    {
+      _models.Append(to_hstring(model));
+    }
+
+    _resolutions.Append(SizeInt32{ 1024, 1024 });
+    _resolutions.Append(SizeInt32{ 768, 768 });
+    _resolutions.Append(SizeInt32{ 512, 512 });
   }
 
   hstring InferenceViewModel::PositivePrompt()
@@ -50,7 +64,25 @@ namespace winrt::Unpaint::implementation
     _propertyChanged(*this, PropertyChangedEventArgs(L"NegativePrompt"));
   }
 
-  Windows::Foundation::Collections::IObservableVector<Windows::Foundation::Size> InferenceViewModel::Resolutions()
+  Windows::Foundation::Collections::IObservableVector<hstring> InferenceViewModel::Models()
+  {
+    return _models;
+  }
+
+  int32_t InferenceViewModel::SelectedModelIndex()
+  {
+    return _selectedModelIndex;
+  }
+
+  void InferenceViewModel::SelectedModelIndex(int32_t value)
+  {
+    if (value == _selectedModelIndex) return;
+
+    _selectedModelIndex = value;
+    _propertyChanged(*this, PropertyChangedEventArgs(L"SelectedModelIndex"));
+  }
+
+  Windows::Foundation::Collections::IObservableVector<Windows::Graphics::SizeInt32> InferenceViewModel::Resolutions()
   {
     return _resolutions;
   }
@@ -138,9 +170,25 @@ namespace winrt::Unpaint::implementation
     return _status;
   }
 
+  void InferenceViewModel::Status(hstring const& value)
+  {
+    if (value == _status) return;
+
+    _status = value;
+    _propertyChanged(*this, PropertyChangedEventArgs(L"Status"));
+  }
+
   float InferenceViewModel::Progress()
   {
     return _progress;
+  }
+
+  void InferenceViewModel::Progress(float value)
+  {
+    if (value == _progress) return;
+
+    _progress = value;
+    _propertyChanged(*this, PropertyChangedEventArgs(L"Progress"));
   }
 
   Windows::UI::Xaml::Media::ImageSource InferenceViewModel::OutputImage()
@@ -148,9 +196,69 @@ namespace winrt::Unpaint::implementation
     return _outputImage;
   }
 
-  void InferenceViewModel::GenerateImage()
+  void InferenceViewModel::OutputImage(Windows::UI::Xaml::Media::ImageSource const& value)
   {
+    if (value == _outputImage) return;
 
+    _outputImage = value;
+    _propertyChanged(*this, PropertyChangedEventArgs(L"OutputImage"));
+  }
+
+  fire_and_forget InferenceViewModel::GenerateImage()
+  {
+    //Capture caller context
+    apartment_context callerContext;
+    auto lifetime = get_strong();
+
+    //Build inference task
+    auto resolution = _resolutions.GetAt(_selectedResolutionIndex);
+
+    if (!_isSeedFrozen)
+    {
+      RandomSeed(_seedDistribution(_random));
+    }
+
+    StableDiffusionInferenceTask task{
+      .PositivePrompt = _positivePrompt.c_str(),
+      .NegativePrompt = _negativePrompt.c_str(),
+      .Resolution = { uint32_t(resolution.Width), uint32_t(resolution.Height) },
+      .GuidanceStrength = _guidanceStrength,
+      .SamplingSteps = _samplingSteps,
+      .RandomSeed = _randomSeed,
+      .ModelId = to_string(_models.GetAt(_selectedModelIndex))
+    };
+
+    //Run inference
+    co_await resume_background();
+
+    async_operation asyncOperation;
+    asyncOperation.state_changed(no_revoke, [=](const async_operation_info& info) -> fire_and_forget {      
+      auto progress = info.progress;
+      auto status = to_hstring(info.status_message);
+
+      co_await callerContext;
+
+      Progress(progress);
+      Status(status);
+    });
+
+    auto result = _modelExecutor->TryRunInference(task, asyncOperation);
+
+    //Update UI
+    co_await callerContext;
+
+    if (result)
+    {
+      auto softwareBitmap = result.ToSoftwareBitmap();
+
+      SoftwareBitmapSource outputBitmap;
+      co_await outputBitmap.SetBitmapAsync(softwareBitmap);
+
+      OutputImage(outputBitmap);
+
+      Progress(0.f);
+      Status(L"");
+    }
   }
 
   event_token InferenceViewModel::PropertyChanged(PropertyChangedEventHandler const& value)

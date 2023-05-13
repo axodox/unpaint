@@ -1,5 +1,7 @@
 ﻿#pragma once
 #include "InferenceViewModel.g.h"
+#include "ModelRepository.h"
+#include "StableDiffusionModelExecutor.h"
 
 namespace winrt::Unpaint::implementation
 {
@@ -13,7 +15,11 @@ namespace winrt::Unpaint::implementation
     hstring NegativePrompt();
     void NegativePrompt(hstring const& value);
 
-    Windows::Foundation::Collections::IObservableVector<Windows::Foundation::Size> Resolutions();
+    Windows::Foundation::Collections::IObservableVector<hstring> Models();
+    int32_t SelectedModelIndex();
+    void SelectedModelIndex(int32_t value);
+
+    Windows::Foundation::Collections::IObservableVector<Windows::Graphics::SizeInt32> Resolutions();
     int32_t SelectedResolutionIndex();
     void SelectedResolutionIndex(int32_t value);
 
@@ -33,21 +39,36 @@ namespace winrt::Unpaint::implementation
     void IsSeedFrozen(bool value);
 
     hstring Status();
+    void Status(hstring const& value);
+
     float Progress();
+    void Progress(float value);
 
     Windows::UI::Xaml::Media::ImageSource OutputImage();
+    void OutputImage(Windows::UI::Xaml::Media::ImageSource const& value);
 
-    void GenerateImage();
+    fire_and_forget GenerateImage();
 
     event_token PropertyChanged(Windows::UI::Xaml::Data::PropertyChangedEventHandler const& value);
     void PropertyChanged(event_token const& token);
 
   private:
+    std::shared_ptr<ModelRepository> _modelRepository;
+    std::shared_ptr<StableDiffusionModelExecutor> _modelExecutor;
+
+    std::minstd_rand _random;
+    std::uniform_int_distribution<uint32_t> _seedDistribution;
+
     event<Windows::UI::Xaml::Data::PropertyChangedEventHandler> _propertyChanged;
 
     hstring _positivePrompt, _negativePrompt;
-    Windows::Foundation::Collections::IObservableVector<Windows::Foundation::Size> _resolutions;
+    
+    Windows::Foundation::Collections::IObservableVector<hstring> _models;
+    int32_t _selectedModelIndex;
+
+    Windows::Foundation::Collections::IObservableVector<Windows::Graphics::SizeInt32> _resolutions;
     int32_t _selectedResolutionIndex;
+    
     float _guidanceStrength, _denoisingStrength;
     uint32_t _samplingSteps, _randomSeed;
     bool _isSeedFrozen;

@@ -4,7 +4,7 @@
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:local="using:Unpaint"
   xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
-  xmlns:foundation="using:Windows.Foundation"
+  xmlns:graphics="using:Windows.Graphics"
   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
   mc:Ignorable="d">
@@ -47,7 +47,7 @@
         <!-- Inference settings -->
         <Button Grid.Column="0" Grid.RowSpan="2" FontFamily="Segoe Fluent Icons" FontSize="24" Content="&#xe9e9;" ToolTipService.ToolTip="Inference Options" VerticalAlignment="Stretch">
           <Button.Flyout>
-            <Flyout Placement="TopEdgeAlignedLeft">
+            <Flyout>
               <Grid ColumnSpacing="12" RowSpacing="6">
                 <Grid.Resources>
                   <Style x:Key="SettingTextBlockStyle" TargetType="TextBlock">
@@ -64,6 +64,7 @@
                   <RowDefinition Height="Auto"/>
                   <RowDefinition Height="Auto"/>
                   <RowDefinition Height="Auto"/>
+                  <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
                 <Grid.ColumnDefinitions>
@@ -74,36 +75,42 @@
                 <!-- Headers -->
                 <TextBlock Grid.ColumnSpan="2" Text="Inference Options" TextAlignment="Center" Margin="0,0,0,6" Style="{StaticResource SubtitleTextBlockStyle}"/>
 
-                <!-- Resolution -->
-                <TextBlock Grid.Row="1" Text="Resolution" Style="{StaticResource SettingTextBlockStyle}" ToolTipService.ToolTip="Controls the size of the output image. Using higher resolutions will increase memory usage and reduce image generation speed."/>
+                <!-- Model -->
+                <TextBlock Grid.Row="1" Text="Model" Style="{StaticResource SettingTextBlockStyle}" ToolTipService.ToolTip="Selects the model used for image generation. Different models will generate different images for the same input."/>
                 <ComboBox Grid.Row="1" Grid.Column="1"
+                          ItemsSource="{x:Bind ViewModel.Models, Mode=OneWay}"
+                          SelectedIndex="{x:Bind ViewModel.SelectedModelIndex, Mode=TwoWay}"/>
+
+                <!-- Resolution -->
+                <TextBlock Grid.Row="2" Text="Resolution" Style="{StaticResource SettingTextBlockStyle}" ToolTipService.ToolTip="Controls the size of the output image. Using higher resolutions will increase memory usage and reduce image generation speed."/>
+                <ComboBox Grid.Row="2" Grid.Column="1"
                           ItemsSource="{x:Bind ViewModel.Resolutions, Mode=OneWay}"
                           SelectedIndex="{x:Bind ViewModel.SelectedResolutionIndex, Mode=TwoWay}">
                   <ComboBox.ItemTemplate>
-                    <DataTemplate x:DataType="foundation:Size">
+                    <DataTemplate x:DataType="graphics:SizeInt32">
                       <TextBlock Text="{x:Bind Converter={StaticResource SizeToStringConverter}}"/>
                     </DataTemplate>
                   </ComboBox.ItemTemplate>
                 </ComboBox>
 
                 <!-- Guidance scale -->
-                <TextBlock Grid.Row="2" Text="Guidance strength" Style="{StaticResource SettingTextBlockStyle}" ToolTipService.ToolTip="Controls the strength of human input when forming the output. Low values can result in more creative results, while higher values will conform to the input more strictly. Selecting values too high or low degrade the quality of the output."/>
-                <Slider Grid.Row="2" Grid.Column="1" Minimum="0" Maximum="20" SmallChange="0.1" LargeChange="1" StepFrequency="0.1"
+                <TextBlock Grid.Row="3" Text="Guidance strength" Style="{StaticResource SettingTextBlockStyle}" ToolTipService.ToolTip="Controls the strength of human input when forming the output. Low values can result in more creative results, while higher values will conform to the input more strictly. Selecting values too high or low degrade the quality of the output."/>
+                <Slider Grid.Row="3" Grid.Column="1" Minimum="0" Maximum="20" SmallChange="0.1" LargeChange="1" StepFrequency="0.1"
                         Value="{x:Bind ViewModel.GuidanceStrength, Mode=TwoWay}"/>
 
                 <!-- Denoising strength -->
-                <TextBlock Grid.Row="3" Text="Denoising strength" Style="{StaticResource SettingTextBlockStyle}" ToolTipService.ToolTip="Controls the amount the output image can change compared to the original."/>
-                <Slider Grid.Row="3" Grid.Column="1" Minimum="0" Maximum="1" SmallChange="0.01" LargeChange="0.1" StepFrequency="0.01"
+                <TextBlock Grid.Row="4" Text="Denoising strength" Style="{StaticResource SettingTextBlockStyle}" ToolTipService.ToolTip="Controls the amount the output image can change compared to the original."/>
+                <Slider Grid.Row="4" Grid.Column="1" Minimum="0" Maximum="1" SmallChange="0.01" LargeChange="0.1" StepFrequency="0.01"
                         Value="{x:Bind ViewModel.DenoisingStrength, Mode=TwoWay}"/>
 
                 <!-- Sampling steps -->
-                <TextBlock Grid.Row="4" Text="Sampling steps" Style="{StaticResource SettingTextBlockStyle}" ToolTipService.ToolTip="Reducing this value speeds up image generation time, however it also degrades image quality."/>
-                <muxc:NumberBox Grid.Row="4" Grid.Column="1" Minimum="5" Maximum="100" SmallChange="1" SpinButtonPlacementMode="Inline"
+                <TextBlock Grid.Row="5" Text="Sampling steps" Style="{StaticResource SettingTextBlockStyle}" ToolTipService.ToolTip="Reducing this value speeds up image generation time, however it also degrades image quality."/>
+                <muxc:NumberBox Grid.Row="5" Grid.Column="1" Minimum="5" Maximum="100" SmallChange="1" SpinButtonPlacementMode="Inline"
                                 Value="{x:Bind ViewModel.SamplingSteps, Mode=TwoWay}"/>
               
                 <!-- Random seed -->
-                <TextBlock Grid.Row="5" Text="Random seed" Style="{StaticResource SettingTextBlockStyle}" ToolTipService.ToolTip="Affects random numbers used in the image generation process. Using the same seed number with the same settings will result in the same image being generated. Useful for testing how different settings affect the output image."/>
-                <Grid Grid.Row="5" Grid.Column="1" ColumnSpacing="6">
+                <TextBlock Grid.Row="6" Text="Random seed" Style="{StaticResource SettingTextBlockStyle}" ToolTipService.ToolTip="Affects random numbers used in the image generation process. Using the same seed number with the same settings will result in the same image being generated. Useful for testing how different settings affect the output image."/>
+                <Grid Grid.Row="6" Grid.Column="1" ColumnSpacing="6">
                   <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>

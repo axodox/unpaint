@@ -6,6 +6,8 @@
 using namespace Axodox::Storage;
 using namespace std;
 using namespace winrt;
+using namespace winrt::Windows::Graphics::Imaging;
+using namespace ::Windows::Foundation;
 
 namespace Axodox::Graphics
 {
@@ -144,10 +146,7 @@ namespace Axodox::Graphics
 
   std::vector<uint8_t> TextureData::ToBuffer() const
   {
-    if (Format != DXGI_FORMAT_B8G8R8A8_UNORM_SRGB && Format != DXGI_FORMAT_B8G8R8A8_UNORM)
-    {
-      throw bad_cast();
-    }
+    if (Format != DXGI_FORMAT_B8G8R8A8_UNORM_SRGB && Format != DXGI_FORMAT_B8G8R8A8_UNORM) throw bad_cast();
 
     auto wicFactory = WicFactory();
 
@@ -185,5 +184,23 @@ namespace Axodox::Graphics
     check_hresult(stream->Read(result.data(), ULONG(result.size()), nullptr));
 
     return result;
+  }
+
+  winrt::Windows::Graphics::Imaging::SoftwareBitmap TextureData::ToSoftwareBitmap() const
+  {
+    if (Format != DXGI_FORMAT_B8G8R8A8_UNORM_SRGB && Format != DXGI_FORMAT_B8G8R8A8_UNORM) throw bad_cast();
+
+    SoftwareBitmap bitmap{ BitmapPixelFormat::Bgra8, int32_t(Width), int32_t(Height) };
+
+    auto input = Buffer.data();
+    auto bitmapData = bitmap.LockBuffer(BitmapBufferAccessMode::Write);
+    auto byteAccess = bitmapData.CreateReference().as<IMemoryBufferByteAccess>();
+
+    uint32_t capacity;
+    uint8_t* output;
+    check_hresult(byteAccess->GetBuffer(&output, &capacity));
+    memcpy(output, input, min(capacity, ByteCount()));
+
+    return bitmap;
   }
 }

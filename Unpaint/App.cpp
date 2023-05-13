@@ -4,14 +4,14 @@
 #include "MainView.h"
 
 using namespace winrt;
-using namespace Windows::ApplicationModel;
-using namespace Windows::ApplicationModel::Activation;
-using namespace Windows::Foundation;
-using namespace Windows::UI::Xaml;
-using namespace Windows::UI::Xaml::Controls;
-using namespace Windows::UI::Xaml::Navigation;
-using namespace Unpaint;
-using namespace Unpaint::implementation;
+using namespace winrt::Windows::ApplicationModel;
+using namespace winrt::Windows::ApplicationModel::Activation;
+using namespace winrt::Windows::Foundation;
+using namespace winrt::Windows::UI::Xaml;
+using namespace winrt::Windows::UI::Xaml::Controls;
+using namespace winrt::Windows::UI::Xaml::Navigation;
+using namespace winrt::Unpaint;
+using namespace winrt::Unpaint::implementation;
 
 /// <summary>
 /// Creates the singleton application object.  This is the first line of authored code

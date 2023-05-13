@@ -26,15 +26,18 @@
 #include <dwrite_3.h>
 #include <wincodec.h>
 #include <winrt/base.h>
+#include <Memorybuffer.h>
 
 #include <winrt/windows.foundation.h>
+#include <winrt/windows.graphics.imaging.h>
 #include <winrt/windows.web.http.h>
 #include <winrt/windows.web.http.filters.h>
 #include <winrt/windows.web.http.headers.h>
 #include <winrt/windows.security.cryptography.h>
-#include <winrt/Windows.Storage.h>
-#include <winrt/Windows.Storage.Search.h>
-#include <winrt/Windows.Storage.Streams.h>
+#include <winrt/windows.storage.h>
+#include <winrt/windows.storage.search.h>
+#include <winrt/windows.storage.streams.h>
+
 
 #ifdef USE_UWP_UI
 #include <winrt/windows.ui.core.h>

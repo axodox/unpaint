@@ -129,6 +129,7 @@
     </ClInclude>
     <ClInclude Include="InferenceViewModel.h" />
     <ClInclude Include="IsNanToBooleanConverter.h" />
+    <ClInclude Include="StableDiffusionModelExecutor.h" />
     <ClInclude Include="ModelRepository.h" />
     <ClInclude Include="ModelsView.h">
       <DependentUpon>ModelsView.xaml</DependentUpon>
@@ -198,6 +199,7 @@
     </ClCompile>
     <ClCompile Include="InferenceViewModel.cpp" />
     <ClCompile Include="IsNanToBooleanConverter.cpp" />
+    <ClCompile Include="StableDiffusionModelExecutor.cpp" />
     <ClCompile Include="ModelRepository.cpp" />
     <ClCompile Include="ModelsView.cpp">
       <DependentUpon>ModelsView.xaml</DependentUpon>
