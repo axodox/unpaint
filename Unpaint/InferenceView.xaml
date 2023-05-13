@@ -4,9 +4,13 @@
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:local="using:Unpaint"
   xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
+  xmlns:foundation="using:Windows.Foundation"
   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
   mc:Ignorable="d">
+  <Page.Resources>
+    <local:SizeToStringConverter x:Key="SizeToStringConverter"/>
+  </Page.Resources>
 
   <Grid Margin="6">
     <Grid.RowDefinitions>
@@ -16,7 +20,7 @@
     </Grid.RowDefinitions>
     
     <!-- Inference options -->
-    <Grid Grid.Row="2" RowSpacing="6" ColumnSpacing="6">
+    <Grid Grid.Row="2" RowSpacing="6" ColumnSpacing="6" MaxWidth="800">
       <Grid.ColumnDefinitions>
         <ColumnDefinition Width="Auto"/>
         <ColumnDefinition Width="*"/>
@@ -60,23 +64,30 @@
 
               <!-- Resolution -->
               <TextBlock Grid.Row="1" Text="Resolution" Style="{StaticResource SettingTextBlockStyle}" ToolTipService.ToolTip="Controls the size of the output image. Using higher resolutions will increase memory usage and reduce image generation speed."/>
-              <ComboBox Grid.Row="1" Grid.Column="1" SelectedIndex="1">
-                <ComboBoxItem>512x512</ComboBoxItem>
-                <ComboBoxItem>768x768</ComboBoxItem>
-                <ComboBoxItem>1024x1024</ComboBoxItem>
+              <ComboBox Grid.Row="1" Grid.Column="1"
+                        ItemsSource="{x:Bind ViewModel.Resolutions, Mode=OneWay}"
+                        SelectedIndex="{x:Bind ViewModel.SelectedResolutionIndex, Mode=TwoWay}">
+                <ComboBox.ItemTemplate>
+                  <DataTemplate x:DataType="foundation:Size">
+                    <TextBlock Text="{x:Bind Converter={StaticResource SizeToStringConverter}}"/>
+                  </DataTemplate>
+                </ComboBox.ItemTemplate>
               </ComboBox>
 
               <!-- Guidance scale -->
               <TextBlock Grid.Row="2" Text="Guidance strength" Style="{StaticResource SettingTextBlockStyle}" ToolTipService.ToolTip="Controls the strength of human input when forming the output. Low values can result in more creative results, while higher values will conform to the input more strictly. Selecting values too high or low degrade the quality of the output."/>
-              <Slider Grid.Row="2" Grid.Column="1" Value="7" Minimum="0" Maximum="20" SmallChange="1"/>
+              <Slider Grid.Row="2" Grid.Column="1" Minimum="0" Maximum="20" SmallChange="0.1" LargeChange="1" StepFrequency="0.1"
+                      Value="{x:Bind ViewModel.GuidanceStrength, Mode=TwoWay}"/>
 
               <!-- Denoising strength -->
               <TextBlock Grid.Row="3" Text="Denoising strength" Style="{StaticResource SettingTextBlockStyle}" ToolTipService.ToolTip="Controls the amount the output image can change compared to the original."/>
-              <Slider Grid.Row="3" Grid.Column="1" Value="0.2" Minimum="0" Maximum="1" SmallChange="0.1"/>
+              <Slider Grid.Row="3" Grid.Column="1" Minimum="0" Maximum="1" SmallChange="0.01" LargeChange="0.1" StepFrequency="0.01"
+                      Value="{x:Bind ViewModel.DenoisingStrength, Mode=TwoWay}"/>
 
               <!-- Sampling steps -->
               <TextBlock Grid.Row="4" Text="Sampling steps" Style="{StaticResource SettingTextBlockStyle}" ToolTipService.ToolTip="Reducing this value speeds up image generation time, however it also degrades image quality."/>
-              <muxc:NumberBox Grid.Row="4" Grid.Column="1" Value="15" Minimum="5" Maximum="100" SmallChange="1" SpinButtonPlacementMode="Inline"/>
+              <muxc:NumberBox Grid.Row="4" Grid.Column="1" Minimum="5" Maximum="100" SmallChange="1" SpinButtonPlacementMode="Inline"
+                              Value="{x:Bind ViewModel.SamplingSteps, Mode=TwoWay}"/>
               
               <!-- Random seed -->
               <TextBlock Grid.Row="5" Text="Random seed" Style="{StaticResource SettingTextBlockStyle}" ToolTipService.ToolTip="Affects random numbers used in the image generation process. Using the same seed number with the same settings will result in the same image being generated. Useful for testing how different settings affect the output image."/>
@@ -86,8 +97,9 @@
                   <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
 
-                <TextBox Text="565464"/>
-                <ToggleButton Grid.Column="1" FontFamily="Segoe Fluent Icons" Content="&#xe72e;" ToolTipService.ToolTip="Freeze seed" VerticalAlignment="Stretch"/>
+                <muxc:NumberBox Value="{x:Bind ViewModel.RandomSeed, Mode=TwoWay}"/>
+                <ToggleButton Grid.Column="1" FontFamily="Segoe Fluent Icons" Content="&#xe72e;" ToolTipService.ToolTip="Freeze seed" VerticalAlignment="Stretch"
+                              IsChecked="{x:Bind ViewModel.IsSeedFrozen, Mode=TwoWay}"/>
               </Grid>
             </Grid>
           </Flyout>
@@ -95,7 +107,8 @@
       </Button>
 
       <!-- Positive prompt -->
-      <TextBox Grid.Column="1" Grid.Row="0" TextWrapping="Wrap" PlaceholderText="an empty canvas standing in a painter's workshop" Padding="36,4,10,0">
+      <TextBox Grid.Column="1" Grid.Row="0" TextWrapping="Wrap" PlaceholderText="an empty canvas standing in a painter's workshop" Padding="36,4,10,0"
+               Text="{x:Bind ViewModel.PositivePrompt, Mode=TwoWay}">
         <ToolTipService.ToolTip>
           <StackPanel>
             <TextBlock Text="Positive prompt" FontWeight="Bold"/>
@@ -106,7 +119,8 @@
       <FontIcon Grid.Column="1" Grid.Row="0" FontFamily="Segoe Fluent Icons" FontSize="20" Glyph="&#xe948;" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,6,0,0"/>
 
       <!-- Negative prompt -->
-      <TextBox Grid.Column="1" Grid.Row="1" TextWrapping="Wrap" PlaceholderText="blurry, render" Padding="36,4,10,0">
+      <TextBox Grid.Column="1" Grid.Row="1" TextWrapping="Wrap" PlaceholderText="blurry, render" Padding="36,4,10,0"
+               Text="{x:Bind ViewModel.NegativePrompt, Mode=TwoWay}">
         <ToolTipService.ToolTip>
           <StackPanel>
             <TextBlock Text="Negative prompt" FontWeight="Bold"/>
@@ -117,7 +131,8 @@
       <FontIcon Grid.Column="1" Grid.Row="1" FontFamily="Segoe Fluent Icons" FontSize="20" Glyph="&#xe949;" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,6,0,0"/>
 
       <!-- Execute -->
-      <Button Grid.Column="2" Grid.RowSpan="2" FontFamily="Segoe Fluent Icons" FontSize="24" Content="&#xe768;" ToolTipService.ToolTip="Generate" VerticalAlignment="Stretch"/>
+      <Button Grid.Column="2" Grid.RowSpan="2" FontFamily="Segoe Fluent Icons" FontSize="24" Content="&#xe768;" ToolTipService.ToolTip="Generate" VerticalAlignment="Stretch"
+              Click="{x:Bind ViewModel.GenerateImage}"/>
     </Grid>
   </Grid>
 </Page>

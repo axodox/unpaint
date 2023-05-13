@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "InferenceView.g.h"
+#include "SizeToStringConverter.h"
 
 namespace winrt::Unpaint::implementation
 {

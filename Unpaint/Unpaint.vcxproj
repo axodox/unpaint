@@ -141,6 +141,7 @@
     <ClInclude Include="MainView.h">
       <DependentUpon>MainView.xaml</DependentUpon>
     </ClInclude>
+    <ClInclude Include="SizeToStringConverter.h" />
     <ClInclude Include="WelcomeView.h">
       <DependentUpon>WelcomeView.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -210,6 +211,7 @@
       <DependentUpon>MainView.xaml</DependentUpon>
     </ClCompile>
     <ClCompile Include="$(GeneratedFilesDir)module.g.cpp" />
+    <ClCompile Include="SizeToStringConverter.cpp" />
     <ClCompile Include="WelcomeView.cpp">
       <DependentUpon>WelcomeView.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -219,6 +221,7 @@
     <Midl Include="App.idl">
       <DependentUpon>App.xaml</DependentUpon>
     </Midl>
+    <Midl Include="Converters.idl" />
     <Midl Include="Dialogs.idl" />
     <Midl Include="ViewModels.idl" />
     <Midl Include="Views.idl" />

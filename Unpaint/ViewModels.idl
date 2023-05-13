@@ -47,5 +47,19 @@ namespace Unpaint
   runtimeclass InferenceViewModel : Windows.UI.Xaml.Data.INotifyPropertyChanged
   {
     InferenceViewModel();
+
+    String PositivePrompt;
+    String NegativePrompt;
+
+    IObservableVector<Windows.Foundation.Size> Resolutions{ get; };
+    Int32 SelectedResolutionIndex;
+
+    Single GuidanceStrength;
+    Single DenoisingStrength;
+    UInt32 SamplingSteps;
+    UInt32 RandomSeed;
+    Boolean IsSeedFrozen;
+
+    void GenerateImage();
   }
 }
