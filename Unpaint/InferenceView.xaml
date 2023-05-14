@@ -61,14 +61,44 @@
 
       <StackPanel x:Name="CommandPanel" Grid.Column="1" HorizontalAlignment="Center" Spacing="6" Orientation="Horizontal" Padding="0,3" Opacity="0">
         <Button Content="&#xe8c8;" FontFamily="Segoe Fluent Icons" Padding="4,0" Background="Transparent" VerticalAlignment="Stretch" ToolTipService.ToolTip="Copy image"
-                Click="{x:Bind ViewModel.CopyToClipboard}" IsEnabled="{x:Bind ViewModel.HasImageSelected, Mode=OneWay}"/>
+                Click="{x:Bind ViewModel.CopyToClipboard}" IsEnabled="{x:Bind ViewModel.HasImageSelected, Mode=OneWay}">
+          <Button.KeyboardAccelerators>
+            <KeyboardAccelerator Key="C" Modifiers="Control"/>
+          </Button.KeyboardAccelerators>
+        </Button>
         <Button Content="&#xe792;" FontFamily="Segoe Fluent Icons" Padding="4,0" Background="Transparent" VerticalAlignment="Stretch" ToolTipService.ToolTip="Save image as..."
-                Click="{x:Bind ViewModel.SaveImageAs}" IsEnabled="{x:Bind ViewModel.HasImageSelected, Mode=OneWay}"/>
+                Click="{x:Bind ViewModel.SaveImageAs}" IsEnabled="{x:Bind ViewModel.HasImageSelected, Mode=OneWay}">
+          <Button.KeyboardAccelerators>
+            <KeyboardAccelerator Key="S" Modifiers="Control"/>
+          </Button.KeyboardAccelerators>
+        </Button>
         <Button Content="&#xe74d;" FontFamily="Segoe Fluent Icons" Padding="4,0" Background="Transparent" VerticalAlignment="Stretch" ToolTipService.ToolTip="Delete image..."
-                Click="{x:Bind ViewModel.DeleteImage}" IsEnabled="{x:Bind ViewModel.HasImageSelected, Mode=OneWay}"/>
+                Click="{x:Bind ViewModel.DeleteImage}" IsEnabled="{x:Bind ViewModel.HasImageSelected, Mode=OneWay}">
+          <Button.KeyboardAccelerators>
+            <KeyboardAccelerator Key="Delete"/>
+          </Button.KeyboardAccelerators>
+        </Button>
         <TextBlock Text="{x:Bind ViewModel.ImagePosition, Mode=OneWay}" FontFamily="Segoe UI Mono" VerticalAlignment="Center" Margin="12,0" IsHitTestVisible="False" Opacity="0.5"/>
         <muxc:SplitButton Content="&#xe838;" FontFamily="Segoe Fluent Icons" Padding="0" Background="Transparent" VerticalAlignment="Stretch" ToolTipService.ToolTip="Open project directory..."
-                          Click="{x:Bind ViewModel.ShowImageDirectory}"/>
+                          Click="{x:Bind ViewModel.ShowImageDirectory}">
+          <muxc:SplitButton.Flyout>
+            <Flyout>
+              <Flyout.FlyoutPresenterStyle>
+                <Style TargetType="FlyoutPresenter">
+                  <Setter Property="Padding" Value="0"/>
+                </Style>
+              </Flyout.FlyoutPresenterStyle>
+
+              <StackPanel>
+                <ListView ItemsSource="{x:Bind ViewModel.Projects, Mode=OneWay}"
+                          SelectedIndex="{x:Bind ViewModel.SelectedProjectIndex, Mode=TwoWay}"/>
+                <MenuFlyoutSeparator/>
+                <MenuFlyoutItem Text="Create new project..." Click="{x:Bind ViewModel.CreateNewProject}"/>
+                <MenuFlyoutItem Text="Delete current project..." Click="{x:Bind ViewModel.DeleteProject}" IsEnabled="{x:Bind ViewModel.CanDeleteProject, Mode=OneWay}"/>
+              </StackPanel>
+            </Flyout>
+          </muxc:SplitButton.Flyout>
+        </muxc:SplitButton>
       </StackPanel>
 
       <muxc:ProgressBar Grid.ColumnSpan="3" Value="{x:Bind ViewModel.Progress, Mode=OneWay, Converter={StaticResource NanToZeroConverter}}" IsIndeterminate="{x:Bind ViewModel.Progress, Mode=OneWay, Converter={StaticResource IsNanToBooleanConverter}}" VerticalAlignment="Top" Background="Transparent" Maximum="1" IsHitTestVisible="False" />
@@ -218,7 +248,11 @@
 
         <!-- Execute -->
         <Button Grid.Column="2" Grid.RowSpan="2" FontFamily="Segoe Fluent Icons" FontSize="24" Content="&#xe768;" ToolTipService.ToolTip="Generate" VerticalAlignment="Stretch"
-                Click="{x:Bind ViewModel.GenerateImage}"/>
+                Click="{x:Bind ViewModel.GenerateImage}">
+          <Button.KeyboardAccelerators>
+            <KeyboardAccelerator Key="Enter"/>
+          </Button.KeyboardAccelerators>
+        </Button>
       </Grid>
     </Border>
   </Grid>

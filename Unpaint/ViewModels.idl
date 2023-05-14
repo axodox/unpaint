@@ -87,6 +87,10 @@ namespace Unpaint
     
     Windows.UI.Xaml.Media.ImageSource OutputImage{ get; };
 
+    IObservableVector<String> Projects{ get; };
+    Int32 SelectedProjectIndex;
+    Boolean CanDeleteProject{ get; };
+
     void GenerateImage();
     void ManageModels();
 
@@ -94,5 +98,7 @@ namespace Unpaint
     void SaveImageAs();
     void DeleteImage();
     void ShowImageDirectory();
+    void CreateNewProject();
+    void DeleteProject();
   }
 }

@@ -52,6 +52,7 @@ namespace Axodox::MachineLearning
     
     auto optimizedModelPath = modelPath;
     optimizedModelPath.replace_extension("optimized.onnx");
+    optimizedModelPath.make_preferred();
 
     const filesystem::path* sourcePath;
     if (filesystem::exists(optimizedModelPath))

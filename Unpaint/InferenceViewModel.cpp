@@ -41,6 +41,7 @@ namespace winrt::Unpaint::implementation
     _status(L""),
     _progress(0),
     _images(single_threaded_observable_vector<hstring>()),
+    _projects(single_threaded_observable_vector<hstring>()),
     _outputImage(nullptr),
     _imagesChangedSubscription(_imageRepository->ImagesChanged(event_handler{ this, &InferenceViewModel::OnImagesChanged }))
   {
@@ -263,6 +264,36 @@ namespace winrt::Unpaint::implementation
     _propertyChanged(*this, PropertyChangedEventArgs(L"OutputImage"));
   }
 
+  Windows::Foundation::Collections::IObservableVector<hstring> InferenceViewModel::Projects()
+  {
+    return _projects;
+  }
+
+  int32_t InferenceViewModel::SelectedProjectIndex()
+  {
+    return _selectedProjectIndex;
+  }
+
+  void InferenceViewModel::SelectedProjectIndex(int32_t value)
+  {
+    if (value == _selectedProjectIndex) return;
+
+    _selectedProjectIndex = value;
+    _propertyChanged(*this, PropertyChangedEventArgs(L"SelectedProjectIndex"));
+    _propertyChanged(*this, PropertyChangedEventArgs(L"CanDeleteProject"));
+
+    if (_selectedProjectIndex == -1) return;
+
+    auto projectName = to_string(_projects.GetAt(value));
+    _imageRepository->ProjectName(projectName);
+    SelectedImageIndex(int32_t(_images.Size()) - 1);
+  }
+
+  bool InferenceViewModel::CanDeleteProject()
+  {
+    return _selectedProjectIndex != -1 && _projects.GetAt(_selectedProjectIndex) != L"scratch";
+  }
+
   fire_and_forget InferenceViewModel::GenerateImage()
   {
     //Capture caller context
@@ -389,6 +420,50 @@ namespace winrt::Unpaint::implementation
     co_await Launcher::LaunchFolderAsync(imageFolder);
   }
 
+  fire_and_forget InferenceViewModel::CreateNewProject()
+  {
+    auto lifetime = get_strong();
+
+    ContentDialog newProjectDialog{};
+    newProjectDialog.Title(box_value(L"Create new project"));
+
+    TextBox projectNameBox{};
+    projectNameBox.PlaceholderText(L"Project name");
+
+    newProjectDialog.Content(projectNameBox);
+    newProjectDialog.PrimaryButtonText(L"OK");
+    newProjectDialog.SecondaryButtonText(L"Cancel");
+    newProjectDialog.DefaultButton(ContentDialogButton::Primary);
+    auto dialogResult = co_await newProjectDialog.ShowAsync();
+
+    auto projectName = to_string(projectNameBox.Text());
+    if (dialogResult != ContentDialogResult::Primary || projectName.empty()) co_return;
+
+    _imageRepository->ProjectName(projectName);
+  }
+
+  fire_and_forget InferenceViewModel::DeleteProject()
+  {
+    auto lifetime = get_strong();
+
+    auto it = ranges::find_if(_imageRepository->Projects(), [=](const std::string& item) { return item != _imageRepository->ProjectName(); });
+    if (it == _imageRepository->Projects().end()) co_return;
+
+    ContentDialog confirmationDialog{};
+    confirmationDialog.Title(box_value(L"Deleting project"));
+    confirmationDialog.Content(box_value(to_hstring(std::format("Are you sure to remove project {}?", _imageRepository->ProjectName()))));
+    confirmationDialog.PrimaryButtonText(L"Yes");
+    confirmationDialog.SecondaryButtonText(L"No");
+    confirmationDialog.DefaultButton(ContentDialogButton::Secondary);
+    auto dialogResult = co_await confirmationDialog.ShowAsync();
+
+    if (dialogResult != ContentDialogResult::Primary) co_return;
+
+    error_code ec;
+    filesystem::remove_all(_imageRepository->ImageRoot(), ec);
+    _imageRepository->ProjectName(*it);
+  }
+
   event_token InferenceViewModel::PropertyChanged(PropertyChangedEventHandler const& value)
   {
     return _propertyChanged.add(value);
@@ -403,5 +478,14 @@ namespace winrt::Unpaint::implementation
   {
     update_observable_collection(sender->Images(), _images, StringMapper{});
     _propertyChanged(*this, PropertyChangedEventArgs(L"ImagePosition"));
+
+    update_observable_collection(sender->Projects(), _projects, StringMapper{});
+    
+    auto it = ranges::find(sender->Projects(), sender->ProjectName());
+    if (it != sender->Projects().end())
+    {
+      _selectedProjectIndex = int32_t(distance(sender->Projects().begin(), it));
+      _propertyChanged(*this, PropertyChangedEventArgs(L"SelectedProjectIndex"));
+    }
   }
 }

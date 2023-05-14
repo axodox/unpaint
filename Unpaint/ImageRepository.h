@@ -16,6 +16,7 @@ namespace winrt::Unpaint
 
     std::filesystem::path ImageRoot(bool isRelative = false) const;
 
+    std::span<const std::string> Projects() const;
     std::span<const std::string> Images() const;
     Axodox::Infrastructure::event_publisher<ImageRepository*> ImagesChanged;
 
@@ -29,5 +30,8 @@ namespace winrt::Unpaint
   private:
     std::string _projectName;
     std::vector<std::string> _images;
+    std::vector<std::string> _projects;
+
+    std::filesystem::path ProjectsRoot(bool isRelative = false) const;
   };
 }

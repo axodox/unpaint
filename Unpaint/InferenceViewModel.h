@@ -57,6 +57,11 @@ namespace winrt::Unpaint::implementation
     Windows::UI::Xaml::Media::ImageSource OutputImage();
     void OutputImage(Windows::UI::Xaml::Media::ImageSource const& value);
 
+    Windows::Foundation::Collections::IObservableVector<hstring> Projects();
+    int32_t SelectedProjectIndex();
+    void SelectedProjectIndex(int32_t value);
+    bool CanDeleteProject();
+
     fire_and_forget GenerateImage();
     void ManageModels();
 
@@ -64,6 +69,8 @@ namespace winrt::Unpaint::implementation
     fire_and_forget SaveImageAs();
     fire_and_forget DeleteImage();
     fire_and_forget ShowImageDirectory();
+    fire_and_forget CreateNewProject();
+    fire_and_forget DeleteProject();
 
     event_token PropertyChanged(Windows::UI::Xaml::Data::PropertyChangedEventHandler const& value);
     void PropertyChanged(event_token const& token);
@@ -98,6 +105,9 @@ namespace winrt::Unpaint::implementation
     Windows::Foundation::Collections::IObservableVector<hstring> _images;
     int32_t _selectedImageIndex;
     Windows::UI::Xaml::Media::ImageSource _outputImage;
+
+    Windows::Foundation::Collections::IObservableVector<hstring> _projects;
+    int32_t _selectedProjectIndex;
 
     void OnImagesChanged(ImageRepository* sender);
   };

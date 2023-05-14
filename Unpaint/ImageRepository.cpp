@@ -31,6 +31,11 @@ namespace winrt::Unpaint
     Refresh();
   }
 
+  std::span<const std::string> ImageRepository::Projects() const
+  {
+    return _projects;
+  }
+
   std::span<const std::string> ImageRepository::Images() const
   {
     return _images;
@@ -98,11 +103,20 @@ namespace winrt::Unpaint
 
   void ImageRepository::Refresh()
   {
-    _images.clear();
-
     error_code ec;
-    auto directory = ImageRoot();
-    for (auto& item : filesystem::directory_iterator{ directory, ec })
+
+    _projects.clear();
+    auto rootDirectory = ProjectsRoot();
+    for (auto& item : filesystem::directory_iterator{ rootDirectory, ec })
+    {
+      if (!item.is_directory()) continue;
+
+      _projects.push_back(item.path().stem().string());
+    }
+
+    _images.clear();
+    auto projectDirectory = ImageRoot();
+    for (auto& item : filesystem::directory_iterator{ projectDirectory, ec })
     {
       if (item.is_directory() || item.path().extension() != ".png") continue;
 
@@ -112,11 +126,16 @@ namespace winrt::Unpaint
     _events.raise(ImagesChanged, this);
   }
 
-  std::filesystem::path ImageRepository::ImageRoot(bool isRelative) const
+  std::filesystem::path ImageRepository::ProjectsRoot(bool isRelative) const
   {
-    auto relativePath = "images/" + _projectName;
+    auto relativePath = "images";
     auto result = isRelative ? relativePath : (filesystem::path{ ApplicationData::Current().LocalCacheFolder().Path().c_str() } / relativePath);
     result.make_preferred();
     return result;
+  }
+
+  std::filesystem::path ImageRepository::ImageRoot(bool isRelative) const
+  {
+    return ProjectsRoot(isRelative) / _projectName;
   }
 }
