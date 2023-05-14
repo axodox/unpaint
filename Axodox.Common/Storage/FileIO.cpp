@@ -21,10 +21,35 @@ namespace Axodox::Storage
     return stream.read_to_end();
   }
 
+  std::vector<uint8_t> try_read_file(const std::filesystem::path& path)
+  {
+    try
+    {
+      return read_file(path);
+    }
+    catch(...)
+    {
+      return {};
+    }
+  }
+
   void write_file(const std::filesystem::path& path, std::span<const uint8_t> buffer)
   {
     file_stream stream(path, file_mode::write);
     stream.write(buffer);
+  }
+
+  bool try_write_file(const std::filesystem::path& path, std::span<const uint8_t> buffer)
+  {
+    try
+    {
+      write_file(path, buffer);
+      return true;
+    }
+    catch (...)
+    {
+      return false;
+    }
   }
 
   enum class text_encoding : uint32_t

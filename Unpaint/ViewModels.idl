@@ -77,6 +77,9 @@ namespace Unpaint
     String Status{ get; };
     Single Progress{ get; };
 
+    IObservableVector<String> Images{ get; };
+    Int32 SelectedImageIndex;
+
     Windows.UI.Xaml.Media.ImageSource OutputImage{ get; };
 
     void GenerateImage();

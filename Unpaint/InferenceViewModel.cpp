@@ -1,9 +1,12 @@
 ﻿#include "pch.h"
 #include "InferenceViewModel.h"
 #include "InferenceViewModel.g.cpp"
+#include "Collections/ObservableExtensions.h"
 #include "Infrastructure/WinRtDependencies.h"
 #include "Threading/AsyncOperation.h"
+#include "StringMapper.h"
 
+using namespace Axodox::Collections;
 using namespace Axodox::Infrastructure;
 using namespace Axodox::Threading;
 using namespace winrt::Windows::Foundation;
@@ -16,6 +19,7 @@ namespace winrt::Unpaint::implementation
   InferenceViewModel::InferenceViewModel() :
     _modelRepository(dependencies.resolve<ModelRepository>()),
     _modelExecutor(dependencies.resolve<StableDiffusionModelExecutor>()),
+    _imageRepository(dependencies.resolve<ImageRepository>()),
     _navigationService(dependencies.resolve<INavigationService>()),
     _guidanceStrength(7.f),
     _denoisingStrength(0.2f),
@@ -23,11 +27,13 @@ namespace winrt::Unpaint::implementation
     _resolutions(single_threaded_observable_vector<SizeInt32>()),
     _selectedResolutionIndex(1),
     _samplingSteps(15),
-    _randomSeed(0),
+    _random(uint32_t(time(nullptr))),
     _isSeedFrozen(false),
     _status(L""),
     _progress(0),
-    _outputImage(nullptr)
+    _images(single_threaded_observable_vector<hstring>()),
+    _outputImage(nullptr),
+    _imagesChangedSubscription(_imageRepository->ImagesChanged(event_handler{ this, &InferenceViewModel::OnImagesChanged }))
   {
     for (auto& model : _modelRepository->Models())
     {
@@ -37,6 +43,9 @@ namespace winrt::Unpaint::implementation
     _resolutions.Append(SizeInt32{ 1024, 1024 });
     _resolutions.Append(SizeInt32{ 768, 768 });
     _resolutions.Append(SizeInt32{ 512, 512 });
+
+    _imageRepository->Refresh();
+    SelectedImageIndex(int32_t(_images.Size()) - 1);
   }
 
   hstring InferenceViewModel::PositivePromptPlaceholder()
@@ -202,6 +211,24 @@ namespace winrt::Unpaint::implementation
     _propertyChanged(*this, PropertyChangedEventArgs(L"Progress"));
   }
 
+  Windows::Foundation::Collections::IObservableVector<hstring> InferenceViewModel::Images()
+  {
+    return _images;
+  }
+
+  int32_t InferenceViewModel::SelectedImageIndex()
+  {
+    return _selectedImageIndex;
+  }
+
+  void InferenceViewModel::SelectedImageIndex(int32_t value)
+  {
+    if (value == _selectedImageIndex) return;
+
+    _selectedImageIndex = value;
+    _propertyChanged(*this, PropertyChangedEventArgs(L"SelectedImageIndex"));
+  }
+
   Windows::UI::Xaml::Media::ImageSource InferenceViewModel::OutputImage()
   {
     return _outputImage;
@@ -270,6 +297,9 @@ namespace winrt::Unpaint::implementation
 
       Progress(0.f);
       Status(L"");
+
+      _imageRepository->AddImage(textureData[0]);
+      SelectedImageIndex(int32_t(_images.Size()) - 1);
     }
   }
 
@@ -286,5 +316,10 @@ namespace winrt::Unpaint::implementation
   void InferenceViewModel::PropertyChanged(event_token const& token)
   {
     _propertyChanged.remove(token);
+  }
+  
+  void InferenceViewModel::OnImagesChanged(ImageRepository* sender)
+  {
+    update_observable_collection(sender->Images(), _images, StringMapper{});
   }
 }

@@ -67,6 +67,15 @@
     <ClCompile Include="StableDiffusionModelExecutor.cpp">
       <Filter>Models</Filter>
     </ClCompile>
+    <ClCompile Include="ImageRepository.cpp">
+      <Filter>Models</Filter>
+    </ClCompile>
+    <ClCompile Include="StringMapper.cpp">
+      <Filter>Models</Filter>
+    </ClCompile>
+    <ClCompile Include="StringToImageSourceConverter.cpp">
+      <Filter>Converters</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\Wide310x150Logo.scale-200.png">
@@ -174,6 +183,15 @@
     </ClInclude>
     <ClInclude Include="UnpaintSettings.h">
       <Filter>Models</Filter>
+    </ClInclude>
+    <ClInclude Include="ImageRepository.h">
+      <Filter>Models</Filter>
+    </ClInclude>
+    <ClInclude Include="StringMapper.h">
+      <Filter>Models</Filter>
+    </ClInclude>
+    <ClInclude Include="StringToImageSourceConverter.h">
+      <Filter>Converters</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

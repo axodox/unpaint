@@ -14,4 +14,9 @@ namespace Unpaint
   {
     NanToZeroConverter();
   };
+
+  runtimeclass StringToImageSourceConverter : [default] Windows.UI.Xaml.Data.IValueConverter
+  {
+    StringToImageSourceConverter();
+  };
 }

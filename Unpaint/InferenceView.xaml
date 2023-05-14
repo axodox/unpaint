@@ -12,6 +12,7 @@
     <local:SizeToStringConverter x:Key="SizeToStringConverter"/>
     <local:IsNanToBooleanConverter x:Key="IsNanToBooleanConverter"/>
     <local:NanToZeroConverter x:Key="NanToZeroConverter"/>
+    <local:StringToImageSourceConverter x:Key="StringToImageSourceConverter"/>
   </Page.Resources>
 
   <Grid>
@@ -28,7 +29,15 @@
     </Grid>
 
     <!-- Output image -->
-    <Image Grid.Row="1" Stretch="Uniform" Source="{x:Bind ViewModel.OutputImage, Mode=OneWay}"/>
+    <FlipView Grid.Row="1" Background="Transparent"
+              ItemsSource="{x:Bind ViewModel.Images, Mode=OneWay}"
+              SelectedIndex="{x:Bind ViewModel.SelectedImageIndex, Mode=TwoWay}">
+      <FlipView.ItemTemplate>
+        <DataTemplate x:DataType="x:String">
+          <Image Grid.Row="1" Stretch="Uniform" Source="{x:Bind Converter={StaticResource StringToImageSourceConverter}}"/>
+        </DataTemplate>
+      </FlipView.ItemTemplate>
+    </FlipView>    
 
     <!-- Inference options -->
     <Border Grid.Row="2" Background="{ThemeResource LayerFillColorDefaultBrush}" CornerRadius="6,6,0,0" MaxWidth="800">

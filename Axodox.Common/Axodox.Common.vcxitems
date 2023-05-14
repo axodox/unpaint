@@ -16,6 +16,7 @@
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)Collections\AlignedAllocator.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Collections\Hasher.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Collections\ObservableExtensions.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Buffers\ConstantBuffer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Buffers\GraphicsBuffer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Buffers\IndexBuffer.h" />

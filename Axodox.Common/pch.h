@@ -34,6 +34,7 @@
 
 #include <winrt/base.h>
 #include <winrt/windows.foundation.h>
+#include <winrt/windows.foundation.collections.h>
 #include <winrt/windows.graphics.imaging.h>
 #include <winrt/windows.web.http.h>
 #include <winrt/windows.web.http.filters.h>

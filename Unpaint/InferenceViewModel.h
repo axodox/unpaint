@@ -2,6 +2,8 @@
 #include "InferenceViewModel.g.h"
 #include "ModelRepository.h"
 #include "StableDiffusionModelExecutor.h"
+#include "ImageRepository.h"
+#include "Infrastructure/Events.h"
 
 namespace winrt::Unpaint::implementation
 {
@@ -46,6 +48,10 @@ namespace winrt::Unpaint::implementation
     float Progress();
     void Progress(float value);
 
+    Windows::Foundation::Collections::IObservableVector<hstring> Images();
+    int32_t SelectedImageIndex();
+    void SelectedImageIndex(int32_t value);
+
     Windows::UI::Xaml::Media::ImageSource OutputImage();
     void OutputImage(Windows::UI::Xaml::Media::ImageSource const& value);
 
@@ -59,6 +65,7 @@ namespace winrt::Unpaint::implementation
     INavigationService _navigationService;
     std::shared_ptr<ModelRepository> _modelRepository;
     std::shared_ptr<StableDiffusionModelExecutor> _modelExecutor;
+    std::shared_ptr<ImageRepository> _imageRepository;
 
     std::minstd_rand _random;
     std::uniform_int_distribution<uint32_t> _seedDistribution;
@@ -80,7 +87,12 @@ namespace winrt::Unpaint::implementation
     hstring _status;
     float _progress;
 
+    Axodox::Infrastructure::event_subscription _imagesChangedSubscription;
+    Windows::Foundation::Collections::IObservableVector<hstring> _images;
+    int32_t _selectedImageIndex;
     Windows::UI::Xaml::Media::ImageSource _outputImage;
+
+    void OnImagesChanged(ImageRepository* sender);
   };
 }
 

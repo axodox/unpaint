@@ -3,6 +3,7 @@
 #include "SizeToStringConverter.h"
 #include "IsNanToBooleanConverter.h"
 #include "NanToZeroConverter.h"
+#include "StringToImageSourceConverter.h"
 
 namespace winrt::Unpaint::implementation
 {
