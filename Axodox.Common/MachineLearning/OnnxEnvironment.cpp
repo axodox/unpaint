@@ -9,20 +9,9 @@ namespace Axodox::MachineLearning
   OnnxEnvironment::OnnxEnvironment(const std::filesystem::path& rootPath) :
     _rootPath(rootPath),
     _environment(),
-    _memoryInfo(MemoryInfo::CreateCpu(OrtDeviceAllocator, OrtMemTypeDefault))
+    _memoryInfo(MemoryInfo::CreateCpu(OrtArenaAllocator, OrtMemTypeDefault))
   {
-    _environment.UpdateEnvWithCustomLogLevel(ORT_LOGGING_LEVEL_WARNING);
-    
-    _defaultSessionOptions.DisableMemPattern();
-    _defaultSessionOptions.SetExecutionMode(ExecutionMode::ORT_SEQUENTIAL);
-    _defaultSessionOptions.SetGraphOptimizationLevel(ORT_DISABLE_ALL);
-
-    //OrtSessionOptionsAppendExecutionProvider_CUDA(_defaultSessionOptions, 0);
-    OrtSessionOptionsAppendExecutionProvider_DML(_defaultSessionOptions, 0);
-
-    _cpuSessionOptions.DisableMemPattern();
-    _cpuSessionOptions.SetExecutionMode(ExecutionMode::ORT_SEQUENTIAL);
-    _cpuSessionOptions.SetGraphOptimizationLevel(ORT_DISABLE_ALL);
+    _environment.UpdateEnvWithCustomLogLevel(ORT_LOGGING_LEVEL_WARNING);    
   }
 
   const std::filesystem::path& OnnxEnvironment::RootPath() const
@@ -40,14 +29,21 @@ namespace Axodox::MachineLearning
     return _memoryInfo;
   }
 
-  Ort::SessionOptions& OnnxEnvironment::DefaultSessionOptions()
+  Ort::SessionOptions OnnxEnvironment::DefaultSessionOptions()
   {
-    return _defaultSessionOptions;
+    Ort::SessionOptions options;
+    options.DisableMemPattern();
+    options.SetExecutionMode(ExecutionMode::ORT_SEQUENTIAL);
+    OrtSessionOptionsAppendExecutionProvider_DML(options, 0);
+    return options;
   }
   
-  Ort::SessionOptions& OnnxEnvironment::CpuSessionOptions()
+  Ort::SessionOptions OnnxEnvironment::CpuSessionOptions()
   {
-    return _cpuSessionOptions;
+    Ort::SessionOptions options;
+    options.DisableMemPattern();
+    options.SetExecutionMode(ExecutionMode::ORT_SEQUENTIAL);
+    return options;
   }
 }
 #endif

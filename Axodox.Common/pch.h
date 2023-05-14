@@ -1,4 +1,8 @@
 #pragma once
+#define USE_UWP_UI
+#define USE_GLOBAL_DEPENDENCIES
+#define USE_ONNX
+
 #include <variant>
 #include <array>
 #include <queue>

@@ -7,7 +7,6 @@
     <Page Include="MainView.xaml">
       <Filter>Views</Filter>
     </Page>
-    <Page Include="CommonResources.xaml" />
     <Page Include="WelcomeView.xaml">
       <Filter>Views</Filter>
     </Page>
@@ -15,6 +14,9 @@
       <Filter>Dialogs</Filter>
     </Page>
     <Page Include="InferenceView.xaml">
+      <Filter>Views</Filter>
+    </Page>
+    <Page Include="CommonResources.xaml">
       <Filter>Views</Filter>
     </Page>
   </ItemGroup>
@@ -28,6 +30,9 @@
     </Midl>
     <Midl Include="Dialogs.idl">
       <Filter>Dialogs</Filter>
+    </Midl>
+    <Midl Include="Converters.idl">
+      <Filter>Converters</Filter>
     </Midl>
   </ItemGroup>
   <ItemGroup>
@@ -49,6 +54,18 @@
     </ClCompile>
     <ClCompile Include="InferenceViewModel.cpp">
       <Filter>View Models</Filter>
+    </ClCompile>
+    <ClCompile Include="IsNanToBooleanConverter.cpp">
+      <Filter>Converters</Filter>
+    </ClCompile>
+    <ClCompile Include="NanToZeroConverter.cpp">
+      <Filter>Converters</Filter>
+    </ClCompile>
+    <ClCompile Include="SizeToStringConverter.cpp">
+      <Filter>Converters</Filter>
+    </ClCompile>
+    <ClCompile Include="StableDiffusionModelExecutor.cpp">
+      <Filter>Models</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -93,6 +110,12 @@
     <Filter Include="Models">
       <UniqueIdentifier>{d623e85b-86a8-4d95-a78e-76ee6c1f811a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Converters">
+      <UniqueIdentifier>{7fb5b1b2-dfdc-4974-beea-97be26315223}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data">
+      <UniqueIdentifier>{93d7435d-4385-4dc0-9b01-21fa2270c8f1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config">
@@ -100,6 +123,15 @@
     </None>
     <None Include="PropertySheet.props">
       <Filter>Config</Filter>
+    </None>
+    <None Include="custom_op_cliptok.onnx">
+      <Filter>Data</Filter>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)..\..\runtimes\win-x64\native\onnxruntime.dll">
+      <Filter>Data</Filter>
+    </None>
+    <None Include="ortextensions.dll">
+      <Filter>Data</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -127,6 +159,18 @@
     </ClInclude>
     <ClInclude Include="InferenceViewModel.h">
       <Filter>View Models</Filter>
+    </ClInclude>
+    <ClInclude Include="IsNanToBooleanConverter.h">
+      <Filter>Converters</Filter>
+    </ClInclude>
+    <ClInclude Include="NanToZeroConverter.h">
+      <Filter>Converters</Filter>
+    </ClInclude>
+    <ClInclude Include="SizeToStringConverter.h">
+      <Filter>Converters</Filter>
+    </ClInclude>
+    <ClInclude Include="StableDiffusionModelExecutor.h">
+      <Filter>Models</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
