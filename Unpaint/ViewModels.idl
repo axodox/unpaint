@@ -3,6 +3,9 @@ namespace Unpaint
   interface INavigationService
   {
     void NavigateToView(Windows.UI.Xaml.Interop.TypeName viewType);
+
+    Boolean IsPointerOverTitleBar{ get; };
+    event Windows.Foundation.EventHandler<Boolean> IsPointerOverTitleBarChanged;
   };
 
   struct ModelViewModel
@@ -78,11 +81,18 @@ namespace Unpaint
     Single Progress{ get; };
 
     IObservableVector<String> Images{ get; };
+    Boolean HasImageSelected{ get; };
     Int32 SelectedImageIndex;
-
+    String ImagePosition{ get; };
+    
     Windows.UI.Xaml.Media.ImageSource OutputImage{ get; };
 
     void GenerateImage();
     void ManageModels();
+
+    void CopyToClipboard();
+    void SaveImageAs();
+    void DeleteImage();
+    void ShowImageDirectory();
   }
 }

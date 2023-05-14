@@ -19,4 +19,9 @@ namespace Unpaint
   {
     StringToImageSourceConverter();
   };
+
+  runtimeclass BooleanInverter : [default] Windows.UI.Xaml.Data.IValueConverter
+  {
+    BooleanInverter();
+  };
 }

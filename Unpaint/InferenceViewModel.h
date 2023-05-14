@@ -49,14 +49,21 @@ namespace winrt::Unpaint::implementation
     void Progress(float value);
 
     Windows::Foundation::Collections::IObservableVector<hstring> Images();
+    bool HasImageSelected();
     int32_t SelectedImageIndex();
     void SelectedImageIndex(int32_t value);
+    hstring ImagePosition();
 
     Windows::UI::Xaml::Media::ImageSource OutputImage();
     void OutputImage(Windows::UI::Xaml::Media::ImageSource const& value);
 
     fire_and_forget GenerateImage();
     void ManageModels();
+
+    fire_and_forget CopyToClipboard();
+    fire_and_forget SaveImageAs();
+    fire_and_forget DeleteImage();
+    fire_and_forget ShowImageDirectory();
 
     event_token PropertyChanged(Windows::UI::Xaml::Data::PropertyChangedEventHandler const& value);
     void PropertyChanged(event_token const& token);

@@ -23,10 +23,12 @@ namespace Unpaint
   }
 
   [default_interface]
-  runtimeclass InferenceView : Windows.UI.Xaml.Controls.Page
+  runtimeclass InferenceView : Windows.UI.Xaml.Controls.Page, Windows.UI.Xaml.Data.INotifyPropertyChanged
   {
     InferenceView();
 
     InferenceViewModel ViewModel{ get; };
+
+    Boolean IsStatusVisible{ get; };
   }
 }

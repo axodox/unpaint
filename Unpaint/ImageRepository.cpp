@@ -91,9 +91,9 @@ namespace winrt::Unpaint
     }
   }
 
-  std::filesystem::path ImageRepository::GetPath(std::string_view imageId) const
+  std::filesystem::path ImageRepository::GetPath(std::string_view imageId, bool isRelative) const
   {
-    return ImageRoot() / imageId;
+    return ImageRoot(isRelative) / imageId;
   }
 
   void ImageRepository::Refresh()
@@ -112,8 +112,11 @@ namespace winrt::Unpaint
     _events.raise(ImagesChanged, this);
   }
 
-  std::filesystem::path ImageRepository::ImageRoot() const
+  std::filesystem::path ImageRepository::ImageRoot(bool isRelative) const
   {
-    return filesystem::path{ ApplicationData::Current().LocalCacheFolder().Path().c_str() } / "images" / _projectName;
+    auto relativePath = "images/" + _projectName;
+    auto result = isRelative ? relativePath : (filesystem::path{ ApplicationData::Current().LocalCacheFolder().Path().c_str() } / relativePath);
+    result.make_preferred();
+    return result;
   }
 }

@@ -9,6 +9,7 @@ using namespace Axodox::Storage;
 using namespace winrt;
 using namespace winrt::Windows::ApplicationModel::Core;
 using namespace winrt::Windows::UI;
+using namespace winrt::Windows::UI::Core;
 using namespace winrt::Windows::UI::ViewManagement; 
 using namespace winrt::Windows::UI::Xaml;
 
@@ -16,7 +17,8 @@ namespace winrt::Unpaint::implementation
 {
   MainView::MainView() :
     _settingsManager(dependencies.resolve<SettingManager>()),
-    _modelRepository(dependencies.resolve<ModelRepository>())
+    _modelRepository(dependencies.resolve<ModelRepository>()),
+    _isPointerOverTitleBar(false)
   {
     //Initialize main view
     InitializeComponent();
@@ -40,6 +42,21 @@ namespace winrt::Unpaint::implementation
     ContentFrame().Navigate(viewType);
   }
 
+  bool MainView::IsPointerOverTitleBar()
+  {
+    return _isPointerOverTitleBar;
+  }
+
+  event_token MainView::IsPointerOverTitleBarChanged(Windows::Foundation::EventHandler<bool> const& handler)
+  {
+    return _isPointerOverTitleBarChanged.add(handler);
+  }
+
+  void MainView::IsPointerOverTitleBarChanged(event_token const& token) noexcept
+  {
+    _isPointerOverTitleBarChanged.remove(token);
+  }
+
   void MainView::InitializeTitleBar()
   {
     auto coreTitleBar = CoreApplication::GetCurrentView().TitleBar();
@@ -61,7 +78,22 @@ namespace winrt::Unpaint::implementation
     UpdateTitleBar();
 
     auto window = Window::Current();
-    window.SetTitleBar(TitleBar());    
+    window.SetTitleBar(TitleBar());
+    
+    auto coreWindow = CoreWindow::GetForCurrentThread();
+    coreWindow.PointerMoved([=](auto&, PointerEventArgs const& eventArgs) {
+      auto verticalPosition = eventArgs.CurrentPoint().Position().Y;
+      auto isPointerOverTitleBar = verticalPosition > 0.f && verticalPosition < coreTitleBar.Height();
+
+      if (isPointerOverTitleBar == _isPointerOverTitleBar) return;
+
+      _isPointerOverTitleBar = isPointerOverTitleBar;
+      _isPointerOverTitleBarChanged(*this, isPointerOverTitleBar);
+      });
+    coreWindow.PointerExited([=](auto&, auto&) {
+      _isPointerOverTitleBar = true;
+      _isPointerOverTitleBarChanged(*this, true);
+      });
   }
   
   void MainView::UpdateTitleBar()

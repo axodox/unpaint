@@ -11,9 +11,16 @@ namespace winrt::Unpaint::implementation
 
     void NavigateToView(Windows::UI::Xaml::Interop::TypeName viewType);
 
+    bool IsPointerOverTitleBar();
+
+    event_token IsPointerOverTitleBarChanged(Windows::Foundation::EventHandler<bool> const& handler);
+    void IsPointerOverTitleBarChanged(event_token const& token) noexcept;
+
   private:
+    event<Windows::Foundation::EventHandler<bool>> _isPointerOverTitleBarChanged;
     std::shared_ptr<Axodox::Storage::SettingManager> _settingsManager;
     std::shared_ptr<ModelRepository> _modelRepository;
+    bool _isPointerOverTitleBar;
 
     Windows::ApplicationModel::Core::CoreApplicationViewTitleBar::LayoutMetricsChanged_revoker _titleBarLayoutMetricsChangedRevoker;
 

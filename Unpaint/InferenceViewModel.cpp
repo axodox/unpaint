@@ -3,14 +3,23 @@
 #include "InferenceViewModel.g.cpp"
 #include "Collections/ObservableExtensions.h"
 #include "Infrastructure/WinRtDependencies.h"
+#include "Storage/FileIO.h"
 #include "Threading/AsyncOperation.h"
 #include "StringMapper.h"
 
 using namespace Axodox::Collections;
 using namespace Axodox::Infrastructure;
+using namespace Axodox::Storage;
 using namespace Axodox::Threading;
+using namespace std;
+using namespace winrt::Windows::ApplicationModel::DataTransfer;
 using namespace winrt::Windows::Foundation;
 using namespace winrt::Windows::Graphics;
+using namespace winrt::Windows::Storage;
+using namespace winrt::Windows::Storage::Pickers;
+using namespace winrt::Windows::Storage::Streams;
+using namespace winrt::Windows::System;
+using namespace winrt::Windows::UI::Xaml::Controls;
 using namespace winrt::Windows::UI::Xaml::Data;
 using namespace winrt::Windows::UI::Xaml::Media::Imaging;
 
@@ -216,6 +225,11 @@ namespace winrt::Unpaint::implementation
     return _images;
   }
 
+  bool InferenceViewModel::HasImageSelected()
+  {
+    return _selectedImageIndex != -1;
+  }
+
   int32_t InferenceViewModel::SelectedImageIndex()
   {
     return _selectedImageIndex;
@@ -227,6 +241,13 @@ namespace winrt::Unpaint::implementation
 
     _selectedImageIndex = value;
     _propertyChanged(*this, PropertyChangedEventArgs(L"SelectedImageIndex"));
+    _propertyChanged(*this, PropertyChangedEventArgs(L"ImagePosition"));
+    _propertyChanged(*this, PropertyChangedEventArgs(L"HasImageSelected"));
+  }
+
+  hstring InferenceViewModel::ImagePosition()
+  {
+    return std::format(L"{} / {}", _selectedImageIndex + 1, _images.Size()).c_str();
   }
 
   Windows::UI::Xaml::Media::ImageSource InferenceViewModel::OutputImage()
@@ -270,7 +291,7 @@ namespace winrt::Unpaint::implementation
     co_await resume_background();
 
     async_operation asyncOperation;
-    asyncOperation.state_changed(no_revoke, [=](const async_operation_info& info) -> fire_and_forget {      
+    asyncOperation.state_changed(no_revoke, [=](const async_operation_info& info) -> fire_and_forget {
       auto progress = info.progress;
       auto status = to_hstring(info.status_message);
 
@@ -278,7 +299,7 @@ namespace winrt::Unpaint::implementation
 
       Progress(progress);
       Status(status);
-    });
+      });
 
     auto result = _modelExecutor->TryRunInference(task, asyncOperation);
 
@@ -308,6 +329,66 @@ namespace winrt::Unpaint::implementation
     _navigationService.NavigateToView(xaml_typename<ModelsView>());
   }
 
+  fire_and_forget InferenceViewModel::CopyToClipboard()
+  {
+    auto lifetime = get_strong();
+    if (!HasImageSelected()) co_return;
+
+    auto imageId = to_string(_images.GetAt(_selectedImageIndex));
+    auto imagePath = _imageRepository->GetPath(imageId);
+
+    DataPackage dataPackage{};
+    dataPackage.SetBitmap(RandomAccessStreamReference::CreateFromFile(co_await StorageFile::GetFileFromPathAsync(imagePath.c_str())));
+    Clipboard::SetContent(dataPackage);
+  }
+
+  fire_and_forget InferenceViewModel::SaveImageAs()
+  {
+    auto lifetime = get_strong();
+    if (!HasImageSelected()) co_return;
+
+    auto imageId = to_string(_images.GetAt(_selectedImageIndex));
+    auto imagePath = _imageRepository->GetPath(imageId);
+    auto buffer = try_read_file(imagePath);
+    if (buffer.empty()) co_return;
+
+    FileSavePicker fileSavePicker{};
+    fileSavePicker.SuggestedFileName(imagePath.filename().c_str());
+    fileSavePicker.SuggestedStartLocation(PickerLocationId::PicturesLibrary);
+    fileSavePicker.FileTypeChoices().Insert(L"PNG image", single_threaded_vector<hstring>({ L".png" }));
+    auto targetFile = co_await fileSavePicker.PickSaveFileAsync();
+    if (!targetFile) co_return;
+
+    co_await FileIO::WriteBytesAsync(targetFile, buffer);
+  }
+
+  fire_and_forget InferenceViewModel::DeleteImage()
+  {
+    auto lifetime = get_strong();
+    if (!HasImageSelected()) co_return;
+
+    ContentDialog confirmationDialog{};
+    confirmationDialog.Title(box_value(L"Deleting image"));
+    confirmationDialog.Content(box_value(L"Are you sure to remove this image?"));
+    confirmationDialog.PrimaryButtonText(L"Yes");
+    confirmationDialog.SecondaryButtonText(L"No");
+    confirmationDialog.DefaultButton(ContentDialogButton::Secondary);
+    auto dialogResult = co_await confirmationDialog.ShowAsync();
+
+    if (dialogResult != ContentDialogResult::Primary) co_return;
+    
+    auto imageId = to_string(_images.GetAt(_selectedImageIndex));
+    _imageRepository->RemoveImage(imageId);
+  }
+
+  fire_and_forget InferenceViewModel::ShowImageDirectory()
+  {
+    auto lifetime = get_strong();
+    auto path = _imageRepository->ImageRoot();
+    auto imageFolder = co_await StorageFolder::GetFolderFromPathAsync(path.c_str());
+    co_await Launcher::LaunchFolderAsync(imageFolder);
+  }
+
   event_token InferenceViewModel::PropertyChanged(PropertyChangedEventHandler const& value)
   {
     return _propertyChanged.add(value);
@@ -317,9 +398,10 @@ namespace winrt::Unpaint::implementation
   {
     _propertyChanged.remove(token);
   }
-  
+
   void InferenceViewModel::OnImagesChanged(ImageRepository* sender)
   {
     update_observable_collection(sender->Images(), _images, StringMapper{});
+    _propertyChanged(*this, PropertyChangedEventArgs(L"ImagePosition"));
   }
 }

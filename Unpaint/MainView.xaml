@@ -15,9 +15,6 @@
       <RowDefinition Height="*"/>
     </Grid.RowDefinitions>
 
-    <!-- Content -->
-    <Frame x:Name="ContentFrame" Grid.RowSpan="2"/>
-
     <!-- Title bar -->
     <Grid x:Name="TitleBar" Background="Transparent">
       <Grid.ColumnDefinitions>
@@ -28,5 +25,8 @@
 
       <TextBlock Grid.Column="0" TextAlignment="Center" VerticalAlignment="Center" Text="Unpaint" Margin="6,0"/>
     </Grid>
+
+    <!-- Content -->
+    <Frame x:Name="ContentFrame" Grid.RowSpan="2"/>
   </Grid>
 </Page>

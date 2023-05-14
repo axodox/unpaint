@@ -8,24 +8,71 @@
   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
   mc:Ignorable="d">
+
   <Page.Resources>
     <local:SizeToStringConverter x:Key="SizeToStringConverter"/>
     <local:IsNanToBooleanConverter x:Key="IsNanToBooleanConverter"/>
     <local:NanToZeroConverter x:Key="NanToZeroConverter"/>
     <local:StringToImageSourceConverter x:Key="StringToImageSourceConverter"/>
+    <local:BooleanInverter x:Key="BooleanInverter"/>
   </Page.Resources>
 
   <Grid>
+    <VisualStateManager.VisualStateGroups>
+      <VisualStateGroup>
+        <VisualState x:Name="CommandPanelVisualState">
+          <VisualState.StateTriggers>
+            <StateTrigger IsActive="{x:Bind IsStatusVisible, Mode=OneWay, Converter={StaticResource BooleanInverter}}"/>
+          </VisualState.StateTriggers>
+          <VisualState.Storyboard>            
+            <Storyboard>
+              <DoubleAnimation Storyboard.TargetName="CommandPanel" Storyboard.TargetProperty="(StackPanel.Opacity)" Duration="0:0:0.5" To="1" FillBehavior="HoldEnd"/>
+              <DoubleAnimation Storyboard.TargetName="StatusMessage" Storyboard.TargetProperty="(UiElement.Opacity)" Duration="0:0:0.5" To="0" FillBehavior="HoldEnd"/>
+            </Storyboard>
+          </VisualState.Storyboard>
+        </VisualState>
+        <VisualState x:Name="StatusMessageVisualState">
+          <VisualState.StateTriggers>
+            <StateTrigger IsActive="{x:Bind IsStatusVisible, Mode=OneWay}"/>
+          </VisualState.StateTriggers>
+          <VisualState.Storyboard>
+            <Storyboard>
+              <DoubleAnimation Storyboard.TargetName="CommandPanel" Storyboard.TargetProperty="(StackPanel.Opacity)" Duration="0:0:0.5" To="0" FillBehavior="HoldEnd"/>
+              <DoubleAnimation Storyboard.TargetName="StatusMessage" Storyboard.TargetProperty="(UiElement.Opacity)" Duration="0:0:0.5" To="0.5" FillBehavior="HoldEnd"/>
+            </Storyboard>
+          </VisualState.Storyboard>
+        </VisualState>
+      </VisualStateGroup>
+    </VisualStateManager.VisualStateGroups>
+
     <Grid.RowDefinitions>
       <RowDefinition Height="Auto"/>
       <RowDefinition Height="*"/>
       <RowDefinition Height="Auto"/>
     </Grid.RowDefinitions>
-    
+
     <!-- Status -->
-    <Grid x:Name="StatusBar">
-      <muxc:ProgressBar Value="{x:Bind ViewModel.Progress, Mode=OneWay, Converter={StaticResource NanToZeroConverter}}" IsIndeterminate="{x:Bind ViewModel.Progress, Mode=OneWay, Converter={StaticResource IsNanToBooleanConverter}}" VerticalAlignment="Top" Background="Transparent" Maximum="1"/>
-      <TextBlock Text="{x:Bind ViewModel.Status, Mode=OneWay}" HorizontalAlignment="Center" VerticalAlignment="Center" Opacity="0.5"/>
+    <Grid x:Name="StatusBar">      
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="Auto"/>
+        <ColumnDefinition Width="*"/>
+        <ColumnDefinition Width="Auto"/>
+      </Grid.ColumnDefinitions>
+
+      <StackPanel x:Name="CommandPanel" Grid.Column="1" HorizontalAlignment="Center" Spacing="6" Orientation="Horizontal" Padding="0,3" Opacity="0">
+        <Button Content="&#xe8c8;" FontFamily="Segoe Fluent Icons" Padding="4,0" Background="Transparent" VerticalAlignment="Stretch" ToolTipService.ToolTip="Copy image"
+                Click="{x:Bind ViewModel.CopyToClipboard}" IsEnabled="{x:Bind ViewModel.HasImageSelected, Mode=OneWay}"/>
+        <Button Content="&#xe792;" FontFamily="Segoe Fluent Icons" Padding="4,0" Background="Transparent" VerticalAlignment="Stretch" ToolTipService.ToolTip="Save image as..."
+                Click="{x:Bind ViewModel.SaveImageAs}" IsEnabled="{x:Bind ViewModel.HasImageSelected, Mode=OneWay}"/>
+        <Button Content="&#xe74d;" FontFamily="Segoe Fluent Icons" Padding="4,0" Background="Transparent" VerticalAlignment="Stretch" ToolTipService.ToolTip="Delete image..."
+                Click="{x:Bind ViewModel.DeleteImage}" IsEnabled="{x:Bind ViewModel.HasImageSelected, Mode=OneWay}"/>
+        <TextBlock Text="{x:Bind ViewModel.ImagePosition, Mode=OneWay}" FontFamily="Segoe UI Mono" VerticalAlignment="Center" Margin="12,0" IsHitTestVisible="False" Opacity="0.5"/>
+        <muxc:SplitButton Content="&#xe838;" FontFamily="Segoe Fluent Icons" Padding="0" Background="Transparent" VerticalAlignment="Stretch" ToolTipService.ToolTip="Open project directory..."
+                          Click="{x:Bind ViewModel.ShowImageDirectory}"/>
+      </StackPanel>
+
+      <muxc:ProgressBar Grid.ColumnSpan="3" Value="{x:Bind ViewModel.Progress, Mode=OneWay, Converter={StaticResource NanToZeroConverter}}" IsIndeterminate="{x:Bind ViewModel.Progress, Mode=OneWay, Converter={StaticResource IsNanToBooleanConverter}}" VerticalAlignment="Top" Background="Transparent" Maximum="1" IsHitTestVisible="False" />
+      <TextBlock x:Name="StatusMessage" Grid.Column="1" Text="{x:Bind ViewModel.Status, Mode=OneWay}" HorizontalAlignment="Center" VerticalAlignment="Center" IsHitTestVisible="False" Opacity="0"/>
     </Grid>
 
     <!-- Output image -->
@@ -37,7 +84,7 @@
           <Image Grid.Row="1" Stretch="Uniform" Source="{x:Bind Converter={StaticResource StringToImageSourceConverter}}"/>
         </DataTemplate>
       </FlipView.ItemTemplate>
-    </FlipView>    
+    </FlipView>
 
     <!-- Inference options -->
     <Border Grid.Row="2" Background="{ThemeResource LayerFillColorDefaultBrush}" CornerRadius="6,6,0,0" MaxWidth="800">
@@ -65,7 +112,7 @@
                     <Setter Property="Grid.Column" Value="0"/>
                   </Style>
                 </Grid.Resources>
-              
+
                 <Grid.RowDefinitions>
                   <RowDefinition Height="Auto"/>
                   <RowDefinition Height="Auto"/>
@@ -97,7 +144,7 @@
                   <Button Grid.Column="1" FontFamily="Segoe Fluent Icons" Content="&#xe8f1;" ToolTipService.ToolTip="Manage models" VerticalAlignment="Stretch"
                           Click="{x:Bind ViewModel.ManageModels}"/>
                 </Grid>
-                
+
 
                 <!-- Resolution -->
                 <TextBlock Grid.Row="2" Text="Resolution" Style="{StaticResource SettingTextBlockStyle}" ToolTipService.ToolTip="Controls the size of the output image. Using higher resolutions will increase memory usage and reduce image generation speed."/>
@@ -125,7 +172,7 @@
                 <TextBlock Grid.Row="5" Text="Sampling steps" Style="{StaticResource SettingTextBlockStyle}" ToolTipService.ToolTip="Reducing this value speeds up image generation time, however it also degrades image quality."/>
                 <muxc:NumberBox Grid.Row="5" Grid.Column="1" Minimum="5" Maximum="100" SmallChange="1" SpinButtonPlacementMode="Inline"
                                 Value="{x:Bind ViewModel.SamplingSteps, Mode=TwoWay}"/>
-              
+
                 <!-- Random seed -->
                 <TextBlock Grid.Row="6" Text="Random seed" Style="{StaticResource SettingTextBlockStyle}" ToolTipService.ToolTip="Affects random numbers used in the image generation process. Using the same seed number with the same settings will result in the same image being generated. Useful for testing how different settings affect the output image."/>
                 <Grid Grid.Row="6" Grid.Column="1" ColumnSpacing="6">
@@ -164,7 +211,7 @@
             <StackPanel>
               <TextBlock Text="Negative prompt" FontWeight="Bold"/>
               <TextBlock Text="Describe what you would not like to see on the image."/>
-            </StackPanel>          
+            </StackPanel>
           </ToolTipService.ToolTip>
         </TextBox>
         <FontIcon Grid.Column="1" Grid.Row="1" FontFamily="Segoe Fluent Icons" FontSize="20" Glyph="&#xe949;" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,6,0,0"/>
