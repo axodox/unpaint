@@ -7,8 +7,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Axodox.Common", "Axodox.Com
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Test", "Test\Test.vcxproj", "{A323E4B7-A310-4293-8650-6CBB9B5D0D8E}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "WinRtTest", "WinRtTest\WinRtTest.vcxproj", "{B1B5D372-D782-40E3-8E58-733025964852}"
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Unpaint", "Unpaint\Unpaint.vcxproj", "{5B947916-7E0D-46A0-9B5C-750941DC587A}"
 EndProject
 Global
@@ -39,22 +37,6 @@ Global
 		{A323E4B7-A310-4293-8650-6CBB9B5D0D8E}.Release|x64.Build.0 = Release|x64
 		{A323E4B7-A310-4293-8650-6CBB9B5D0D8E}.Release|x86.ActiveCfg = Release|Win32
 		{A323E4B7-A310-4293-8650-6CBB9B5D0D8E}.Release|x86.Build.0 = Release|Win32
-		{B1B5D372-D782-40E3-8E58-733025964852}.Debug|ARM.ActiveCfg = Debug|x64
-		{B1B5D372-D782-40E3-8E58-733025964852}.Debug|ARM.Build.0 = Debug|x64
-		{B1B5D372-D782-40E3-8E58-733025964852}.Debug|ARM64.ActiveCfg = Debug|x64
-		{B1B5D372-D782-40E3-8E58-733025964852}.Debug|ARM64.Build.0 = Debug|x64
-		{B1B5D372-D782-40E3-8E58-733025964852}.Debug|x64.ActiveCfg = Debug|x64
-		{B1B5D372-D782-40E3-8E58-733025964852}.Debug|x64.Build.0 = Debug|x64
-		{B1B5D372-D782-40E3-8E58-733025964852}.Debug|x86.ActiveCfg = Debug|Win32
-		{B1B5D372-D782-40E3-8E58-733025964852}.Debug|x86.Build.0 = Debug|Win32
-		{B1B5D372-D782-40E3-8E58-733025964852}.Release|ARM.ActiveCfg = Release|x64
-		{B1B5D372-D782-40E3-8E58-733025964852}.Release|ARM.Build.0 = Release|x64
-		{B1B5D372-D782-40E3-8E58-733025964852}.Release|ARM64.ActiveCfg = Release|x64
-		{B1B5D372-D782-40E3-8E58-733025964852}.Release|ARM64.Build.0 = Release|x64
-		{B1B5D372-D782-40E3-8E58-733025964852}.Release|x64.ActiveCfg = Release|x64
-		{B1B5D372-D782-40E3-8E58-733025964852}.Release|x64.Build.0 = Release|x64
-		{B1B5D372-D782-40E3-8E58-733025964852}.Release|x86.ActiveCfg = Release|Win32
-		{B1B5D372-D782-40E3-8E58-733025964852}.Release|x86.Build.0 = Release|Win32
 		{5B947916-7E0D-46A0-9B5C-750941DC587A}.Debug|ARM.ActiveCfg = Debug|ARM
 		{5B947916-7E0D-46A0-9B5C-750941DC587A}.Debug|ARM.Build.0 = Debug|ARM
 		{5B947916-7E0D-46A0-9B5C-750941DC587A}.Debug|ARM.Deploy.0 = Debug|ARM
@@ -89,7 +71,6 @@ Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		Axodox.Common\Axodox.Common.vcxitems*{5b947916-7e0d-46a0-9b5c-750941dc587a}*SharedItemsImports = 4
 		Axodox.Common\Axodox.Common.vcxitems*{a323e4b7-a310-4293-8650-6cbb9b5d0d8e}*SharedItemsImports = 4
-		Axodox.Common\Axodox.Common.vcxitems*{b1b5d372-d782-40e3-8e58-733025964852}*SharedItemsImports = 4
 		Axodox.Common\Axodox.Common.vcxitems*{e13522b3-7530-4cbe-b5d3-cce94136e40f}*SharedItemsImports = 9
 	EndGlobalSection
 EndGlobal
