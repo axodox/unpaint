@@ -12,11 +12,8 @@ namespace Axodox::MachineLearning
 {
   StableDiffusionInferer::StableDiffusionInferer(OnnxEnvironment& environment) :
     _environment(environment),
-    _session(nullptr)
-  {
-    _session = { _environment.Environment(), (_environment.RootPath() / L"unet/model.onnx").c_str(), _environment.DefaultSessionOptions() };
-    //OnnxPrintStatistics(_environment, _session);
-  }
+    _session(environment.CreateOptimizedSession(_environment.RootPath() / L"unet/model.onnx"))
+  { }
 
   Tensor StableDiffusionInferer::RunInference(const StableDiffusionOptions& options, Threading::async_operation_source* async)
   {

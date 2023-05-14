@@ -9,10 +9,8 @@ namespace Axodox::MachineLearning
 {
   VaeDecoder::VaeDecoder(OnnxEnvironment& environment) :
     _environment(environment),
-    _session(nullptr)
-  {
-    _session = { _environment.Environment(), (_environment.RootPath() / L"vae_decoder/model.onnx").c_str(), _environment.DefaultSessionOptions() };
-  }
+    _session(environment.CreateOptimizedSession(_environment.RootPath() / L"vae_decoder/model.onnx"))
+  { }
 
   Tensor VaeDecoder::DecodeVae(const Tensor& image)
   {

@@ -3,6 +3,7 @@
 #include "OnnxEnvironment.h"
 
 using namespace Ort;
+using namespace std;
 
 namespace Axodox::MachineLearning
 {
@@ -44,6 +45,29 @@ namespace Axodox::MachineLearning
     options.DisableMemPattern();
     options.SetExecutionMode(ExecutionMode::ORT_SEQUENTIAL);
     return options;
+  }
+  
+  Ort::Session OnnxEnvironment::CreateOptimizedSession(const std::filesystem::path& modelPath)
+  {
+    auto sessionOptions = DefaultSessionOptions();
+
+    auto optimizedModelPath = modelPath;
+    optimizedModelPath.replace_extension("optimized.onnx");
+
+    const filesystem::path* sourcePath;
+    if (filesystem::exists(optimizedModelPath))
+    {
+      sourcePath = &optimizedModelPath;
+      sessionOptions.SetGraphOptimizationLevel(GraphOptimizationLevel::ORT_DISABLE_ALL);
+    }
+    else
+    {
+      sourcePath = &modelPath;
+      sessionOptions.SetGraphOptimizationLevel(GraphOptimizationLevel::ORT_ENABLE_ALL);
+      sessionOptions.SetOptimizedModelFilePath(optimizedModelPath.c_str());
+    }
+
+    return Session{ _environment, sourcePath->c_str(), sessionOptions};
   }
 }
 #endif

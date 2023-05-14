@@ -11,10 +11,8 @@ namespace Axodox::MachineLearning
 
   TextEncoder::TextEncoder(OnnxEnvironment& environment) :
     _environment(environment),
-    _session(nullptr)
-  {
-    _session = { _environment.Environment(), (_environment.RootPath() / L"text_encoder/model.onnx").c_str(), _environment.DefaultSessionOptions() };
-  }
+    _session(environment.CreateOptimizedSession(_environment.RootPath() / L"text_encoder/model.onnx"))
+  { }
 
   Tensor TextEncoder::EncodeText(const Tensor& text)
   {

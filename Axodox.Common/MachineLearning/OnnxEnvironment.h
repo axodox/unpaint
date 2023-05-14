@@ -15,6 +15,8 @@ namespace Axodox::MachineLearning
     Ort::SessionOptions DefaultSessionOptions();
     Ort::SessionOptions CpuSessionOptions();
 
+    Ort::Session CreateOptimizedSession(const std::filesystem::path& modelPath);
+
   private:
     std::filesystem::path _rootPath;
     Ort::Env _environment;
