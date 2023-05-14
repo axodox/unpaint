@@ -3,7 +3,7 @@ import "ViewModels.idl";
 namespace Unpaint
 {
   [default_interface]
-  runtimeclass MainView : Windows.UI.Xaml.Controls.Page
+  runtimeclass MainView : Windows.UI.Xaml.Controls.Page, INavigationService
   {
     MainView();
   }

@@ -16,7 +16,7 @@
     </Grid.RowDefinitions>
 
     <!-- Content -->
-    <local:InferenceView Grid.RowSpan="2"/>
+    <Frame x:Name="ContentFrame" Grid.RowSpan="2"/>
 
     <!-- Title bar -->
     <Grid x:Name="TitleBar" Background="Transparent">

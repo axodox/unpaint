@@ -95,6 +95,6 @@
     <TextBlock Text="Please use the interface above to install publicly available models offered by the HuggingFace community. If a model works for you please don't forget to like it on HuggingFace, you can also use the same page to report questionable models, so everyone benefits." Style="{StaticResource ParagraphTextBlockStyle}"/>
 
     <!-- Footer -->
-    <Button HorizontalAlignment="Center" Content="Continue"/>
+    <Button HorizontalAlignment="Center" Content="Continue" Click="{x:Bind ViewModel.Continue}" IsEnabled="{x:Bind ViewModel.CanContinue, Mode=OneWay}"/>
   </StackPanel>
 </Page>

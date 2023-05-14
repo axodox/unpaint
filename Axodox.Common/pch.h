@@ -32,6 +32,7 @@
 #include <winrt/base.h>
 #include <Memorybuffer.h>
 
+#include <winrt/base.h>
 #include <winrt/windows.foundation.h>
 #include <winrt/windows.graphics.imaging.h>
 #include <winrt/windows.web.http.h>

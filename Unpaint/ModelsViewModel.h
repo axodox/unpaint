@@ -27,11 +27,15 @@ namespace winrt::Unpaint::implementation
     void SelectedInstalledModel(int32_t value);
     bool IsInstalledModelSelected();
 
+    bool CanContinue();
+    void Continue();
+
     event_token PropertyChanged(Windows::UI::Xaml::Data::PropertyChangedEventHandler const& value);
     void PropertyChanged(event_token const& token);
 
   private:
     static const char* const _modelFilter;
+    INavigationService _navigationService;
     std::shared_ptr<ModelRepository> _modelRepository;
     event<Windows::UI::Xaml::Data::PropertyChangedEventHandler> _propertyChanged;
 

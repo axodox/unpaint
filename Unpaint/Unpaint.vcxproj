@@ -147,6 +147,7 @@
       <DependentUpon>MainView.xaml</DependentUpon>
     </ClInclude>
     <ClInclude Include="SizeToStringConverter.h" />
+    <ClInclude Include="UnpaintSettings.h" />
     <ClInclude Include="WelcomeView.h">
       <DependentUpon>WelcomeView.xaml</DependentUpon>
       <SubType>Code</SubType>

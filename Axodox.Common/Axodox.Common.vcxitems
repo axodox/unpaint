@@ -57,8 +57,10 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Infrastructure\BitwiseOperations.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Infrastructure\DependencyContainer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Infrastructure\Events.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Storage\SettingManager.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Infrastructure\Traits.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Infrastructure\Win32.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Infrastructure\WinRtDependencies.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\OnnxEnvironment.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\OnnxExtensions.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\OnnxModelStatistics.h" />
@@ -131,6 +133,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Textures\Texture2DDefinition.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Textures\TextureData.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Infrastructure\DependencyContainer.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Storage\SettingManager.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Infrastructure\Win32.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Json\JsonArray.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Json\JsonBoolean.cpp" />

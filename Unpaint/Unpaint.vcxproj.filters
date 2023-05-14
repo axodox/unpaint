@@ -172,5 +172,8 @@
     <ClInclude Include="StableDiffusionModelExecutor.h">
       <Filter>Models</Filter>
     </ClInclude>
+    <ClInclude Include="UnpaintSettings.h">
+      <Filter>Models</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

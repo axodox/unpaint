@@ -16,6 +16,7 @@ namespace winrt::Unpaint::implementation
     _titleBarLayoutMetricsChangedRevoker = coreTitleBar.LayoutMetricsChanged(auto_revoke, [=](auto&, auto&) {
       StatusBar().Height(coreTitleBar.Height());
     });
+    StatusBar().Height(coreTitleBar.Height());
   }
 
   InferenceViewModel InferenceView::ViewModel()

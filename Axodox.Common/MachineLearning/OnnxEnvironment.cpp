@@ -12,7 +12,7 @@ namespace Axodox::MachineLearning
     _environment(),
     _memoryInfo(MemoryInfo::CreateCpu(OrtArenaAllocator, OrtMemTypeDefault))
   {
-    _environment.UpdateEnvWithCustomLogLevel(ORT_LOGGING_LEVEL_WARNING);    
+    _environment.UpdateEnvWithCustomLogLevel(ORT_LOGGING_LEVEL_ERROR);    
   }
 
   const std::filesystem::path& OnnxEnvironment::RootPath() const
@@ -32,9 +32,7 @@ namespace Axodox::MachineLearning
 
   Ort::SessionOptions OnnxEnvironment::DefaultSessionOptions()
   {
-    Ort::SessionOptions options;
-    options.DisableMemPattern();
-    options.SetExecutionMode(ExecutionMode::ORT_SEQUENTIAL);
+    auto options = CpuSessionOptions();
     OrtSessionOptionsAppendExecutionProvider_DML(options, 0);
     return options;
   }
@@ -42,6 +40,7 @@ namespace Axodox::MachineLearning
   Ort::SessionOptions OnnxEnvironment::CpuSessionOptions()
   {
     Ort::SessionOptions options;
+    options.SetLogSeverityLevel(ORT_LOGGING_LEVEL_ERROR);
     options.DisableMemPattern();
     options.SetExecutionMode(ExecutionMode::ORT_SEQUENTIAL);
     return options;
@@ -50,7 +49,7 @@ namespace Axodox::MachineLearning
   Ort::Session OnnxEnvironment::CreateOptimizedSession(const std::filesystem::path& modelPath)
   {
     auto sessionOptions = DefaultSessionOptions();
-
+    
     auto optimizedModelPath = modelPath;
     optimizedModelPath.replace_extension("optimized.onnx");
 

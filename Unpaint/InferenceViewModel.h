@@ -50,11 +50,13 @@ namespace winrt::Unpaint::implementation
     void OutputImage(Windows::UI::Xaml::Media::ImageSource const& value);
 
     fire_and_forget GenerateImage();
+    void ManageModels();
 
     event_token PropertyChanged(Windows::UI::Xaml::Data::PropertyChangedEventHandler const& value);
     void PropertyChanged(event_token const& token);
 
   private:
+    INavigationService _navigationService;
     std::shared_ptr<ModelRepository> _modelRepository;
     std::shared_ptr<StableDiffusionModelExecutor> _modelExecutor;
 

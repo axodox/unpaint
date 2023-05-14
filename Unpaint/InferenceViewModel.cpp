@@ -1,7 +1,7 @@
 ﻿#include "pch.h"
 #include "InferenceViewModel.h"
 #include "InferenceViewModel.g.cpp"
-#include "Infrastructure/DependencyContainer.h"
+#include "Infrastructure/WinRtDependencies.h"
 #include "Threading/AsyncOperation.h"
 
 using namespace Axodox::Infrastructure;
@@ -16,6 +16,7 @@ namespace winrt::Unpaint::implementation
   InferenceViewModel::InferenceViewModel() :
     _modelRepository(dependencies.resolve<ModelRepository>()),
     _modelExecutor(dependencies.resolve<StableDiffusionModelExecutor>()),
+    _navigationService(dependencies.resolve<INavigationService>()),
     _guidanceStrength(7.f),
     _denoisingStrength(0.2f),
     _models(single_threaded_observable_vector<hstring>()),
@@ -270,6 +271,11 @@ namespace winrt::Unpaint::implementation
       Progress(0.f);
       Status(L"");
     }
+  }
+
+  void InferenceViewModel::ManageModels()
+  {
+    _navigationService.NavigateToView(xaml_typename<ModelsView>());
   }
 
   event_token InferenceViewModel::PropertyChanged(PropertyChangedEventHandler const& value)

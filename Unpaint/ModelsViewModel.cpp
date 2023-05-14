@@ -1,7 +1,7 @@
 ﻿#include "pch.h"
 #include "ModelsViewModel.h"
 #include "ModelsViewModel.g.cpp"
-#include "Infrastructure/DependencyContainer.h"
+#include "Infrastructure/WinRtDependencies.h"
 #include "Infrastructure/Win32.h"
 #include "Web/HuggingFaceClient.h"
 
@@ -21,6 +21,7 @@ namespace winrt::Unpaint::implementation
   ModelsViewModel::ModelsViewModel() :
     _availableModels(single_threaded_observable_vector<ModelViewModel>()),
     _installedModels(single_threaded_observable_vector<ModelViewModel>()),
+    _navigationService(dependencies.resolve<INavigationService>()),
     _modelRepository(dependencies.resolve<ModelRepository>())
   {
     UpdateInstalledModels();
@@ -59,6 +60,7 @@ namespace winrt::Unpaint::implementation
     }
 
     _propertyChanged(*this, PropertyChangedEventArgs(L"AreAvailableModelsEmpty"));
+    _propertyChanged(*this, PropertyChangedEventArgs(L"CanContinue"));
   }
 
   fire_and_forget ModelsViewModel::DownloadModelAsync()
@@ -147,6 +149,16 @@ namespace winrt::Unpaint::implementation
   bool ModelsViewModel::IsInstalledModelSelected()
   {
     return _selectedInstalledModel != -1;
+  }
+
+  bool ModelsViewModel::CanContinue()
+  {
+    return !AreInstalledModelsEmpty();
+  }
+
+  void ModelsViewModel::Continue()
+  {
+    _navigationService.NavigateToView(xaml_typename<InferenceView>());
   }
 
   event_token ModelsViewModel::PropertyChanged(PropertyChangedEventHandler const& value)

@@ -1,5 +1,10 @@
 namespace Unpaint
 {
+  interface INavigationService
+  {
+    void NavigateToView(Windows.UI.Xaml.Interop.TypeName viewType);
+  };
+
   struct ModelViewModel
   {
     String Id;
@@ -27,6 +32,9 @@ namespace Unpaint
 
     Int32 SelectedInstalledModel;
     Boolean IsInstalledModelSelected{ get; };
+
+    Boolean CanContinue{ get; };
+    void Continue();
   }
 
   [default_interface]
@@ -72,5 +80,6 @@ namespace Unpaint
     Windows.UI.Xaml.Media.ImageSource OutputImage{ get; };
 
     void GenerateImage();
+    void ManageModels();
   }
 }

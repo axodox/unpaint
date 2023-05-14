@@ -1,5 +1,7 @@
 ﻿#pragma once
 #include "MainView.g.h"
+#include "Storage/SettingManager.h"
+#include "ModelRepository.h"
 
 namespace winrt::Unpaint::implementation
 {
@@ -7,7 +9,12 @@ namespace winrt::Unpaint::implementation
   {
     MainView();
 
+    void NavigateToView(Windows::UI::Xaml::Interop::TypeName viewType);
+
   private:
+    std::shared_ptr<Axodox::Storage::SettingManager> _settingsManager;
+    std::shared_ptr<ModelRepository> _modelRepository;
+
     Windows::ApplicationModel::Core::CoreApplicationViewTitleBar::LayoutMetricsChanged_revoker _titleBarLayoutMetricsChangedRevoker;
 
     void InitializeTitleBar();

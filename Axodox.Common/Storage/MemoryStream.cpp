@@ -64,8 +64,23 @@ namespace Axodox::Storage
     return _buffer.data() + _position;
   }
 
+  memory_stream::operator std::span<uint8_t>()
+  {
+    return _buffer;
+  }
+
   memory_stream::operator std::span<const uint8_t>() const
   {
     return _buffer;
+  }
+
+  uint8_t* memory_stream::data()
+  {
+    return _buffer.data();
+  }
+
+  const uint8_t* memory_stream::data() const
+  {
+    return _buffer.data();
   }
 }
