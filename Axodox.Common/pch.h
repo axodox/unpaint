@@ -46,7 +46,7 @@
 #include <windows.ui.xaml.media.dxinterop.h>
 #endif // USE_UWP_UI
 
-#ifdef ONNX
+#ifdef USE_ONNX
 #include "onnxruntime_cxx_api.h"
 #include "dml_provider_factory.h"
 #endif

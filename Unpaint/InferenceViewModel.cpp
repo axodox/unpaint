@@ -38,6 +38,11 @@ namespace winrt::Unpaint::implementation
     _resolutions.Append(SizeInt32{ 512, 512 });
   }
 
+  hstring InferenceViewModel::PositivePromptPlaceholder()
+  {
+    return L"an empty canvas standing in a painter's workshop";
+  }
+
   hstring InferenceViewModel::PositivePrompt()
   {
     return _positivePrompt;
@@ -49,6 +54,11 @@ namespace winrt::Unpaint::implementation
 
     _positivePrompt = value;
     _propertyChanged(*this, PropertyChangedEventArgs(L"PositivePrompt"));
+  }
+
+  hstring InferenceViewModel::NegativePromptPlaceholder()
+  {
+    return L"blurry, render";
   }
 
   hstring InferenceViewModel::NegativePrompt()
@@ -219,8 +229,8 @@ namespace winrt::Unpaint::implementation
     }
 
     StableDiffusionInferenceTask task{
-      .PositivePrompt = _positivePrompt.c_str(),
-      .NegativePrompt = _negativePrompt.c_str(),
+      .PositivePrompt = to_string(_positivePrompt.empty() ? PositivePromptPlaceholder() : _positivePrompt),
+      .NegativePrompt = to_string(_negativePrompt.empty() ? NegativePromptPlaceholder() : _negativePrompt),
       .Resolution = { uint32_t(resolution.Width), uint32_t(resolution.Height) },
       .GuidanceStrength = _guidanceStrength,
       .SamplingSteps = _samplingSteps,
@@ -249,7 +259,8 @@ namespace winrt::Unpaint::implementation
 
     if (result)
     {
-      auto softwareBitmap = result.ToSoftwareBitmap();
+      auto textureData = result.ToTextureData();
+      auto softwareBitmap = textureData[0].ToSoftwareBitmap();
 
       SoftwareBitmapSource outputBitmap;
       co_await outputBitmap.SetBitmapAsync(softwareBitmap);

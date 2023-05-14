@@ -1,5 +1,5 @@
 #pragma once
-#ifdef ONNX
+#ifdef USE_ONNX
 #include "Tensor.h"
 
 namespace Axodox::MachineLearning

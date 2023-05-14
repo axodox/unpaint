@@ -5,7 +5,7 @@ using namespace std;
 
 namespace Axodox::MachineLearning
 {
-#ifdef ONNX
+#ifdef USE_ONNX
   TensorType ToTensorType(ONNXTensorElementDataType type)
   {
     switch (type)

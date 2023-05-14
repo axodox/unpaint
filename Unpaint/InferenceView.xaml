@@ -23,7 +23,7 @@
     
     <!-- Status -->
     <Grid x:Name="StatusBar">
-      <muxc:ProgressBar Value="{x:Bind ViewModel.Progress, Mode=OneWay, Converter={StaticResource NanToZeroConverter}}" IsIndeterminate="{x:Bind ViewModel.Progress, Mode=OneWay, Converter={StaticResource IsNanToBooleanConverter}}" VerticalAlignment="Top" Background="Transparent"/>
+      <muxc:ProgressBar Value="{x:Bind ViewModel.Progress, Mode=OneWay, Converter={StaticResource NanToZeroConverter}}" IsIndeterminate="{x:Bind ViewModel.Progress, Mode=OneWay, Converter={StaticResource IsNanToBooleanConverter}}" VerticalAlignment="Top" Background="Transparent" Maximum="1"/>
       <TextBlock Text="{x:Bind ViewModel.Status, Mode=OneWay}" HorizontalAlignment="Center" VerticalAlignment="Center" Opacity="0.5"/>
     </Grid>
 
@@ -126,7 +126,8 @@
         </Button>
 
         <!-- Positive prompt -->
-        <TextBox Grid.Column="1" Grid.Row="0" TextWrapping="Wrap" PlaceholderText="an empty canvas standing in a painter's workshop" Padding="36,4,10,0"
+        <TextBox Grid.Column="1" Grid.Row="0" TextWrapping="Wrap" Padding="36,4,10,0"
+                 PlaceholderText="{x:Bind ViewModel.PositivePromptPlaceholder}"
                  Text="{x:Bind ViewModel.PositivePrompt, Mode=TwoWay}">
           <ToolTipService.ToolTip>
             <StackPanel>
@@ -138,7 +139,8 @@
         <FontIcon Grid.Column="1" Grid.Row="0" FontFamily="Segoe Fluent Icons" FontSize="20" Glyph="&#xe948;" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,6,0,0"/>
 
         <!-- Negative prompt -->
-        <TextBox Grid.Column="1" Grid.Row="1" TextWrapping="Wrap" PlaceholderText="blurry, render" Padding="36,4,10,0"
+        <TextBox Grid.Column="1" Grid.Row="1" TextWrapping="Wrap" Padding="36,4,10,0"
+                 PlaceholderText="{x:Bind ViewModel.NegativePromptPlaceholder}"
                  Text="{x:Bind ViewModel.NegativePrompt, Mode=TwoWay}">
           <ToolTipService.ToolTip>
             <StackPanel>

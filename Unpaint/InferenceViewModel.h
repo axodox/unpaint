@@ -9,9 +9,11 @@ namespace winrt::Unpaint::implementation
   {
     InferenceViewModel();
 
+    hstring PositivePromptPlaceholder();
     hstring PositivePrompt();
     void PositivePrompt(hstring const& value);
 
+    hstring NegativePromptPlaceholder();
     hstring NegativePrompt();
     void NegativePrompt(hstring const& value);
 

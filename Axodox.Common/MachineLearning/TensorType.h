@@ -75,7 +75,7 @@ namespace Axodox::MachineLearning
 
   size_t GetElementSize(TensorType type);
 
-#ifdef ONNX
+#ifdef USE_ONNX
   TensorType ToTensorType(ONNXTensorElementDataType type);
   ONNXTensorElementDataType ToTensorType(TensorType type);
 #endif

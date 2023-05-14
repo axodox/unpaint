@@ -77,13 +77,13 @@ int main()
   winrt::init_apartment();
 
   OnnxEnvironment onnxEnvironment{ L"C:/dev/ai/realistic_vision_v1.4-fp16-vram" };
-  //OnnxEnvironment onnxEnvironment{ L"D:/dev/Stable-Diffusion-ONNX-FP16/model/safetensors-sd15-fp16" };
-  //OnnxEnvironment onnxEnvironment{ L"D:/dev/Stable-Diffusion-ONNX-FP16/model/safetensors-protogenX53Photorealism_10-fp16" };
+  //OnnxEnvironment onnxEnvironment{ L"D:/dev/Stable-Diffusion-USE_ONNX-FP16/model/safetensors-sd15-fp16" };
+  //OnnxEnvironment onnxEnvironment{ L"D:/dev/Stable-Diffusion-USE_ONNX-FP16/model/safetensors-protogenX53Photorealism_10-fp16" };
   //OnnxEnvironment onnxEnvironment{ L"C:/dev/StableDiffusion/StableDiffusion" };
   //OnnxEnvironment onnxEnvironment{ L"D:/dev/stable-diffusion-2-1-fp16-onnx" };
 
   //Load source image
-  Tensor latentInput;
+  /*Tensor latentInput;
   {
     auto pngBuffer = read_file(L"bin/input.png");
     auto imageTexture = TextureData::FromBuffer(pngBuffer);
@@ -91,15 +91,15 @@ int main()
 
     VaeEncoder vaeEncoder{ onnxEnvironment };
     latentInput = vaeEncoder.EncodeVae(imageTensor);
-  }
+  }*/
 
   //Load mask image
-  Tensor maskInput;
+  /*Tensor maskInput;
   {
     auto pngBuffer = read_file(L"bin/mask.png");
     auto imageTexture = TextureData::FromBuffer(pngBuffer, TextureImageFormat::Gray8);
     maskInput = Tensor::FromTextureData(imageTexture);
-  }
+  }*/
 
   //Create text embeddings
   Tensor textEmbeddings;
@@ -129,9 +129,9 @@ int main()
       .Height = 768,
       .Seed = 88,
       .TextEmbeddings = textEmbeddings,
-      .LatentInput = latentInput,
-      .MaskInput = maskInput,
-      .DenoisingStrength = 0.6f
+      /*.LatentInput = latentInput,
+      .MaskInput = maskInput,*/
+      //.DenoisingStrength = 0.6f
     };
 
     latentResult = stableDiffusion.RunInference(options);

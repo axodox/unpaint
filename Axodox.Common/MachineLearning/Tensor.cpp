@@ -6,7 +6,7 @@ using namespace DirectX;
 using namespace DirectX::PackedVector;
 using namespace std;
 
-#ifdef ONNX
+#ifdef USE_ONNX
 using namespace Ort;
 #endif
 
@@ -354,7 +354,7 @@ namespace Axodox::MachineLearning
     return results;
   }
 
-#ifdef ONNX
+#ifdef USE_ONNX
   Tensor Tensor::FromOrtValue(const Ort::Value& value)
   {
     Tensor result;

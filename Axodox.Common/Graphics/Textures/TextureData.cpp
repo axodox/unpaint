@@ -190,7 +190,7 @@ namespace Axodox::Graphics
   {
     if (Format != DXGI_FORMAT_B8G8R8A8_UNORM_SRGB && Format != DXGI_FORMAT_B8G8R8A8_UNORM) throw bad_cast();
 
-    SoftwareBitmap bitmap{ BitmapPixelFormat::Bgra8, int32_t(Width), int32_t(Height) };
+    SoftwareBitmap bitmap{ BitmapPixelFormat::Bgra8, int32_t(Width), int32_t(Height), BitmapAlphaMode::Premultiplied };
 
     auto input = Buffer.data();
     auto bitmapData = bitmap.LockBuffer(BitmapBufferAccessMode::Write);

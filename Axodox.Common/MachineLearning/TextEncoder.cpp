@@ -1,5 +1,5 @@
 #include "pch.h"
-#ifdef ONNX
+#ifdef USE_ONNX
 #include "TextEncoder.h"
 
 using namespace Ort;

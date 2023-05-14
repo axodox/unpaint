@@ -1,5 +1,5 @@
 #pragma once
-#ifdef ONNX
+#ifdef USE_ONNX
 #include "OnnxEnvironment.h"
 #include "Tensor.h"
 
@@ -8,7 +8,7 @@ namespace Axodox::MachineLearning
   class TextTokenizer
   {
   public:
-    TextTokenizer(OnnxEnvironment& environment);
+    TextTokenizer(OnnxEnvironment& environment, const std::filesystem::path& sourcePath = {});
 
     Tensor TokenizeText(std::string_view text);
     Tensor GetUnconditionalTokens();

@@ -161,7 +161,7 @@ namespace Axodox::MachineLearning
     bool operator==(const Tensor& other) const;
     bool operator!=(const Tensor& other) const;
 
-#ifdef ONNX
+#ifdef USE_ONNX
     static Tensor FromOrtValue(const Ort::Value& value);
     Ort::Value ToOrtValue(Ort::MemoryInfo& memoryInfo) const;
 

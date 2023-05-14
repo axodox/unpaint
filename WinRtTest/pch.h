@@ -1,4 +1,4 @@
 ﻿#pragma once
 #define USE_UWP_UI
-#define ONNX
+#define USE_ONNX
 #include "..\Axodox.Common\pch.h"

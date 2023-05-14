@@ -1,5 +1,5 @@
 #pragma once
-#define ONNX
+#define USE_ONNX
 #include "..\Axodox.Common\pch.h"
 
 #include "winrt/Windows.Web.Http.h"

@@ -1,5 +1,5 @@
 #pragma once
-#ifdef ONNX
+#ifdef USE_ONNX
 #include "OnnxEnvironment.h"
 #include "Tensor.h"
 

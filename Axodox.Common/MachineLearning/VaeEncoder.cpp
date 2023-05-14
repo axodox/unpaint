@@ -1,5 +1,5 @@
 #include "pch.h"
-#ifdef ONNX
+#ifdef USE_ONNX
 #include "VaeEncoder.h"
 
 using namespace Ort;

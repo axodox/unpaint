@@ -1,5 +1,5 @@
 #include "pch.h"
-#ifdef ONNX
+#ifdef USE_ONNX
 #include "OnnxEnvironment.h"
 
 using namespace Ort;
@@ -15,10 +15,14 @@ namespace Axodox::MachineLearning
     
     _defaultSessionOptions.DisableMemPattern();
     _defaultSessionOptions.SetExecutionMode(ExecutionMode::ORT_SEQUENTIAL);
-    //_defaultSessionOptions.SetGraphOptimizationLevel(ORT_ENABLE_ALL);
+    _defaultSessionOptions.SetGraphOptimizationLevel(ORT_DISABLE_ALL);
 
     //OrtSessionOptionsAppendExecutionProvider_CUDA(_defaultSessionOptions, 0);
     OrtSessionOptionsAppendExecutionProvider_DML(_defaultSessionOptions, 0);
+
+    _cpuSessionOptions.DisableMemPattern();
+    _cpuSessionOptions.SetExecutionMode(ExecutionMode::ORT_SEQUENTIAL);
+    _cpuSessionOptions.SetGraphOptimizationLevel(ORT_DISABLE_ALL);
   }
 
   const std::filesystem::path& OnnxEnvironment::RootPath() const
@@ -39,6 +43,11 @@ namespace Axodox::MachineLearning
   Ort::SessionOptions& OnnxEnvironment::DefaultSessionOptions()
   {
     return _defaultSessionOptions;
+  }
+  
+  Ort::SessionOptions& OnnxEnvironment::CpuSessionOptions()
+  {
+    return _cpuSessionOptions;
   }
 }
 #endif

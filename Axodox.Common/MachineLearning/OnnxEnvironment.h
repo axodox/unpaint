@@ -1,5 +1,5 @@
 #pragma once
-#ifdef ONNX
+#ifdef USE_ONNX
 #include "pch.h"
 
 namespace Axodox::MachineLearning
@@ -13,12 +13,14 @@ namespace Axodox::MachineLearning
     Ort::Env& Environment();
     Ort::MemoryInfo& MemoryInfo();
     Ort::SessionOptions& DefaultSessionOptions();
+    Ort::SessionOptions& CpuSessionOptions();
 
   private:
     std::filesystem::path _rootPath;
     Ort::Env _environment;
     Ort::MemoryInfo _memoryInfo;
     Ort::SessionOptions _defaultSessionOptions;
+    Ort::SessionOptions _cpuSessionOptions;
   };
 }
 #endif

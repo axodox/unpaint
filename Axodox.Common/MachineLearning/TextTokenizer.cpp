@@ -1,5 +1,5 @@
 #include "pch.h"
-#ifdef ONNX
+#ifdef USE_ONNX
 #include "TextTokenizer.h"
 #include "OnnxExtensions.h"
 
@@ -11,13 +11,17 @@ namespace Axodox::MachineLearning
   const size_t TextTokenizer::_maxTokenCount = 77;
   const int32_t TextTokenizer::_blankToken = 49407;
 
-  TextTokenizer::TextTokenizer(OnnxEnvironment& environment) :
+  TextTokenizer::TextTokenizer(OnnxEnvironment& environment, const std::filesystem::path& sourcePath) :
     _environment(environment),
     _sessionOptions(),
     _session(nullptr)
   {
-    _sessionOptions.RegisterCustomOpsLibrary((_environment.RootPath() / L"ortextensions.dll").c_str());
-    _session = { _environment.Environment(), (_environment.RootPath() / L"text_tokenizer/custom_op_cliptok.onnx").c_str(), _sessionOptions};
+    auto rootPath = sourcePath.empty() ? _environment.RootPath() / L"text_tokenizer" : sourcePath;
+
+    _sessionOptions.SetGraphOptimizationLevel(ORT_DISABLE_ALL);
+    _sessionOptions.SetExecutionMode(ExecutionMode::ORT_SEQUENTIAL);
+    _sessionOptions.RegisterCustomOpsLibrary((rootPath / L"ortextensions.dll").c_str());
+    _session = { _environment.Environment(), (rootPath / L"custom_op_cliptok.onnx").c_str(), _sessionOptions};
   }
 
   Tensor TextTokenizer::TokenizeText(std::string_view text)

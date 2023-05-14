@@ -1,8 +1,9 @@
 #pragma once
-#ifdef ONNX
+#ifdef USE_ONNX
 #include "Tensor.h"
 #include "OnnxEnvironment.h"
 #include "StableDiffusionScheduler.h"
+#include "Threading/AsyncOperation.h"
 
 namespace Axodox::MachineLearning
 {
@@ -32,7 +33,7 @@ namespace Axodox::MachineLearning
   public:
     StableDiffusionInferer(OnnxEnvironment& environment);
 
-    Tensor RunInference(const StableDiffusionOptions& options = {});
+    Tensor RunInference(const StableDiffusionOptions& options, Threading::async_operation_source* async = nullptr);
 
   private:
     OnnxEnvironment& _environment;

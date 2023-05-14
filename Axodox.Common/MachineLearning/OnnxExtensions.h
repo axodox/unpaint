@@ -1,5 +1,5 @@
 #pragma once
-#ifdef ONNX
+#ifdef USE_ONNX
 #include "pch.h"
 
 namespace Axodox::MachineLearning

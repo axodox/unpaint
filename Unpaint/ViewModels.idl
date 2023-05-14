@@ -49,7 +49,10 @@ namespace Unpaint
     InferenceViewModel();
 
     String PositivePrompt;
+    String PositivePromptPlaceholder{ get; };
+
     String NegativePrompt;
+    String NegativePromptPlaceholder{ get; };
 
     IObservableVector<String> Models{ get; };
     Int32 SelectedModelIndex;
