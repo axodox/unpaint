@@ -150,7 +150,6 @@
                   <RowDefinition Height="Auto"/>
                   <RowDefinition Height="Auto"/>
                   <RowDefinition Height="Auto"/>
-                  <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
                 <Grid.ColumnDefinitions>
@@ -193,19 +192,14 @@
                 <Slider Grid.Row="3" Grid.Column="1" Minimum="0" Maximum="20" SmallChange="0.1" LargeChange="1" StepFrequency="0.1"
                         Value="{x:Bind ViewModel.GuidanceStrength, Mode=TwoWay}"/>
 
-                <!-- Denoising strength -->
-                <TextBlock Grid.Row="4" Text="Denoising strength" Style="{StaticResource SettingTextBlockStyle}" ToolTipService.ToolTip="Controls the amount the output image can change compared to the original."/>
-                <Slider Grid.Row="4" Grid.Column="1" Minimum="0" Maximum="1" SmallChange="0.01" LargeChange="0.1" StepFrequency="0.01"
-                        Value="{x:Bind ViewModel.DenoisingStrength, Mode=TwoWay}"/>
-
                 <!-- Sampling steps -->
-                <TextBlock Grid.Row="5" Text="Sampling steps" Style="{StaticResource SettingTextBlockStyle}" ToolTipService.ToolTip="Reducing this value speeds up image generation time, however it also degrades image quality."/>
-                <muxc:NumberBox Grid.Row="5" Grid.Column="1" Minimum="5" Maximum="100" SmallChange="1" SpinButtonPlacementMode="Inline"
+                <TextBlock Grid.Row="4" Text="Sampling steps" Style="{StaticResource SettingTextBlockStyle}" ToolTipService.ToolTip="Reducing this value speeds up image generation time, however it also degrades image quality."/>
+                <muxc:NumberBox Grid.Row="4" Grid.Column="1" Minimum="5" Maximum="100" SmallChange="1" SpinButtonPlacementMode="Inline"
                                 Value="{x:Bind ViewModel.SamplingSteps, Mode=TwoWay}"/>
 
                 <!-- Random seed -->
-                <TextBlock Grid.Row="6" Text="Random seed" Style="{StaticResource SettingTextBlockStyle}" ToolTipService.ToolTip="Affects random numbers used in the image generation process. Using the same seed number with the same settings will result in the same image being generated. Useful for testing how different settings affect the output image."/>
-                <Grid Grid.Row="6" Grid.Column="1" ColumnSpacing="6">
+                <TextBlock Grid.Row="5" Text="Random seed" Style="{StaticResource SettingTextBlockStyle}" ToolTipService.ToolTip="Affects random numbers used in the image generation process. Using the same seed number with the same settings will result in the same image being generated. Useful for testing how different settings affect the output image."/>
+                <Grid Grid.Row="5" Grid.Column="1" ColumnSpacing="6">
                   <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
