@@ -3,6 +3,7 @@
 #include "ModelRepository.h"
 #include "StableDiffusionModelExecutor.h"
 #include "ImageRepository.h"
+#include "UnpaintOptions.h"
 #include "Infrastructure/Events.h"
 
 namespace winrt::Unpaint::implementation
@@ -64,6 +65,7 @@ namespace winrt::Unpaint::implementation
 
     fire_and_forget GenerateImage();
     void ManageModels();
+    void OpenSettings();
 
     fire_and_forget CopyToClipboard();
     fire_and_forget SaveImageAs();
@@ -76,7 +78,10 @@ namespace winrt::Unpaint::implementation
     void PropertyChanged(event_token const& token);
 
   private:
+    static const char* const _safetyFilter;
+
     INavigationService _navigationService;
+    std::shared_ptr<UnpaintOptions> _unpaintOptions;
     std::shared_ptr<ModelRepository> _modelRepository;
     std::shared_ptr<StableDiffusionModelExecutor> _modelExecutor;
     std::shared_ptr<ImageRepository> _imageRepository;

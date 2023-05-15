@@ -91,6 +91,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Threading\AsyncOperation.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Threading\Events.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Threading\ManualDispatcher.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Threading\Parallel.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Threading\UwpThreading.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)UI\Window.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Web\HuggingFaceClient.h" />
@@ -162,6 +163,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Storage\Stream.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Threading\AsyncOperation.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Threading\ManualDispatcher.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Threading\Parallel.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Threading\UwpThreading.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)UI\Window.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Web\HuggingFaceClient.cpp" />

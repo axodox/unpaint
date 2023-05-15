@@ -4,7 +4,9 @@
 #include "Threading/AsyncOperation.h"
 #include "MachineLearning/Tensor.h"
 #include "MachineLearning/OnnxEnvironment.h"
+#include "MachineLearning/StableDiffustionInferer.h"
 #include "ModelRepository.h"
+#include "UnpaintOptions.h"
 
 namespace winrt::Unpaint
 {
@@ -28,9 +30,11 @@ namespace winrt::Unpaint
     Axodox::MachineLearning::Tensor TryRunInference(const StableDiffusionInferenceTask& task, Axodox::Threading::async_operation& operation);
 
   private:
+    std::shared_ptr<UnpaintOptions> _unpaintOptions;
     std::shared_ptr<ModelRepository> _modelRepository;
 
     std::unique_ptr<Axodox::MachineLearning::OnnxEnvironment> _onnxEnvironment;
+    std::unique_ptr<Axodox::MachineLearning::StableDiffusionInferer> _denoiser;
     std::mutex _mutex;
 
     std::string _modelId;

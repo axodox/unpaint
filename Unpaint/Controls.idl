@@ -1,0 +1,17 @@
+namespace Unpaint
+{
+  [default_interface]
+  runtimeclass SettingControl : Windows.UI.Xaml.Controls.ContentControl
+  {
+    SettingControl();
+
+    String Icon;
+    static Windows.UI.Xaml.DependencyProperty IconProperty{ get; };
+
+    String Title;
+    static Windows.UI.Xaml.DependencyProperty TitleProperty{ get; };
+
+    String Subtitle;
+    static Windows.UI.Xaml.DependencyProperty SubtitleProperty{ get; };
+  }
+}

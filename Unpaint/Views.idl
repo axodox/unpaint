@@ -18,7 +18,6 @@ namespace Unpaint
   runtimeclass ModelsView : Windows.UI.Xaml.Controls.Page
   {
     ModelsView();
-
     ModelsViewModel ViewModel{ get; };
   }
 
@@ -26,9 +25,15 @@ namespace Unpaint
   runtimeclass InferenceView : Windows.UI.Xaml.Controls.Page, Windows.UI.Xaml.Data.INotifyPropertyChanged
   {
     InferenceView();
-
     InferenceViewModel ViewModel{ get; };
 
     Boolean IsStatusVisible{ get; };
+  }
+
+  [default_interface]
+  runtimeclass SettingsView : Windows.UI.Xaml.Controls.Page
+  {
+    SettingsView();
+    SettingsViewModel ViewModel{ get; };
   }
 }

@@ -126,6 +126,15 @@
       <SubType>Code</SubType>
     </ClInclude>
     <ClInclude Include="DownloadModelViewModel.h" />
+    <ClInclude Include="SettingControl.h">
+      <DependentUpon>SettingControl.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </ClInclude>
+    <ClInclude Include="SettingsView.h">
+      <DependentUpon>SettingsView.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </ClInclude>
+    <ClInclude Include="SettingsViewModel.h" />
     <ClInclude Include="StringMapper.h" />
     <ClInclude Include="ImageRepository.h" />
     <ClInclude Include="InferenceView.h">
@@ -151,7 +160,7 @@
     </ClInclude>
     <ClInclude Include="SizeToStringConverter.h" />
     <ClInclude Include="StringToImageSourceConverter.h" />
-    <ClInclude Include="UnpaintSettings.h" />
+    <ClInclude Include="UnpaintOptions.h" />
     <ClInclude Include="WelcomeView.h">
       <DependentUpon>WelcomeView.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -174,6 +183,12 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="ModelsView.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="SettingControl.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="SettingsView.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Include="WelcomeView.xaml">
@@ -208,6 +223,15 @@
     </ClCompile>
     <ClCompile Include="InferenceViewModel.cpp" />
     <ClCompile Include="IsNanToBooleanConverter.cpp" />
+    <ClCompile Include="SettingControl.cpp">
+      <DependentUpon>SettingControl.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </ClCompile>
+    <ClCompile Include="SettingsView.cpp">
+      <DependentUpon>SettingsView.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </ClCompile>
+    <ClCompile Include="SettingsViewModel.cpp" />
     <ClCompile Include="StableDiffusionModelExecutor.cpp" />
     <ClCompile Include="ModelRepository.cpp" />
     <ClCompile Include="ModelsView.cpp">
@@ -229,6 +253,7 @@
     <ClCompile Include="SizeToStringConverter.cpp" />
     <ClCompile Include="StringMapper.cpp" />
     <ClCompile Include="StringToImageSourceConverter.cpp" />
+    <ClCompile Include="UnpaintOptions.cpp" />
     <ClCompile Include="WelcomeView.cpp">
       <DependentUpon>WelcomeView.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -238,6 +263,7 @@
     <Midl Include="App.idl">
       <DependentUpon>App.xaml</DependentUpon>
     </Midl>
+    <Midl Include="Controls.idl" />
     <Midl Include="Converters.idl" />
     <Midl Include="Dialogs.idl" />
     <Midl Include="ViewModels.idl" />
