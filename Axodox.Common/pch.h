@@ -30,7 +30,7 @@
 #include <dwrite_3.h>
 #include <wincodec.h>
 #include <winrt/base.h>
-#include <Memorybuffer.h>
+#include <memorybuffer.h>
 
 #include <winrt/base.h>
 #include <winrt/windows.foundation.h>

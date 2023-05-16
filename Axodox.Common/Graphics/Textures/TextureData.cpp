@@ -2,7 +2,10 @@
 #include "TextureData.h"
 #include "Graphics/Helpers.h"
 #include "Storage/ComHelpers.h"
+#include "Infrastructure/BitwiseOperations.h"
+#include "Infrastructure/Win32.h"
 
+using namespace Axodox::Infrastructure;
 using namespace Axodox::Storage;
 using namespace std;
 using namespace winrt;
@@ -83,7 +86,7 @@ namespace Axodox::Graphics
     return !Buffer.empty();
   }
 
-  TextureData TextureData::FromBuffer(std::span<const uint8_t> buffer, TextureImageFormat format)
+  TextureData TextureData::FromBuffer(std::span<const uint8_t> buffer, TextureImageFormat format, std::string* metadata)
   {
     auto wicFactory = WicFactory();
 
@@ -101,6 +104,21 @@ namespace Axodox::Graphics
       ));
 
       check_hresult(wicBitmapDecoder->GetFrame(0, reinterpret_cast<IWICBitmapFrameDecode**>(wicBitmap.put())));
+
+      if (metadata)
+      {
+        com_ptr<IWICMetadataQueryReader> metadataQueryReader;
+        check_hresult(reinterpret_cast<IWICBitmapFrameDecode*>(wicBitmap.get())->GetMetadataQueryReader(metadataQueryReader.put()));
+
+        PROPVARIANT metadataProperty;
+        zero_memory(metadataProperty);
+        metadataQueryReader->GetMetadataByName(L"/tEXt/{str=Metadata}", &metadataProperty);
+
+        if (metadataProperty.vt == VT_LPSTR)
+        {
+          *metadata = metadataProperty.pszVal;
+        }
+      }
     }
 
     //Select format
@@ -144,12 +162,13 @@ namespace Axodox::Graphics
     return result;
   }
 
-  std::vector<uint8_t> TextureData::ToBuffer() const
+  std::vector<uint8_t> TextureData::ToBuffer(std::string_view metadata) const
   {
     if (Format != DXGI_FORMAT_B8G8R8A8_UNORM_SRGB && Format != DXGI_FORMAT_B8G8R8A8_UNORM) throw bad_cast();
 
     auto wicFactory = WicFactory();
 
+    //Create stream
     com_ptr<IStream> stream;
     check_hresult(CreateStreamOnHGlobal(nullptr, true, stream.put()));
 
@@ -157,11 +176,13 @@ namespace Axodox::Graphics
     check_hresult(wicFactory->CreateStream(wicStream.put()));
     check_hresult(wicStream->InitializeFromIStream(stream.get()));
 
+    //Create frame encoder
     com_ptr<IWICBitmapEncoder> wicBitmapEncoder;
     check_hresult(wicFactory->CreateEncoder(GUID_ContainerFormatPng, nullptr, wicBitmapEncoder.put()));
 
     wicBitmapEncoder->Initialize(wicStream.get(), WICBitmapEncoderNoCache);
 
+    //Initalize frame
     com_ptr<IWICBitmapFrameEncode> wicBitmapFrameEncode;
     check_hresult(wicBitmapEncoder->CreateNewFrame(wicBitmapFrameEncode.put(), nullptr));
 
@@ -169,11 +190,29 @@ namespace Axodox::Graphics
     check_hresult(wicBitmapFrameEncode->Initialize(nullptr));
     check_hresult(wicBitmapFrameEncode->SetPixelFormat(&pixelFormat));
     check_hresult(wicBitmapFrameEncode->SetSize(Width, Height));
-    check_hresult(wicBitmapFrameEncode->WritePixels(Height, Stride, ByteCount(), const_cast<uint8_t*>(Buffer.data())));
-    check_hresult(wicBitmapFrameEncode->Commit());
 
+    //Encode metadata
+    if (!metadata.empty())
+    {
+      com_ptr<IWICMetadataQueryWriter> metadataQueryWriter;
+      check_hresult(wicBitmapFrameEncode->GetMetadataQueryWriter(metadataQueryWriter.put()));
+
+      PROPVARIANT textEntryProperty;
+      PropVariantInit(&textEntryProperty);
+      textEntryProperty.vt = VT_LPSTR;
+      textEntryProperty.pszVal = const_cast<char*>(metadata.data());
+
+      check_hresult(metadataQueryWriter->SetMetadataByName(L"/tEXt/{str=Metadata}", &textEntryProperty));
+    }
+
+    //Write pixels
+    check_hresult(wicBitmapFrameEncode->WritePixels(Height, Stride, ByteCount(), const_cast<uint8_t*>(Buffer.data())));
+            
+    //Close frame
+    check_hresult(wicBitmapFrameEncode->Commit());
     check_hresult(wicBitmapEncoder->Commit());
 
+    //Return result
     STATSTG streamStats;
     check_hresult(stream->Stat(&streamStats, STATFLAG_DEFAULT));
 
