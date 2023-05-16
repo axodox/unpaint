@@ -78,8 +78,6 @@ namespace winrt::Unpaint::implementation
     void PropertyChanged(event_token const& token);
 
   private:
-    static const char* const _safetyFilter;
-
     INavigationService _navigationService;
     std::shared_ptr<UnpaintOptions> _unpaintOptions;
     std::shared_ptr<ModelRepository> _modelRepository;
@@ -115,6 +113,8 @@ namespace winrt::Unpaint::implementation
     int32_t _selectedProjectIndex;
 
     void OnImagesChanged(ImageRepository* sender);
+
+    fire_and_forget LoadImageMetadataAsync();
   };
 }
 

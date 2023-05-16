@@ -8,7 +8,9 @@
 #include "StringMapper.h"
 
 using namespace Axodox::Collections;
+using namespace Axodox::Graphics;
 using namespace Axodox::Infrastructure;
+using namespace Axodox::Json;
 using namespace Axodox::Storage;
 using namespace Axodox::Threading;
 using namespace std;
@@ -25,8 +27,6 @@ using namespace winrt::Windows::UI::Xaml::Media::Imaging;
 
 namespace winrt::Unpaint::implementation
 {
-  const char* const InferenceViewModel::_safetyFilter = "nsfw, nudity, porn, ";
-
   InferenceViewModel::InferenceViewModel() :
     _unpaintOptions(dependencies.resolve<UnpaintOptions>()),
     _modelRepository(dependencies.resolve<ModelRepository>()),
@@ -247,6 +247,8 @@ namespace winrt::Unpaint::implementation
     _propertyChanged(*this, PropertyChangedEventArgs(L"SelectedImageIndex"));
     _propertyChanged(*this, PropertyChangedEventArgs(L"ImagePosition"));
     _propertyChanged(*this, PropertyChangedEventArgs(L"HasImageSelected"));
+
+    LoadImageMetadataAsync();
   }
 
   hstring InferenceViewModel::ImagePosition()
@@ -318,13 +320,9 @@ namespace winrt::Unpaint::implementation
       .GuidanceStrength = _guidanceStrength,
       .SamplingSteps = _samplingSteps,
       .RandomSeed = _randomSeed,
+      .SafeMode = _unpaintOptions->IsSafeModeEnabled(),
       .ModelId = to_string(_models.GetAt(_selectedModelIndex))
     };
-
-    if (_unpaintOptions->IsSafeModeEnabled())
-    {
-      task.NegativePrompt = _safetyFilter + task.NegativePrompt;
-    }
 
     //Run inference
     co_await resume_background();
@@ -358,7 +356,7 @@ namespace winrt::Unpaint::implementation
       Progress(0.f);
       Status(L"");
 
-      _imageRepository->AddImage(textureData[0]);
+      _imageRepository->AddImage(textureData[0], task.ToMetadata());
       SelectedImageIndex(int32_t(_images.Size()) - 1);
     }
   }
@@ -500,5 +498,43 @@ namespace winrt::Unpaint::implementation
       _selectedProjectIndex = int32_t(distance(sender->Projects().begin(), it));
       _propertyChanged(*this, PropertyChangedEventArgs(L"SelectedProjectIndex"));
     }
+  }
+  
+  fire_and_forget InferenceViewModel::LoadImageMetadataAsync()
+  {
+    if (_selectedImageIndex == -1) co_return;
+   
+    //Capture context
+    apartment_context callerContext;
+    auto lifetime = get_strong();
+    
+    //Locate image path
+    auto imageId = to_string(_images.GetAt(_selectedImageIndex));
+    auto imagePath = _imageRepository->GetPath(imageId);
+
+    //Switch to background thread
+    co_await resume_background();
+
+    //Try read file into memory
+    auto imageBuffer = try_read_file(imagePath);
+    if (imageBuffer.empty()) co_return;
+
+    //Try decode image and extract metadata string
+    string metadataString;
+    if (!TextureData::FromBuffer(imageBuffer, TextureImageFormat::Rgba8, &metadataString)) co_return;
+
+    //Try parse metadata
+    auto imageMetadata = try_parse_json<ImageMetadata>(metadataString);
+    if (!imageMetadata) co_return;
+
+    //Return to UI thread
+    co_await callerContext;
+
+    //Apply settings
+    PositivePrompt(to_hstring(*imageMetadata->PositivePrompt));
+    NegativePrompt(to_hstring(*imageMetadata->NegativePrompt));
+    GuidanceStrength(*imageMetadata->GuidanceStrength);
+    SamplingSteps(*imageMetadata->SamplingSteps);
+    RandomSeed(*imageMetadata->RandomSeed);
   }
 }

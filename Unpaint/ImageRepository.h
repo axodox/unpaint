@@ -1,6 +1,7 @@
 #pragma once
 #include "Graphics/Textures/TextureData.h"
 #include "Infrastructure/Events.h"
+#include "ImageMetadata.h"
 
 namespace winrt::Unpaint
 {
@@ -20,7 +21,7 @@ namespace winrt::Unpaint
     std::span<const std::string> Images() const;
     Axodox::Infrastructure::event_publisher<ImageRepository*> ImagesChanged;
 
-    std::string AddImage(const Axodox::Graphics::TextureData& image);
+    std::string AddImage(const Axodox::Graphics::TextureData& image, const ImageMetadata& metadata);
     bool RemoveImage(std::string_view imageId);
     Axodox::Graphics::TextureData GetImage(std::string_view imageId) const;
     std::filesystem::path GetPath(std::string_view imageId, bool isRelative = false) const;

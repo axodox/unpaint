@@ -94,6 +94,9 @@
     <ClCompile Include="UnpaintOptions.cpp">
       <Filter>Models</Filter>
     </ClCompile>
+    <ClCompile Include="ImageMetadata.cpp">
+      <Filter>Models</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\Wide310x150Logo.scale-200.png">
@@ -219,6 +222,9 @@
     </ClInclude>
     <ClInclude Include="SettingsViewModel.h">
       <Filter>View Models</Filter>
+    </ClInclude>
+    <ClInclude Include="ImageMetadata.h">
+      <Filter>Models</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

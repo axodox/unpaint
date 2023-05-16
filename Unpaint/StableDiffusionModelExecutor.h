@@ -7,6 +7,7 @@
 #include "MachineLearning/StableDiffustionInferer.h"
 #include "ModelRepository.h"
 #include "UnpaintOptions.h"
+#include "ImageMetadata.h"
 
 namespace winrt::Unpaint
 {
@@ -18,8 +19,11 @@ namespace winrt::Unpaint
     float GuidanceStrength;
     uint32_t SamplingSteps;
     uint32_t RandomSeed;
+    bool SafeMode;
 
     std::string ModelId;
+
+    ImageMetadata ToMetadata() const;
   };
 
   class StableDiffusionModelExecutor
@@ -30,6 +34,7 @@ namespace winrt::Unpaint
     Axodox::MachineLearning::Tensor TryRunInference(const StableDiffusionInferenceTask& task, Axodox::Threading::async_operation& operation);
 
   private:
+    static const char* const _safetyFilter;
     std::shared_ptr<UnpaintOptions> _unpaintOptions;
     std::shared_ptr<ModelRepository> _modelRepository;
 

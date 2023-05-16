@@ -15,6 +15,8 @@ using namespace std;
 
 namespace winrt::Unpaint
 {
+  const char* const StableDiffusionModelExecutor::_safetyFilter = "nsfw, nudity, porn, sex, child, girl, boy, minor, teen, ";
+
   StableDiffusionModelExecutor::StableDiffusionModelExecutor() :
     _unpaintOptions(dependencies.resolve<UnpaintOptions>()),
     _modelRepository(dependencies.resolve<ModelRepository>())
@@ -61,7 +63,7 @@ namespace winrt::Unpaint
     TextEncoder textEncoder{ *_onnxEnvironment };
 
     async.update_state("Creating text embedding...");
-    auto tokenizedNegativePrompt = textTokenizer.TokenizeText(task.NegativePrompt);
+    auto tokenizedNegativePrompt = textTokenizer.TokenizeText((task.SafeMode ? _safetyFilter : "") + task.NegativePrompt);
     auto encodedNegativePrompt = textEncoder.EncodeText(tokenizedNegativePrompt);
 
     auto tokenizedPositivePrompt = textTokenizer.TokenizeText(task.PositivePrompt);
@@ -105,5 +107,25 @@ namespace winrt::Unpaint
 
     async.update_state("Decoding latent image...");
     return vaeDecoder.DecodeVae(latentImage);
+  }
+  
+  ImageMetadata StableDiffusionInferenceTask::ToMetadata() const
+  {
+    ImageMetadata result{};
+
+    *result.PositivePrompt = PositivePrompt;
+    *result.NegativePrompt = NegativePrompt;
+
+    *result.Width = Resolution.x;
+    *result.Height = Resolution.y;
+
+    *result.GuidanceStrength = GuidanceStrength;
+    *result.SamplingSteps = SamplingSteps;
+    *result.RandomSeed = RandomSeed;
+    *result.SafeMode = SafeMode;
+
+    *result.ModelId = ModelId;
+
+    return result;
   }
 }

@@ -126,6 +126,7 @@
       <SubType>Code</SubType>
     </ClInclude>
     <ClInclude Include="DownloadModelViewModel.h" />
+    <ClInclude Include="ImageMetadata.h" />
     <ClInclude Include="SettingControl.h">
       <DependentUpon>SettingControl.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -216,6 +217,7 @@
       <SubType>Code</SubType>
     </ClCompile>
     <ClCompile Include="DownloadModelViewModel.cpp" />
+    <ClCompile Include="ImageMetadata.cpp" />
     <ClCompile Include="ImageRepository.cpp" />
     <ClCompile Include="InferenceView.cpp">
       <DependentUpon>InferenceView.xaml</DependentUpon>

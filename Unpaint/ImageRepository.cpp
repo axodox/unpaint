@@ -3,6 +3,7 @@
 #include "Storage/FileIO.h"
 
 using namespace Axodox::Graphics;
+using namespace Axodox::Json;
 using namespace Axodox::Storage;
 using namespace std;
 using namespace std::chrono;
@@ -41,13 +42,15 @@ namespace winrt::Unpaint
     return _images;
   }
 
-  std::string ImageRepository::AddImage(const Axodox::Graphics::TextureData& image)
+  std::string ImageRepository::AddImage(const Axodox::Graphics::TextureData& image, const ImageMetadata& metadata)
   {
     auto now = zoned_time{ current_zone(), time_point_cast<seconds>(system_clock::now()) };
     auto fileName = format("{:%Y-%m-%d %H-%M-%S}.png", now);
 
+    auto imageMetadata = stringify_json(metadata);
+
     auto imagePath = GetPath(fileName);
-    auto imageBuffer = image.ToBuffer();
+    auto imageBuffer = image.ToBuffer(imageMetadata);
     auto success = try_write_file(imagePath, imageBuffer);
 
     if (success)
