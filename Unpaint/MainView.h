@@ -1,6 +1,6 @@
 ﻿#pragma once
 #include "MainView.g.h"
-#include "Storage/SettingManager.h"
+#include "UnpaintOptions.h"
 #include "ModelRepository.h"
 
 namespace winrt::Unpaint::implementation
@@ -18,7 +18,7 @@ namespace winrt::Unpaint::implementation
 
   private:
     event<Windows::Foundation::EventHandler<bool>> _isPointerOverTitleBarChanged;
-    std::shared_ptr<Axodox::Storage::SettingManager> _settingsManager;
+    std::shared_ptr<UnpaintOptions> _unpaintOptions;
     std::shared_ptr<ModelRepository> _modelRepository;
     bool _isPointerOverTitleBar;
 

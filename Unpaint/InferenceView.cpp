@@ -25,10 +25,10 @@ namespace winrt::Unpaint::implementation
     StatusBar().Height(coreTitleBar.Height());
 
     //Configure command panel
-    _navigationService.IsPointerOverTitleBarChanged([=](auto&, auto&) {
+    _isPointerOverTitleBarChangedRevoker = _navigationService.IsPointerOverTitleBarChanged(auto_revoke, [=](auto&, auto&) {
       UpdateStatusVisibility();
       });
-    ViewModel().PropertyChanged([=](auto&, auto&) {
+    _viewModelPropertyChangedRevoker = ViewModel().PropertyChanged(auto_revoke, [=](auto&, auto&) {
       UpdateStatusVisibility();
       });
   }

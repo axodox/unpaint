@@ -19,6 +19,12 @@
     <Page Include="CommonResources.xaml">
       <Filter>Views</Filter>
     </Page>
+    <Page Include="SettingsView.xaml">
+      <Filter>Views</Filter>
+    </Page>
+    <Page Include="SettingControl.xaml">
+      <Filter>Controls</Filter>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Midl Include="App.idl" />
@@ -33,6 +39,9 @@
     </Midl>
     <Midl Include="Converters.idl">
       <Filter>Converters</Filter>
+    </Midl>
+    <Midl Include="Controls.idl">
+      <Filter>Controls</Filter>
     </Midl>
   </ItemGroup>
   <ItemGroup>
@@ -78,6 +87,12 @@
     </ClCompile>
     <ClCompile Include="BooleanInverter.cpp">
       <Filter>Converters</Filter>
+    </ClCompile>
+    <ClCompile Include="SettingsViewModel.cpp">
+      <Filter>View Models</Filter>
+    </ClCompile>
+    <ClCompile Include="UnpaintOptions.cpp">
+      <Filter>Models</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -127,6 +142,9 @@
     </Filter>
     <Filter Include="Data">
       <UniqueIdentifier>{93d7435d-4385-4dc0-9b01-21fa2270c8f1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Controls">
+      <UniqueIdentifier>{5e02f57c-cabe-4e22-9862-1b41c4e0e3a3}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -182,7 +200,7 @@
     <ClInclude Include="StableDiffusionModelExecutor.h">
       <Filter>Models</Filter>
     </ClInclude>
-    <ClInclude Include="UnpaintSettings.h">
+    <ClInclude Include="UnpaintOptions.h">
       <Filter>Models</Filter>
     </ClInclude>
     <ClInclude Include="ImageRepository.h">
@@ -196,6 +214,9 @@
     </ClInclude>
     <ClInclude Include="BooleanInverter.h">
       <Filter>Converters</Filter>
+    </ClInclude>
+    <ClInclude Include="SettingsViewModel.h">
+      <Filter>View Models</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

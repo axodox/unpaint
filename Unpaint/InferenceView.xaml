@@ -15,6 +15,20 @@
     <local:NanToZeroConverter x:Key="NanToZeroConverter"/>
     <local:StringToImageSourceConverter x:Key="StringToImageSourceConverter"/>
     <local:BooleanInverter x:Key="BooleanInverter"/>
+
+    <Style x:Key="HeaderButtonStyle" TargetType="Button" BasedOn="{StaticResource DefaultButtonStyle}">
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="Padding" Value="4,0"/>
+      <Setter Property="FontFamily" Value="Segoe Fluent Icons"/>
+      <Setter Property="VerticalAlignment" Value="Stretch"/>
+    </Style>
+
+    <Style x:Key="HeaderSplitButtonStyle" TargetType="muxc:SplitButton">
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="Padding" Value="4,0"/>
+      <Setter Property="FontFamily" Value="Segoe Fluent Icons"/>
+      <Setter Property="VerticalAlignment" Value="Stretch"/>
+    </Style>
   </Page.Resources>
 
   <Grid>
@@ -52,34 +66,44 @@
     </Grid.RowDefinitions>
 
     <!-- Status -->
-    <Grid x:Name="StatusBar">      
+    <Grid x:Name="StatusBar">
       <Grid.ColumnDefinitions>
         <ColumnDefinition Width="Auto"/>
         <ColumnDefinition Width="*"/>
         <ColumnDefinition Width="Auto"/>
       </Grid.ColumnDefinitions>
 
+      <!-- Command panel -->
       <StackPanel x:Name="CommandPanel" Grid.Column="1" HorizontalAlignment="Center" Spacing="6" Orientation="Horizontal" Padding="0,3" Opacity="0">
-        <Button Content="&#xe8c8;" FontFamily="Segoe Fluent Icons" Padding="4,0" Background="Transparent" VerticalAlignment="Stretch" ToolTipService.ToolTip="Copy image"
+        <!-- Copy image -->
+        <Button Content="&#xe8c8;" ToolTipService.ToolTip="Copy image" Style="{StaticResource HeaderButtonStyle}"
                 Click="{x:Bind ViewModel.CopyToClipboard}" IsEnabled="{x:Bind ViewModel.HasImageSelected, Mode=OneWay}">
           <Button.KeyboardAccelerators>
             <KeyboardAccelerator Key="C" Modifiers="Control"/>
           </Button.KeyboardAccelerators>
         </Button>
-        <Button Content="&#xe792;" FontFamily="Segoe Fluent Icons" Padding="4,0" Background="Transparent" VerticalAlignment="Stretch" ToolTipService.ToolTip="Save image as..."
+        
+        <!-- Save image as -->
+        <Button Content="&#xe792;" ToolTipService.ToolTip="Save image as..." Style="{StaticResource HeaderButtonStyle}"
                 Click="{x:Bind ViewModel.SaveImageAs}" IsEnabled="{x:Bind ViewModel.HasImageSelected, Mode=OneWay}">
           <Button.KeyboardAccelerators>
             <KeyboardAccelerator Key="S" Modifiers="Control"/>
           </Button.KeyboardAccelerators>
         </Button>
-        <Button Content="&#xe74d;" FontFamily="Segoe Fluent Icons" Padding="4,0" Background="Transparent" VerticalAlignment="Stretch" ToolTipService.ToolTip="Delete image..."
+        
+        <!-- Delete image -->
+        <Button Content="&#xe74d;" ToolTipService.ToolTip="Delete image..." Style="{StaticResource HeaderButtonStyle}"
                 Click="{x:Bind ViewModel.DeleteImage}" IsEnabled="{x:Bind ViewModel.HasImageSelected, Mode=OneWay}">
           <Button.KeyboardAccelerators>
             <KeyboardAccelerator Key="Delete"/>
           </Button.KeyboardAccelerators>
         </Button>
+        
+        <!-- Page count -->
         <TextBlock Text="{x:Bind ViewModel.ImagePosition, Mode=OneWay}" FontFamily="Segoe UI Mono" VerticalAlignment="Center" Margin="12,0" IsHitTestVisible="False" Opacity="0.5"/>
-        <muxc:SplitButton Content="&#xe838;" FontFamily="Segoe Fluent Icons" Padding="0" Background="Transparent" VerticalAlignment="Stretch" ToolTipService.ToolTip="Open project directory..."
+        
+        <!-- Project management -->
+        <muxc:SplitButton Content="&#xe838;" Padding="0" ToolTipService.ToolTip="Open project directory..." Style="{StaticResource HeaderSplitButtonStyle}"
                           Click="{x:Bind ViewModel.ShowImageDirectory}">
           <muxc:SplitButton.Flyout>
             <Flyout>
@@ -99,8 +123,13 @@
             </Flyout>
           </muxc:SplitButton.Flyout>
         </muxc:SplitButton>
+        
+        <!-- Settings -->
+        <Button Content="&#xe713;" ToolTipService.ToolTip="Open settings" Style="{StaticResource HeaderButtonStyle}"
+                Click="{x:Bind ViewModel.OpenSettings}"/>
       </StackPanel>
 
+      <!-- Progress bar & status message -->
       <muxc:ProgressBar Grid.ColumnSpan="3" Value="{x:Bind ViewModel.Progress, Mode=OneWay, Converter={StaticResource NanToZeroConverter}}" IsIndeterminate="{x:Bind ViewModel.Progress, Mode=OneWay, Converter={StaticResource IsNanToBooleanConverter}}" VerticalAlignment="Top" Background="Transparent" Maximum="1" IsHitTestVisible="False" />
       <TextBlock x:Name="StatusMessage" Grid.Column="1" Text="{x:Bind ViewModel.Status, Mode=OneWay}" HorizontalAlignment="Center" VerticalAlignment="Center" IsHitTestVisible="False" Opacity="0"/>
     </Grid>
@@ -150,7 +179,6 @@
                   <RowDefinition Height="Auto"/>
                   <RowDefinition Height="Auto"/>
                   <RowDefinition Height="Auto"/>
-                  <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
                 <Grid.ColumnDefinitions>
@@ -193,19 +221,14 @@
                 <Slider Grid.Row="3" Grid.Column="1" Minimum="0" Maximum="20" SmallChange="0.1" LargeChange="1" StepFrequency="0.1"
                         Value="{x:Bind ViewModel.GuidanceStrength, Mode=TwoWay}"/>
 
-                <!-- Denoising strength -->
-                <TextBlock Grid.Row="4" Text="Denoising strength" Style="{StaticResource SettingTextBlockStyle}" ToolTipService.ToolTip="Controls the amount the output image can change compared to the original."/>
-                <Slider Grid.Row="4" Grid.Column="1" Minimum="0" Maximum="1" SmallChange="0.01" LargeChange="0.1" StepFrequency="0.01"
-                        Value="{x:Bind ViewModel.DenoisingStrength, Mode=TwoWay}"/>
-
                 <!-- Sampling steps -->
-                <TextBlock Grid.Row="5" Text="Sampling steps" Style="{StaticResource SettingTextBlockStyle}" ToolTipService.ToolTip="Reducing this value speeds up image generation time, however it also degrades image quality."/>
-                <muxc:NumberBox Grid.Row="5" Grid.Column="1" Minimum="5" Maximum="100" SmallChange="1" SpinButtonPlacementMode="Inline"
+                <TextBlock Grid.Row="4" Text="Sampling steps" Style="{StaticResource SettingTextBlockStyle}" ToolTipService.ToolTip="Reducing this value speeds up image generation time, however it also degrades image quality."/>
+                <muxc:NumberBox Grid.Row="4" Grid.Column="1" Minimum="5" Maximum="100" SmallChange="1" SpinButtonPlacementMode="Inline"
                                 Value="{x:Bind ViewModel.SamplingSteps, Mode=TwoWay}"/>
 
                 <!-- Random seed -->
-                <TextBlock Grid.Row="6" Text="Random seed" Style="{StaticResource SettingTextBlockStyle}" ToolTipService.ToolTip="Affects random numbers used in the image generation process. Using the same seed number with the same settings will result in the same image being generated. Useful for testing how different settings affect the output image."/>
-                <Grid Grid.Row="6" Grid.Column="1" ColumnSpacing="6">
+                <TextBlock Grid.Row="5" Text="Random seed" Style="{StaticResource SettingTextBlockStyle}" ToolTipService.ToolTip="Affects random numbers used in the image generation process. Using the same seed number with the same settings will result in the same image being generated. Useful for testing how different settings affect the output image."/>
+                <Grid Grid.Row="5" Grid.Column="1" ColumnSpacing="6">
                   <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>

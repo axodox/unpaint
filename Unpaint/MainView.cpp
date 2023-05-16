@@ -2,10 +2,12 @@
 #include "MainView.h"
 #include "MainView.g.cpp"
 #include "Infrastructure/WinRtDependencies.h"
-#include "UnpaintSettings.h"
+#include "Threading/Parallel.h"
+#include "UnpaintOptions.h"
 
 using namespace Axodox::Infrastructure;
 using namespace Axodox::Storage;
+using namespace Axodox::Threading;
 using namespace winrt;
 using namespace winrt::Windows::ApplicationModel::Core;
 using namespace winrt::Windows::UI;
@@ -16,10 +18,12 @@ using namespace winrt::Windows::UI::Xaml;
 namespace winrt::Unpaint::implementation
 {
   MainView::MainView() :
-    _settingsManager(dependencies.resolve<SettingManager>()),
+    _unpaintOptions(dependencies.resolve<UnpaintOptions>()),
     _modelRepository(dependencies.resolve<ModelRepository>()),
     _isPointerOverTitleBar(false)
   {
+    set_thread_name(L"* ui");
+
     //Initialize main view
     InitializeComponent();
     InitializeTitleBar();
@@ -30,7 +34,7 @@ namespace winrt::Unpaint::implementation
 
   void MainView::NavigateToView(Windows::UI::Xaml::Interop::TypeName viewType)
   {
-    if (!_settingsManager->LoadSettingOr(Settings::UserInterface::HasShownWelcomeView, false))
+    if (!_unpaintOptions->HasShownWelcomeView())
     {
       viewType = xaml_typename<WelcomeView>();
     }
@@ -91,6 +95,8 @@ namespace winrt::Unpaint::implementation
       _isPointerOverTitleBarChanged(*this, isPointerOverTitleBar);
       });
     coreWindow.PointerExited([=](auto&, auto&) {
+      if (_isPointerOverTitleBar) return;
+
       _isPointerOverTitleBar = true;
       _isPointerOverTitleBarChanged(*this, true);
       });

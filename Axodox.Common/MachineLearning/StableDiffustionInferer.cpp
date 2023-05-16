@@ -47,7 +47,7 @@ namespace Axodox::MachineLearning
     {
       if (async)
       {
-        async->update_state((i + 1.f) / options.StepCount, format("Running inference {}/{}...", i + 1, options.StepCount));
+        async->update_state((i + 1.f) / options.StepCount, format("Denoising {}/{}...", i + 1, options.StepCount));
         if (async->is_cancelled()) return {};
       }
 

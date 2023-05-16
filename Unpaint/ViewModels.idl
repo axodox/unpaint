@@ -93,6 +93,7 @@ namespace Unpaint
 
     void GenerateImage();
     void ManageModels();
+    void OpenSettings();
 
     void CopyToClipboard();
     void SaveImageAs();
@@ -100,5 +101,16 @@ namespace Unpaint
     void ShowImageDirectory();
     void CreateNewProject();
     void DeleteProject();
+  }
+
+  [default_interface]
+  runtimeclass SettingsViewModel
+  {
+    SettingsViewModel();
+    
+    Boolean IsSafeModeEnabled;
+    Boolean IsDenoiserPinned;
+
+    void Continue();
   }
 }

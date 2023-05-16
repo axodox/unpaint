@@ -60,7 +60,6 @@ namespace winrt::Unpaint::implementation
     }
 
     _propertyChanged(*this, PropertyChangedEventArgs(L"AreAvailableModelsEmpty"));
-    _propertyChanged(*this, PropertyChangedEventArgs(L"CanContinue"));
   }
 
   fire_and_forget ModelsViewModel::DownloadModelAsync()
@@ -88,7 +87,10 @@ namespace winrt::Unpaint::implementation
 
   void ModelsViewModel::SelectedAvailableModel(int32_t value)
   {
+    if (value == _selectedAvailableModel) return;
+
     _selectedAvailableModel = value;
+    _propertyChanged(*this, PropertyChangedEventArgs(L"SelectedAvailableModel"));
     _propertyChanged(*this, PropertyChangedEventArgs(L"IsAvailableModelSelected"));
   }
 
@@ -142,7 +144,10 @@ namespace winrt::Unpaint::implementation
 
   void ModelsViewModel::SelectedInstalledModel(int32_t value)
   {
+    if (value == _selectedInstalledModel) return;
+
     _selectedInstalledModel = value;
+    _propertyChanged(*this, PropertyChangedEventArgs(L"SelectedInstalledModel"));
     _propertyChanged(*this, PropertyChangedEventArgs(L"IsInstalledModelSelected"));
   }
 
@@ -181,7 +186,8 @@ namespace winrt::Unpaint::implementation
       _installedModels.Append(CreateModelViewModel(model));
     }
 
-    _propertyChanged(*this, PropertyChangedEventArgs(L"InstalledModels"));
+    _propertyChanged(*this, PropertyChangedEventArgs(L"AreInstalledModelsEmpty"));
+    _propertyChanged(*this, PropertyChangedEventArgs(L"CanContinue"));
   }
   
   ModelViewModel ModelsViewModel::CreateModelViewModel(const std::string& modelId)

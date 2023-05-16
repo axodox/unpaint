@@ -25,7 +25,10 @@ using namespace winrt::Windows::UI::Xaml::Media::Imaging;
 
 namespace winrt::Unpaint::implementation
 {
+  const char* const InferenceViewModel::_safetyFilter = "nsfw, nudity, porn, ";
+
   InferenceViewModel::InferenceViewModel() :
+    _unpaintOptions(dependencies.resolve<UnpaintOptions>()),
     _modelRepository(dependencies.resolve<ModelRepository>()),
     _modelExecutor(dependencies.resolve<StableDiffusionModelExecutor>()),
     _imageRepository(dependencies.resolve<ImageRepository>()),
@@ -318,6 +321,11 @@ namespace winrt::Unpaint::implementation
       .ModelId = to_string(_models.GetAt(_selectedModelIndex))
     };
 
+    if (_unpaintOptions->IsSafeModeEnabled())
+    {
+      task.NegativePrompt = _safetyFilter + task.NegativePrompt;
+    }
+
     //Run inference
     co_await resume_background();
 
@@ -358,6 +366,11 @@ namespace winrt::Unpaint::implementation
   void InferenceViewModel::ManageModels()
   {
     _navigationService.NavigateToView(xaml_typename<ModelsView>());
+  }
+
+  void InferenceViewModel::OpenSettings()
+  {
+    _navigationService.NavigateToView(xaml_typename<SettingsView>());
   }
 
   fire_and_forget InferenceViewModel::CopyToClipboard()

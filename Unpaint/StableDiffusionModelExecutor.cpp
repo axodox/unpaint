@@ -4,8 +4,8 @@
 #include "Storage/FileIO.h"
 #include "MachineLearning/TextTokenizer.h"
 #include "MachineLearning/TextEncoder.h"
-#include "MachineLearning/StableDiffustionInferer.h"
 #include "MachineLearning/VaeDecoder.h"
+#include "Threading/Parallel.h"
 
 using namespace Axodox::Infrastructure;
 using namespace Axodox::MachineLearning;
@@ -16,6 +16,7 @@ using namespace std;
 namespace winrt::Unpaint
 {
   StableDiffusionModelExecutor::StableDiffusionModelExecutor() :
+    _unpaintOptions(dependencies.resolve<UnpaintOptions>()),
     _modelRepository(dependencies.resolve<ModelRepository>())
   { }
 
@@ -23,6 +24,7 @@ namespace winrt::Unpaint
   {
     //Set up async source
     lock_guard lock(_mutex);
+    thread_name_context threadName{L"* inference"};
 
     async_operation_source async;
     operation.set_source(async);
@@ -76,8 +78,8 @@ namespace winrt::Unpaint
 
   Axodox::MachineLearning::Tensor StableDiffusionModelExecutor::RunStableDiffusion(const StableDiffusionInferenceTask& task, const Axodox::MachineLearning::Tensor& textEmbeddings, Axodox::Threading::async_operation_source& async)
   {
-    async.update_state(NAN, "Loading U-net...");
-    StableDiffusionInferer stableDiffusion{ *_onnxEnvironment };
+    async.update_state(NAN, "Loading denoiser...");
+    if (!_denoiser) _denoiser = make_unique<StableDiffusionInferer>(*_onnxEnvironment);
 
     StableDiffusionOptions options{
       .StepCount = task.SamplingSteps,
@@ -88,8 +90,12 @@ namespace winrt::Unpaint
       .TextEmbeddings = textEmbeddings
     };
 
-    async.update_state("Running U-net...");
-    return stableDiffusion.RunInference(options, &async);
+    async.update_state("Running denoiser...");
+    auto result = _denoiser->RunInference(options, &async);
+
+    if (!_unpaintOptions->IsDenoiserPinned()) _denoiser.reset();
+
+    return result;
   }
   
   Axodox::MachineLearning::Tensor StableDiffusionModelExecutor::DecodeVAE(const Axodox::MachineLearning::Tensor& latentImage, Axodox::Threading::async_operation_source& async)

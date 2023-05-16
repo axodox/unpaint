@@ -24,6 +24,8 @@ namespace winrt::Unpaint::implementation
     INavigationService _navigationService;
 
     Windows::ApplicationModel::Core::CoreApplicationViewTitleBar::LayoutMetricsChanged_revoker _titleBarLayoutMetricsChangedRevoker;
+    INavigationService::IsPointerOverTitleBarChanged_revoker _isPointerOverTitleBarChangedRevoker;
+    Windows::UI::Xaml::Data::INotifyPropertyChanged::PropertyChanged_revoker _viewModelPropertyChangedRevoker;
 
     bool _isPointerOverStatusBar;
     InferenceViewModel _viewModel;

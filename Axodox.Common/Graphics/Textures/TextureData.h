@@ -33,8 +33,8 @@ namespace Axodox::Graphics
 
     explicit operator bool() const;
 
-    static TextureData FromBuffer(std::span<const uint8_t> buffer, TextureImageFormat format = TextureImageFormat::Rgba8);
-    std::vector<uint8_t> ToBuffer() const;
+    static TextureData FromBuffer(std::span<const uint8_t> buffer, TextureImageFormat format = TextureImageFormat::Rgba8, std::string* metadata = nullptr);
+    std::vector<uint8_t> ToBuffer(std::string_view metadata = "") const;
     
     winrt::Windows::Graphics::Imaging::SoftwareBitmap ToSoftwareBitmap() const;
 
