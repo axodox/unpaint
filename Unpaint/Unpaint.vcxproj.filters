@@ -139,12 +139,10 @@
     <None Include="custom_op_cliptok.onnx">
       <Filter>Data</Filter>
     </None>
-    <None Include="$(MSBuildThisFileDirectory)..\..\runtimes\win-x64\native\onnxruntime.dll">
-      <Filter>Data</Filter>
-    </None>
     <None Include="ortextensions.dll">
       <Filter>Data</Filter>
     </None>
+    <None Include="Unpaint_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">
