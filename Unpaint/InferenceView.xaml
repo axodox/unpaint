@@ -31,7 +31,7 @@
     </Style>
   </Page.Resources>
 
-  <Grid>
+  <Grid Grid.RowSpacing="3">
     <VisualStateManager.VisualStateGroups>
       <VisualStateGroup>
         <VisualState x:Name="CommandPanelVisualState">
@@ -146,8 +146,22 @@
     </FlipView>
 
     <!-- Inference options -->
-    <Border Grid.Row="2" Background="{ThemeResource LayerFillColorDefaultBrush}" CornerRadius="6,6,0,0" MaxWidth="800">
-      <Grid RowSpacing="6" ColumnSpacing="6" Margin="6">
+    <Grid Grid.Row="2" CornerRadius="6,6,0,0" MaxWidth="800" BorderThickness="1" 
+          Background="{ThemeResource LayerFillColorDefaultBrush}"
+          BorderBrush="{ThemeResource ControlElevationBorderBrush}">
+      
+      <Grid.RowDefinitions>
+        <RowDefinition Height="Auto"/>
+        <RowDefinition Height="Auto"/>
+      </Grid.RowDefinitions>
+
+      <ComboBox HorizontalAlignment="Center">
+        <ComboBoxItem>Create</ComboBoxItem>
+        <ComboBoxItem>Modify</ComboBoxItem>
+      </ComboBox>
+
+      <Grid RowSpacing="6" ColumnSpacing="6" Margin="6" Grid.Row="1"
+            Background="{ThemeResource LayerFillColorAltBrush}">
         <Grid.ColumnDefinitions>
           <ColumnDefinition Width="Auto"/>
           <ColumnDefinition Width="*"/>
@@ -245,8 +259,8 @@
 
         <!-- Positive prompt -->
         <TextBox Grid.Column="1" Grid.Row="0" TextWrapping="Wrap" Padding="36,4,10,0"
-                 PlaceholderText="{x:Bind ViewModel.PositivePromptPlaceholder}"
-                 Text="{x:Bind ViewModel.PositivePrompt, Mode=TwoWay}">
+                  PlaceholderText="{x:Bind ViewModel.PositivePromptPlaceholder}"
+                  Text="{x:Bind ViewModel.PositivePrompt, Mode=TwoWay}">
           <ToolTipService.ToolTip>
             <StackPanel>
               <TextBlock Text="Positive prompt" FontWeight="Bold"/>
@@ -258,8 +272,8 @@
 
         <!-- Negative prompt -->
         <TextBox Grid.Column="1" Grid.Row="1" TextWrapping="Wrap" Padding="36,4,10,0"
-                 PlaceholderText="{x:Bind ViewModel.NegativePromptPlaceholder}"
-                 Text="{x:Bind ViewModel.NegativePrompt, Mode=TwoWay}">
+                  PlaceholderText="{x:Bind ViewModel.NegativePromptPlaceholder}"
+                  Text="{x:Bind ViewModel.NegativePrompt, Mode=TwoWay}">
           <ToolTipService.ToolTip>
             <StackPanel>
               <TextBlock Text="Negative prompt" FontWeight="Bold"/>
@@ -276,7 +290,7 @@
             <KeyboardAccelerator Key="Enter"/>
           </Button.KeyboardAccelerators>
         </Button>
-      </Grid>
-    </Border>
+      </Grid>      
+    </Grid>    
   </Grid>
 </Page>
