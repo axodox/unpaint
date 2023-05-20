@@ -91,6 +91,8 @@ namespace Axodox::Infrastructure
     return memcmp(&a, &b, sizeof(U)) == 0;
   }
 
+  bool are_equal(const winrt::Windows::Foundation::IInspectable& a, const winrt::Windows::Foundation::IInspectable& b);
+
   template <typename T>
   bool is_default(const T& value)
   {

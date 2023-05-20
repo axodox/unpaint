@@ -59,6 +59,8 @@ namespace Unpaint
   {
     InferenceViewModel();
 
+    Int32 SelectedModeIndex;
+
     String PositivePrompt;
     String PositivePromptPlaceholder{ get; };
 

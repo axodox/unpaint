@@ -12,6 +12,9 @@ namespace winrt::Unpaint::implementation
   {
     InferenceViewModel();
 
+    int32_t SelectedModeIndex();
+    void SelectedModeIndex(int32_t value);
+
     hstring PositivePromptPlaceholder();
     hstring PositivePrompt();
     void PositivePrompt(hstring const& value);
@@ -88,6 +91,8 @@ namespace winrt::Unpaint::implementation
     std::uniform_int_distribution<uint32_t> _seedDistribution;
 
     event<Windows::UI::Xaml::Data::PropertyChangedEventHandler> _propertyChanged;
+
+    InferenceMode _inferenceMode;
 
     hstring _positivePrompt, _negativePrompt;
     

@@ -52,6 +52,12 @@ namespace winrt::Unpaint
     return decocedImage;
   }
   
+  Axodox::Graphics::TextureData StableDiffusionModelExecutor::LoadImage(const StableDiffusionInferenceTask& task, Axodox::Threading::async_operation_source& async)
+  {
+
+    return Axodox::Graphics::TextureData();
+  }
+
   Axodox::MachineLearning::Tensor StableDiffusionModelExecutor::CreateTextEmbeddings(const StableDiffusionInferenceTask& task, Axodox::Threading::async_operation_source& async)
   {
     if (_textEmbedding && _positivePrompt == task.PositivePrompt && _negativePrompt == task.NegativePrompt) return _textEmbedding;

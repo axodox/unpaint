@@ -134,6 +134,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Textures\Texture2D.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Textures\Texture2DDefinition.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Textures\TextureData.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Infrastructure\BitwiseOperations.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Infrastructure\DependencyContainer.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Storage\SettingManager.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Infrastructure\Win32.cpp" />

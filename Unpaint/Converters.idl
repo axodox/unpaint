@@ -24,4 +24,12 @@ namespace Unpaint
   {
     BooleanInverter();
   };
+
+  runtimeclass EqualsConverter : [default] Windows.UI.Xaml.Data.IValueConverter
+  {
+    Boolean IsNegating;
+    Object Value;
+
+    EqualsConverter();
+  };
 }

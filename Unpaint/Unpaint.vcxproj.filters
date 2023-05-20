@@ -97,6 +97,9 @@
     <ClCompile Include="ImageMetadata.cpp">
       <Filter>Models</Filter>
     </ClCompile>
+    <ClCompile Include="EqualsConverter.cpp">
+      <Filter>Converters</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\Wide310x150Logo.scale-200.png">
@@ -223,6 +226,9 @@
     </ClInclude>
     <ClInclude Include="ImageMetadata.h">
       <Filter>Models</Filter>
+    </ClInclude>
+    <ClInclude Include="EqualsConverter.h">
+      <Filter>Converters</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -104,7 +104,7 @@ namespace Axodox::Graphics
       ));
 
       check_hresult(wicBitmapDecoder->GetFrame(0, reinterpret_cast<IWICBitmapFrameDecode**>(wicBitmap.put())));
-
+      
       if (metadata)
       {
         com_ptr<IWICMetadataQueryReader> metadataQueryReader;
@@ -223,6 +223,92 @@ namespace Axodox::Graphics
     check_hresult(stream->Read(result.data(), ULONG(result.size()), nullptr));
 
     return result;
+  }
+
+  TextureData TextureData::FromWicBitmap(const winrt::com_ptr<IWICBitmap>& wicBitmap)
+  {
+    WICPixelFormatGUID format;
+    check_hresult(wicBitmap->GetPixelFormat(&format));
+
+    if (format != GUID_WICPixelFormat32bppBGRA) throw bad_cast();
+
+    uint32_t width, height;
+    check_hresult(wicBitmap->GetSize(&width, &height));
+    
+    WICRect wicRect{
+      .X = 0,
+      .Y = 0,
+      .Width = int32_t(width),
+      .Height = int32_t(height)
+    };
+
+    com_ptr<IWICBitmapLock> wicBitmapLock;
+    check_hresult(wicBitmap->Lock(&wicRect, WICBitmapLockRead, wicBitmapLock.put()));
+
+    uint32_t bufferSize;
+    uint32_t bufferStride;
+    uint8_t* bufferData;
+    check_hresult(wicBitmapLock->GetDataPointer(&bufferSize, &bufferData));
+    check_hresult(wicBitmapLock->GetStride(&bufferStride));
+
+    TextureData result{ width, height, DXGI_FORMAT_B8G8R8A8_UNORM_SRGB };
+    for (uint32_t row = 0; row < height; row++)
+    {
+      auto pSource = reinterpret_cast<uint32_t*>(bufferData + bufferStride * row);
+      auto pTarget = result.Row<uint32_t>(row);      
+      memcpy(pTarget, pSource, width * sizeof(uint32_t));
+    }
+
+    return result;
+  }
+
+  winrt::com_ptr<IWICBitmap> TextureData::ToWicBitmap() const
+  {
+    if (Format != DXGI_FORMAT_B8G8R8A8_UNORM_SRGB && Format != DXGI_FORMAT_B8G8R8A8_UNORM) throw bad_cast();
+
+    auto wicFactory = WicFactory();
+
+    com_ptr<IWICBitmap> wicBitmap;
+    check_hresult(wicFactory->CreateBitmap(Width, Height, GUID_WICPixelFormat32bppBGRA, WICBitmapNoCache, wicBitmap.put()));
+
+    WICRect wicRect{
+      .X = 0,
+      .Y = 0,
+      .Width = int32_t(Width),
+      .Height = int32_t(Height)
+    };
+
+    com_ptr<IWICBitmapLock> wicBitmapLock;
+    check_hresult(wicBitmap->Lock(&wicRect, WICBitmapLockWrite, wicBitmapLock.put()));
+
+    uint32_t bufferSize;
+    uint32_t bufferStride;
+    uint8_t* bufferData;
+    check_hresult(wicBitmapLock->GetDataPointer(&bufferSize, &bufferData));
+    check_hresult(wicBitmapLock->GetStride(&bufferStride));
+
+    for (uint32_t row = 0; row < Height; row++)
+    {
+      auto pSource = Row<uint32_t>(row);
+      auto pTarget = reinterpret_cast<uint32_t*>(bufferData + bufferStride * row);
+      memcpy(pTarget, pSource, Width * sizeof(uint32_t));
+    }
+
+    return wicBitmap;
+  }
+
+  TextureData TextureData::Resize(uint32_t width, uint32_t height) const
+  {
+    if (width == Width && height == Height) return TextureData(*this);
+
+    auto wicFactory = WicFactory();
+    auto wicBitmap = ToWicBitmap();
+
+    com_ptr<IWICBitmapScaler> wicBitmapScaler;
+    check_hresult(wicFactory->CreateBitmapScaler(wicBitmapScaler.put()));
+    check_hresult(wicBitmapScaler->Initialize(wicBitmap.get(), width, height, WICBitmapInterpolationModeHighQualityCubic));
+
+    return TextureData::FromWicBitmap(wicBitmapScaler.as<IWICBitmap>());
   }
 
   winrt::Windows::Graphics::Imaging::SoftwareBitmap TextureData::ToSoftwareBitmap() const

@@ -15,6 +15,17 @@
     <local:NanToZeroConverter x:Key="NanToZeroConverter"/>
     <local:StringToImageSourceConverter x:Key="StringToImageSourceConverter"/>
     <local:BooleanInverter x:Key="BooleanInverter"/>
+    <local:EqualsConverter x:Key="IsCreateModeSelectedConverter">
+      <local:EqualsConverter.Value>
+        <x:Int32>0</x:Int32>
+      </local:EqualsConverter.Value>
+    </local:EqualsConverter>
+
+    <local:EqualsConverter x:Key="IsModifyModeSelectedConverter">
+      <local:EqualsConverter.Value>
+        <x:Int32>1</x:Int32>
+      </local:EqualsConverter.Value>
+    </local:EqualsConverter>
 
     <Style x:Key="HeaderButtonStyle" TargetType="Button" BasedOn="{StaticResource DefaultButtonStyle}">
       <Setter Property="Background" Value="Transparent"/>
@@ -155,12 +166,50 @@
         <RowDefinition Height="Auto"/>
       </Grid.RowDefinitions>
 
-      <ComboBox HorizontalAlignment="Center">
-        <ComboBoxItem>Create</ComboBoxItem>
-        <ComboBoxItem>Modify</ComboBoxItem>
-      </ComboBox>
+      <!-- Top section -->
+      <Grid Margin="6" ColumnSpacing="3">
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="*"/>
+          <ColumnDefinition Width="Auto"/>
+          <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        
+        <!-- Modify controls -->
+        <Grid Visibility="{x:Bind ViewModel.SelectedModeIndex, Mode=OneWay, Converter={StaticResource IsModifyModeSelectedConverter}}">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+          </Grid.ColumnDefinitions>
 
-      <Grid RowSpacing="6" ColumnSpacing="6" Margin="6" Grid.Row="1"
+          <!-- Denoising strength -->
+          <FontIcon FontFamily="Segoe Fluent Icons" FontSize="20" Glyph="&#xf4a5;" VerticalAlignment="Center" Margin="0,-10">
+            <ToolTipService.ToolTip>
+              <StackPanel>
+                <TextBlock Text="Denoising strength" FontWeight="Bold"/>
+                <TextBlock Text="Defines how much the original image can be changed to fit the prompt." TextWrapping="WrapWholeWords"/>
+              </StackPanel>
+            </ToolTipService.ToolTip>
+          </FontIcon>
+          <Slider Grid.Column="1" Minimum="0" Maximum="1" SmallChange="0.01" LargeChange="0.1" StepFrequency="0.01" VerticalAlignment="Center" Margin="6,-10"
+                  Value="{x:Bind ViewModel.DenoisingStrength, Mode=TwoWay}"/>
+        </Grid>
+        
+        <!-- Mode selector -->
+        <ComboBox Grid.Column="1" Width="120" SelectedIndex="{x:Bind ViewModel.SelectedModeIndex, Mode=TwoWay}">
+          <ToolTipService.ToolTip>
+            <StackPanel>
+              <TextBlock Text="Mode Selector" FontWeight="Bold"/>
+              <TextBlock Text="Selects what work to perform:&#xA;- Create: generate new images from scratch&#xA;- Modify: transform an existing image" TextWrapping="WrapWholeWords"/>
+            </StackPanel>
+          </ToolTipService.ToolTip>
+
+          <ComboBoxItem>Create</ComboBoxItem>
+          <ComboBoxItem>Modify</ComboBoxItem>
+        </ComboBox>
+      </Grid>      
+
+      <!-- Bottom section -->
+      <Grid RowSpacing="6" ColumnSpacing="6" Padding="6" Grid.Row="1"
             Background="{ThemeResource LayerFillColorAltBrush}">
         <Grid.ColumnDefinitions>
           <ColumnDefinition Width="Auto"/>
@@ -259,8 +308,8 @@
 
         <!-- Positive prompt -->
         <TextBox Grid.Column="1" Grid.Row="0" TextWrapping="Wrap" Padding="36,4,10,0"
-                  PlaceholderText="{x:Bind ViewModel.PositivePromptPlaceholder}"
-                  Text="{x:Bind ViewModel.PositivePrompt, Mode=TwoWay}">
+                 PlaceholderText="{x:Bind ViewModel.PositivePromptPlaceholder}"
+                 Text="{x:Bind ViewModel.PositivePrompt, Mode=TwoWay}">
           <ToolTipService.ToolTip>
             <StackPanel>
               <TextBlock Text="Positive prompt" FontWeight="Bold"/>
@@ -272,8 +321,8 @@
 
         <!-- Negative prompt -->
         <TextBox Grid.Column="1" Grid.Row="1" TextWrapping="Wrap" Padding="36,4,10,0"
-                  PlaceholderText="{x:Bind ViewModel.NegativePromptPlaceholder}"
-                  Text="{x:Bind ViewModel.NegativePrompt, Mode=TwoWay}">
+                 PlaceholderText="{x:Bind ViewModel.NegativePromptPlaceholder}"
+                 Text="{x:Bind ViewModel.NegativePrompt, Mode=TwoWay}">
           <ToolTipService.ToolTip>
             <StackPanel>
               <TextBlock Text="Negative prompt" FontWeight="Bold"/>

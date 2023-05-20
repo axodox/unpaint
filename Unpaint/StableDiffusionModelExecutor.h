@@ -11,17 +11,27 @@
 
 namespace winrt::Unpaint
 {
+  enum class InferenceMode
+  {
+    Create,
+    Modify
+  };
+
   struct StableDiffusionInferenceTask
   {
+    InferenceMode Mode;
+
     std::string PositivePrompt, NegativePrompt;
     DirectX::XMUINT2 Resolution;
 
     float GuidanceStrength;
+    float DenoisingStrength;
     uint32_t SamplingSteps;
     uint32_t RandomSeed;
     bool SafeMode;
 
     std::string ModelId;
+    std::filesystem::path InputImage;
 
     ImageMetadata ToMetadata() const;
   };
@@ -47,6 +57,7 @@ namespace winrt::Unpaint
     std::string _positivePrompt, _negativePrompt;
     Axodox::MachineLearning::Tensor _textEmbedding;
 
+    Axodox::Graphics::TextureData LoadImage(const StableDiffusionInferenceTask& task, Axodox::Threading::async_operation_source& async);
     Axodox::MachineLearning::Tensor CreateTextEmbeddings(const StableDiffusionInferenceTask& task, Axodox::Threading::async_operation_source& async);
     Axodox::MachineLearning::Tensor RunStableDiffusion(const StableDiffusionInferenceTask& task, const Axodox::MachineLearning::Tensor& textEmbeddings, Axodox::Threading::async_operation_source& async);
     Axodox::MachineLearning::Tensor DecodeVAE(const Axodox::MachineLearning::Tensor& latentImage, Axodox::Threading::async_operation_source& async);

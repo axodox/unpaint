@@ -5,6 +5,7 @@
 #include "NanToZeroConverter.h"
 #include "StringToImageSourceConverter.h"
 #include "BooleanInverter.h"
+#include "EqualsConverter.h"
 
 namespace winrt::Unpaint::implementation
 {

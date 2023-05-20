@@ -33,6 +33,7 @@ namespace winrt::Unpaint::implementation
     _modelExecutor(dependencies.resolve<StableDiffusionModelExecutor>()),
     _imageRepository(dependencies.resolve<ImageRepository>()),
     _navigationService(dependencies.resolve<INavigationService>()),
+    _inferenceMode(InferenceMode::Create),
     _guidanceStrength(7.f),
     _denoisingStrength(0.2f),
     _models(single_threaded_observable_vector<hstring>()),
@@ -59,6 +60,19 @@ namespace winrt::Unpaint::implementation
 
     _imageRepository->Refresh();
     SelectedImageIndex(int32_t(_images.Size()) - 1);
+  }
+
+  int32_t InferenceViewModel::SelectedModeIndex()
+  {
+    return static_cast<int32_t>(_inferenceMode);
+  }
+
+  void InferenceViewModel::SelectedModeIndex(int32_t value)
+  {
+    if (static_cast<InferenceMode>(value) == _inferenceMode) return;
+
+    _inferenceMode = static_cast<InferenceMode>(value);
+    _propertyChanged(*this, PropertyChangedEventArgs(L"SelectedModeIndex"));
   }
 
   hstring InferenceViewModel::PositivePromptPlaceholder()
@@ -314,15 +328,29 @@ namespace winrt::Unpaint::implementation
     }
 
     StableDiffusionInferenceTask task{
+      .Mode = _inferenceMode,
       .PositivePrompt = to_string(_positivePrompt.empty() ? PositivePromptPlaceholder() : _positivePrompt),
       .NegativePrompt = to_string(_negativePrompt.empty() ? NegativePromptPlaceholder() : _negativePrompt),
       .Resolution = { uint32_t(resolution.Width), uint32_t(resolution.Height) },
       .GuidanceStrength = _guidanceStrength,
+      .DenoisingStrength = _denoisingStrength,
       .SamplingSteps = _samplingSteps,
       .RandomSeed = _randomSeed,
       .SafeMode = _unpaintOptions->IsSafeModeEnabled(),
       .ModelId = to_string(_models.GetAt(_selectedModelIndex))
     };
+
+    if (_inferenceMode == InferenceMode::Modify)
+    {
+      if (_selectedImageIndex != -1)
+      {
+        task.InputImage = _imageRepository->GetPath(to_string(_images.GetAt(_selectedImageIndex)));
+      }
+      else
+      {
+        task.Mode = InferenceMode::Create;
+      }
+    }
 
     //Run inference
     co_await resume_background();
