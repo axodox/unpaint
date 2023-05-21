@@ -2,8 +2,7 @@
 #include "StableDiffusionModelExecutor.h"
 #include "Infrastructure/DependencyContainer.h"
 #include "Storage/FileIO.h"
-#include "MachineLearning/TextTokenizer.h"
-#include "MachineLearning/TextEncoder.h"
+#include "MachineLearning/TextEmbedder.h"
 #include "MachineLearning/VaeEncoder.h"
 #include "MachineLearning/VaeDecoder.h"
 #include "Threading/Parallel.h"
@@ -89,24 +88,18 @@ namespace winrt::Unpaint
   {
     if (_textEmbedding && _positivePrompt == task.PositivePrompt && _negativePrompt == task.NegativePrompt) return _textEmbedding;
 
-    async.update_state(NAN, "Loading text tokenizer...");
-    TextTokenizer textTokenizer{ *_onnxEnvironment, app_folder() };
-
-    async.update_state("Loading text encoder...");
-    TextEncoder textEncoder{ *_onnxEnvironment };
+    async.update_state(NAN, "Loading text embedder...");
+    TextEmbedder textEmbedder{ *_onnxEnvironment, app_folder() };
 
     async.update_state("Creating text embedding...");
-    auto tokenizedNegativePrompt = textTokenizer.TokenizeText((task.SafeMode ? _safetyFilter : "") + task.NegativePrompt);
-    auto encodedNegativePrompt = textEncoder.EncodeText(tokenizedNegativePrompt);
-
-    auto tokenizedPositivePrompt = textTokenizer.TokenizeText(task.PositivePrompt);
-    auto encodedPositivePrompt = textEncoder.EncodeText(tokenizedPositivePrompt);
-
-    async.update_state("Text embedding created.");
+    auto encodedNegativePrompt = textEmbedder.ProcessText((task.SafeMode ? _safetyFilter : "") + task.NegativePrompt);
+    auto encodedPositivePrompt = textEmbedder.ProcessText(task.PositivePrompt);
 
     _positivePrompt = task.PositivePrompt;
     _negativePrompt = task.NegativePrompt;
     _textEmbedding = encodedNegativePrompt.Concat(encodedPositivePrompt);
+    
+    async.update_state("Text embedding created.");
 
     return _textEmbedding;
   }

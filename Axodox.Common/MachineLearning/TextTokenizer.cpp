@@ -8,8 +8,8 @@ using namespace std;
 
 namespace Axodox::MachineLearning
 {
-  const size_t TextTokenizer::_maxTokenCount = 77;
-  const int32_t TextTokenizer::_blankToken = 49407;
+  const size_t TextTokenizer::MaxTokenCount = 77;
+  const int32_t TextTokenizer::BlankToken = 49407;
 
   TextTokenizer::TextTokenizer(OnnxEnvironment& environment, const std::filesystem::path& sourcePath) :
     _environment(environment),
@@ -26,14 +26,18 @@ namespace Axodox::MachineLearning
 
   Tensor TextTokenizer::TokenizeText(std::string_view text)
   {
+    return TokenizeText(std::vector<const char*>{ text.data() });
+  }
+
+  Tensor TextTokenizer::TokenizeText(const std::vector<const char*>& texts)
+  {
     //Load inputs
     Allocator allocator{ _session, _environment.MemoryInfo() };
     
-    vector<int64_t> inputShape{ 1 };
+    vector<int64_t> inputShape{ int64_t(texts.size()) };
     auto inputValue = Value::CreateTensor(allocator, inputShape.data(), inputShape.size(), ONNX_TENSOR_ELEMENT_DATA_TYPE_STRING);
     
-    const char* inputLines[] = { text.data() };
-    inputValue.FillStringTensor(inputLines, size(inputLines));
+    inputValue.FillStringTensor(texts.data(), texts.size());
 
     //Bind values
     IoBinding bindings{ _session };
@@ -46,28 +50,31 @@ namespace Axodox::MachineLearning
 
     //Get result
     auto outputValues = bindings.GetOutputValues();
-    auto outputSpan = AsSpan<int64_t>(outputValues[0]);
+    auto outputSpan = Tensor::FromOrtValue(outputValues[0]);
 
     //Pad results to a fixed size
-    Tensor result{ TensorType::Int32, 1, _maxTokenCount };
+    Tensor result{ TensorType::Int32, outputSpan.Shape[0], MaxTokenCount};
 
-    auto sToken = result.AsPointer<int32_t>();
-    auto pToken = sToken;
-    for (auto token : outputSpan)
+    for (size_t i = 0; i < outputSpan.Shape[0]; i++)
     {
-      *pToken++= int32_t(token);
-    }
+      auto sToken = result.AsPointer<int32_t>(i);
+      auto pToken = sToken;
+      for (auto token : outputSpan.AsSubSpan<int64_t>(i))
+      {
+        *pToken++ = int32_t(token);
+      }
 
-    auto eToken = result.AsPointer<int32_t>(1);
-    fill(pToken, eToken, _blankToken);
+      auto eToken = result.AsPointer<int32_t>(i + 1);
+      fill(pToken, eToken, BlankToken);
+    }
 
     return result;
   }
   
   Tensor TextTokenizer::GetUnconditionalTokens()
   {
-    Tensor result{ TensorType::Int32, 1, _maxTokenCount };
-    ranges::fill(result.AsSpan<int32_t>(), _blankToken);
+    Tensor result{ TensorType::Int32, 1, MaxTokenCount };
+    ranges::fill(result.AsSpan<int32_t>(), BlankToken);
 
     *result.AsPointer<int32_t>(0) = 49406;
     return result;

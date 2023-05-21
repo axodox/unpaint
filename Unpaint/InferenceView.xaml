@@ -321,7 +321,7 @@
           <ToolTipService.ToolTip>
             <StackPanel>
               <TextBlock Text="Positive prompt" FontWeight="Bold"/>
-              <TextBlock Text="Describe what you would like to see on the image."/>
+              <TextBlock Text="Describe what you would like to see on the image. You can control the attention (like this:1.2)." TextWrapping="WrapWholeWords"/>
             </StackPanel>
           </ToolTipService.ToolTip>
         </TextBox>
@@ -334,7 +334,7 @@
           <ToolTipService.ToolTip>
             <StackPanel>
               <TextBlock Text="Negative prompt" FontWeight="Bold"/>
-              <TextBlock Text="Describe what you would not like to see on the image."/>
+              <TextBlock Text="Describe what you would not like to see on the image. You can control the attention (like this:1.2)." TextWrapping="WrapWholeWords"/>
             </StackPanel>
           </ToolTipService.ToolTip>
         </TextBox>

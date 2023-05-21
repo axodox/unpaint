@@ -8,14 +8,16 @@ namespace Axodox::MachineLearning
   class TextTokenizer
   {
   public:
+    static const int32_t BlankToken;
+    static const size_t MaxTokenCount;
+
     TextTokenizer(OnnxEnvironment& environment, const std::filesystem::path& sourcePath = {});
 
     Tensor TokenizeText(std::string_view text);
+    Tensor TokenizeText(const std::vector<const char*>& texts);
     Tensor GetUnconditionalTokens();
 
   private:
-    static const size_t _maxTokenCount;
-    static const int32_t _blankToken;
 
     OnnxEnvironment& _environment;
     Ort::SessionOptions _sessionOptions;

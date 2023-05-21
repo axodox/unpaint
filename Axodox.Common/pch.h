@@ -6,6 +6,7 @@
 #include <variant>
 #include <array>
 #include <queue>
+#include <stack>
 #include <ranges>
 #include <functional>
 #include <future>
@@ -18,6 +19,8 @@
 #include <sstream>
 #include <set>
 #include <typeindex>
+#include <algorithm>
+#include <numeric>
 
 #define NOMINMAX
 #include <DirectXMath.h>

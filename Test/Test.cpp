@@ -15,6 +15,7 @@
 #include "MachineLearning/StableDiffustionInferer.h"
 #include "MachineLearning/VaeDecoder.h"
 #include "MachineLearning/VaeEncoder.h"
+#include "MachineLearning/TextEmbedder.h"
 
 using namespace Axodox::Graphics;
 using namespace Axodox::Infrastructure;
@@ -77,6 +78,10 @@ int main()
   winrt::init_apartment();
 
   OnnxEnvironment onnxEnvironment{ L"C:/dev/ai/realistic_vision_v1.4-fp16-vram" };
+
+  TextEmbedder embedder{onnxEnvironment};
+  embedder.ProcessText("a (simple (not so much:15) :0.1) prompt");
+
   //OnnxEnvironment onnxEnvironment{ L"D:/dev/Stable-Diffusion-USE_ONNX-FP16/model/safetensors-sd15-fp16" };
   //OnnxEnvironment onnxEnvironment{ L"D:/dev/Stable-Diffusion-USE_ONNX-FP16/model/safetensors-protogenX53Photorealism_10-fp16" };
   //OnnxEnvironment onnxEnvironment{ L"C:/dev/StableDiffusion/StableDiffusion" };
