@@ -2,7 +2,9 @@
 #include "InferenceViewModel.h"
 #include "InferenceViewModel.g.cpp"
 #include "Collections/ObservableExtensions.h"
+#include "Graphics/Textures/TextureData.h"
 #include "Infrastructure/WinRtDependencies.h"
+#include "Storage/UwpStorage.h"
 #include "Storage/FileIO.h"
 #include "Threading/AsyncOperation.h"
 #include "StringMapper.h"
@@ -497,6 +499,32 @@ namespace winrt::Unpaint::implementation
     error_code ec;
     filesystem::remove_all(_imageRepository->ImageRoot(), ec);
     _imageRepository->ProjectName(*it);
+  }
+
+  fire_and_forget InferenceViewModel::AddImage(Windows::Storage::StorageFile file)
+  {
+    auto lifetime = get_strong();
+    apartment_context context{};
+
+    co_await resume_background();
+
+    TextureData texture;
+    try
+    {
+      auto buffer = read_file(file);
+      texture = TextureData::FromBuffer(buffer);
+    }
+    catch (...)
+    { }
+
+    co_await context;
+
+    if (texture)
+    {
+      auto fileName = filesystem::path(file.Name().c_str()).replace_extension(".png");
+      _imageRepository->AddImage(texture, fileName.string());
+      SelectedImageIndex(int32_t(_images.Size()) - 1);
+    }
   }
 
   event_token InferenceViewModel::PropertyChanged(PropertyChangedEventHandler const& value)

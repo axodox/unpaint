@@ -105,6 +105,7 @@ namespace Unpaint
     void ShowImageDirectory();
     void CreateNewProject();
     void DeleteProject();
+    void AddImage(Windows.Storage.StorageFile file);
   }
 
   [default_interface]

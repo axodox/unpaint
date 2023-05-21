@@ -1,4 +1,5 @@
 #include "pch.h"
+#ifdef USE_ONNX
 #include "TextEmbedder.h"
 
 using namespace std;
@@ -224,3 +225,4 @@ namespace Axodox::MachineLearning
     }
   }
 }
+#endif

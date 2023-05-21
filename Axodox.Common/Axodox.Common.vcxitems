@@ -89,6 +89,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Storage\FileStream.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Storage\MemoryStream.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Storage\Stream.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Storage\UwpStorage.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Threading\AsyncOperation.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Threading\Events.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Threading\ManualDispatcher.h" />
@@ -164,6 +165,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Storage\FileStream.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Storage\MemoryStream.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Storage\Stream.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Storage\UwpStorage.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Threading\AsyncOperation.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Threading\ManualDispatcher.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Threading\Parallel.cpp" />

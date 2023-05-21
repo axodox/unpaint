@@ -65,6 +65,16 @@ namespace winrt::Unpaint
     }
   }
 
+  void ImageRepository::AddImage(const Axodox::Graphics::TextureData& image, std::string_view fileName)
+  {
+    auto imagePath = GetPath(fileName);
+    auto imageBuffer = image.ToBuffer();
+    auto success = try_write_file(imagePath, imageBuffer);
+
+    _images.push_back(string(fileName));
+    _events.raise(ImagesChanged, this);
+  }
+
   bool ImageRepository::RemoveImage(std::string_view imageId)
   {
     auto it = ranges::find(_images, imageId);

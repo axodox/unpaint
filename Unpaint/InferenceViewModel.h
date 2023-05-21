@@ -78,6 +78,7 @@ namespace winrt::Unpaint::implementation
     fire_and_forget ShowImageDirectory();
     fire_and_forget CreateNewProject();
     fire_and_forget DeleteProject();
+    fire_and_forget AddImage(Windows::Storage::StorageFile file);
 
     event_token PropertyChanged(Windows::UI::Xaml::Data::PropertyChangedEventHandler const& value);
     void PropertyChanged(event_token const& token);

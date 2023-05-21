@@ -146,7 +146,7 @@
     </Grid>
 
     <!-- Output image -->
-    <FlipView Grid.Row="1" Background="Transparent"
+    <FlipView Grid.Row="1" Background="Transparent" AllowDrop="True" DragOver="OnOutputImageDragOver" Drop="OnOutputImageDrop"
               ItemsSource="{x:Bind ViewModel.Images, Mode=OneWay}"
               SelectedIndex="{x:Bind ViewModel.SelectedImageIndex, Mode=TwoWay}">
       <FlipView.ItemTemplate>

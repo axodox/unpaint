@@ -20,6 +20,8 @@ namespace winrt::Unpaint::implementation
     void ToggleSettingsLock();
 
     void OnOutputImageDragStarting(Windows::UI::Xaml::UIElement const& sender, Windows::UI::Xaml::DragStartingEventArgs const& eventArgs);
+    void OnOutputImageDragOver(Windows::Foundation::IInspectable const& sender, Windows::UI::Xaml::DragEventArgs const& eventArgs);
+    fire_and_forget OnOutputImageDrop(Windows::Foundation::IInspectable const& sender, Windows::UI::Xaml::DragEventArgs const& eventArgs);
 
     event_token PropertyChanged(Windows::UI::Xaml::Data::PropertyChangedEventHandler const& value);
     void PropertyChanged(event_token const& token);
