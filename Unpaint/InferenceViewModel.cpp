@@ -568,6 +568,8 @@ namespace winrt::Unpaint::implementation
     if (_selectedImageIndex == -1) co_return;
 
     auto imagePath = _imageRepository->GetPath(to_string(_images.GetAt(_selectedImageIndex)));
+    if (imagePath.empty() || !filesystem::exists(imagePath)) co_return;
+
     _outputImage = co_await StorageFile::GetFileFromPathAsync(imagePath.c_str());
     _propertyChanged(*this, PropertyChangedEventArgs(L"OutputImage"));
   }
