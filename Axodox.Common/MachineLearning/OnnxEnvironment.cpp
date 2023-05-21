@@ -12,7 +12,7 @@ namespace Axodox::MachineLearning
     _environment(),
     _memoryInfo(MemoryInfo::CreateCpu(OrtArenaAllocator, OrtMemTypeDefault))
   {
-    _environment.UpdateEnvWithCustomLogLevel(ORT_LOGGING_LEVEL_ERROR);    
+    _environment.UpdateEnvWithCustomLogLevel(ORT_LOGGING_LEVEL_ERROR);
   }
 
   const std::filesystem::path& OnnxEnvironment::RootPath() const

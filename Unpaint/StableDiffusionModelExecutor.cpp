@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "StableDiffusionModelExecutor.h"
+#include "Infrastructure/BitwiseOperations.h"
 #include "Infrastructure/DependencyContainer.h"
 #include "Storage/FileIO.h"
 #include "MachineLearning/TextEmbedder.h"
@@ -12,6 +13,7 @@ using namespace Axodox::Infrastructure;
 using namespace Axodox::MachineLearning;
 using namespace Axodox::Storage;
 using namespace Axodox::Threading;
+using namespace DirectX;
 using namespace std;
 
 namespace winrt::Unpaint
@@ -23,7 +25,7 @@ namespace winrt::Unpaint
     _modelRepository(dependencies.resolve<ModelRepository>())
   { }
 
-  Axodox::MachineLearning::Tensor StableDiffusionModelExecutor::TryRunInference(const StableDiffusionInferenceTask& task, Axodox::Threading::async_operation& operation)
+  std::vector<Axodox::Graphics::TextureData> StableDiffusionModelExecutor::TryRunInference(const StableDiffusionInferenceTask& task, Axodox::Threading::async_operation& operation)
   {
     //Set up async source
     lock_guard lock(_mutex);
@@ -45,9 +47,10 @@ namespace winrt::Unpaint
     StableDiffusionInputs inputs;
     inputs.TextEmbeddings = CreateTextEmbeddings(task, async);
 
+    std::optional<XMUINT2> resolutionOverride;
     if (!task.InputImage.empty())
     {
-      auto imageTensor = LoadImage(task, async);
+      auto imageTensor = LoadImage(task, resolutionOverride, async);
       inputs.InputImage = EncodeVAE(imageTensor, async);
 
       inputs.InputMask = Tensor{ TensorType::Single, 1, 1, inputs.InputImage.Shape[2], inputs.InputImage.Shape[3] };
@@ -59,19 +62,66 @@ namespace winrt::Unpaint
     if (async.is_cancelled()) return {};
 
     //Prepare outputs
-    auto decocedImage = DecodeVAE(latentImage, async);
+    auto decodedImage = DecodeVAE(latentImage, async);
+    auto outputs = decodedImage.ToTextureData();
+    if (resolutionOverride)
+    {
+      for (auto& output : outputs)
+      {
+        if (output.Width > resolutionOverride->x)
+        {
+          output = output.TruncateHorizontally(resolutionOverride->x);
+        }
+        
+        if (output.Height > resolutionOverride->y)
+        {
+          output = output.TruncateVertically(resolutionOverride->y);
+        }
+      }
+    }
 
     //Return results
     async.update_state(1.f, "Done.");
-    return decocedImage;
+    return outputs;
   }
   
-  Axodox::MachineLearning::Tensor StableDiffusionModelExecutor::LoadImage(const StableDiffusionInferenceTask& task, Axodox::Threading::async_operation_source& async)
+  Axodox::MachineLearning::Tensor StableDiffusionModelExecutor::LoadImage(const StableDiffusionInferenceTask& task, std::optional<DirectX::XMUINT2>& resolutionOverride, Axodox::Threading::async_operation_source& async)
   {
     async.update_state(NAN, "Loading input image...");
     auto imageBuffer = try_read_file(task.InputImage);
     auto imageTexture = TextureData::FromBuffer(imageBuffer);
-    imageTexture = imageTexture.Resize(task.Resolution.x, task.Resolution.y);
+
+    auto sourceAspectRatio = float(imageTexture.Width) / float(imageTexture.Height);
+    auto targetAspectRatio = float(task.Resolution.x) / float(task.Resolution.y);
+
+    uint32_t width, height;
+    if (targetAspectRatio > sourceAspectRatio)
+    {
+      width = uint32_t(task.Resolution.x * sourceAspectRatio / targetAspectRatio);
+      height = task.Resolution.y;
+    }
+    else
+    {
+      width = task.Resolution.x;
+      height = uint32_t(task.Resolution.y * targetAspectRatio / sourceAspectRatio);
+    }
+
+    imageTexture = imageTexture.Resize(width, height);
+
+    if (!are_equal(task.Resolution, XMUINT2{ width, height }))
+    {
+      if (targetAspectRatio > sourceAspectRatio)
+      {
+        imageTexture = imageTexture.ExtendHorizontally(task.Resolution.x);
+      }
+      else
+      {
+        imageTexture = imageTexture.ExtendVertically(task.Resolution.y);
+      }
+
+      resolutionOverride = { width, height };
+    }
+
     return Tensor::FromTextureData(imageTexture);
   }
 

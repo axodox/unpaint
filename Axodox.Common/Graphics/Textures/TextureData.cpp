@@ -227,7 +227,7 @@ namespace Axodox::Graphics
     return result;
   }
 
-  TextureData TextureData::FromWicBitmap(const winrt::com_ptr<IWICBitmap>& wicBitmap)
+  TextureData TextureData::FromWicBitmap(const winrt::com_ptr<IWICBitmapSource>& wicBitmap)
   {
     WICPixelFormatGUID format;
     check_hresult(wicBitmap->GetPixelFormat(&format));
@@ -244,22 +244,8 @@ namespace Axodox::Graphics
       .Height = int32_t(height)
     };
 
-    com_ptr<IWICBitmapLock> wicBitmapLock;
-    check_hresult(wicBitmap->Lock(&wicRect, WICBitmapLockRead, wicBitmapLock.put()));
-
-    uint32_t bufferSize;
-    uint32_t bufferStride;
-    uint8_t* bufferData;
-    check_hresult(wicBitmapLock->GetDataPointer(&bufferSize, &bufferData));
-    check_hresult(wicBitmapLock->GetStride(&bufferStride));
-
     TextureData result{ width, height, DXGI_FORMAT_B8G8R8A8_UNORM_SRGB };
-    for (uint32_t row = 0; row < height; row++)
-    {
-      auto pSource = reinterpret_cast<uint32_t*>(bufferData + bufferStride * row);
-      auto pTarget = result.Row<uint32_t>(row);      
-      memcpy(pTarget, pSource, width * sizeof(uint32_t));
-    }
+    check_hresult(wicBitmap->CopyPixels(&wicRect, result.Stride, result.ByteCount(), result.Buffer.data()));
 
     return result;
   }
@@ -271,7 +257,7 @@ namespace Axodox::Graphics
     auto wicFactory = WicFactory();
 
     com_ptr<IWICBitmap> wicBitmap;
-    check_hresult(wicFactory->CreateBitmap(Width, Height, GUID_WICPixelFormat32bppBGRA, WICBitmapNoCache, wicBitmap.put()));
+    check_hresult(wicFactory->CreateBitmap(Width, Height, GUID_WICPixelFormat32bppBGRA, WICBitmapCacheOnDemand, wicBitmap.put()));
 
     WICRect wicRect{
       .X = 0,
@@ -310,7 +296,7 @@ namespace Axodox::Graphics
     check_hresult(wicFactory->CreateBitmapScaler(wicBitmapScaler.put()));
     check_hresult(wicBitmapScaler->Initialize(wicBitmap.get(), width, height, WICBitmapInterpolationModeHighQualityCubic));
 
-    return TextureData::FromWicBitmap(wicBitmapScaler.as<IWICBitmap>());
+    return TextureData::FromWicBitmap(wicBitmapScaler);
   }
 
   winrt::Windows::Graphics::Imaging::SoftwareBitmap TextureData::ToSoftwareBitmap() const
@@ -329,5 +315,75 @@ namespace Axodox::Graphics
     memcpy(output, input, min(capacity, ByteCount()));
 
     return bitmap;
+  }
+
+  TextureData TextureData::ExtendHorizontally(uint32_t width) const
+  {
+    if (width <= Width) return TextureData{ *this };
+
+    TextureData result{ width, Height, Format };
+
+    auto bytesPerPixel = BitsPerPixel(Format) / 8;
+    auto offset = bytesPerPixel * (width - Width) / 2;
+    for (uint32_t row = 0; row < Height; row++)
+    {
+      auto pSource = Buffer.data() + row * Stride;
+      auto pTarget = result.Buffer.data() + row * result.Stride + offset;
+      memcpy(pTarget, pSource, Stride);
+    }
+
+    return result;
+  }
+
+  TextureData TextureData::ExtendVertically(uint32_t height) const
+  {
+    if (height <= Height) return TextureData{ *this };
+
+    TextureData result{ Width, height, Format };
+
+    auto offset = Stride * (height - Height) / 2;
+    for (uint32_t row = 0; row < Height; row++)
+    {
+      auto pSource = Buffer.data() + row * Stride;
+      auto pTarget = result.Buffer.data() + row * result.Stride + offset;
+      memcpy(pTarget, pSource, Stride);
+    }
+
+    return result;
+  }
+
+  TextureData TextureData::TruncateHorizontally(uint32_t width) const
+  {
+    if (width >= Width) return TextureData{ *this };
+
+    TextureData result{ width, Height, Format };
+
+    auto bytesPerPixel = BitsPerPixel(Format) / 8;
+    auto offset = bytesPerPixel * (Width - width) / 2;
+    for (uint32_t row = 0; row < Height; row++)
+    {
+      auto pSource = Buffer.data() + row * Stride + offset;
+      auto pTarget = result.Buffer.data() + row * result.Stride;
+      memcpy(pTarget, pSource, result.Stride);
+    }
+
+    return result;
+  }
+
+  TextureData TextureData::TruncateVertically(uint32_t height) const
+  {
+    if (height >= Height) return TextureData{ *this };
+
+    TextureData result{ Width, height, Format };
+
+    auto offset = Stride * (Height - height) / 2;
+    for (uint32_t row = 0; row < Height; row++)
+    {
+      auto pSource = Buffer.data() + row * Stride + offset;
+      auto pTarget = result.Buffer.data() + row * result.Stride;
+      memcpy(pTarget, pSource, Stride);
+    }
+
+    return result;
   }
 }

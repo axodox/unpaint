@@ -3,6 +3,7 @@
 #include "InferenceViewModel.g.cpp"
 #include "Collections/ObservableExtensions.h"
 #include "Graphics/Textures/TextureData.h"
+#include "Infrastructure/BitwiseOperations.h"
 #include "Infrastructure/WinRtDependencies.h"
 #include "Storage/UwpStorage.h"
 #include "Storage/FileIO.h"
@@ -15,6 +16,7 @@ using namespace Axodox::Infrastructure;
 using namespace Axodox::Json;
 using namespace Axodox::Storage;
 using namespace Axodox::Threading;
+using namespace DirectX;
 using namespace std;
 using namespace winrt::Windows::ApplicationModel::DataTransfer;
 using namespace winrt::Windows::Foundation;
@@ -377,18 +379,17 @@ namespace winrt::Unpaint::implementation
       Status(status);
       });
 
-    auto result = _modelExecutor->TryRunInference(task, asyncOperation);
-
+    auto results = _modelExecutor->TryRunInference(task, asyncOperation);
+    
     //Update UI
     co_await callerContext;
 
-    if (result)
+    if (!results.empty())
     {
       Progress(0.f);
       Status(L"");
 
-      auto textureData = result.ToTextureData();
-      _imageRepository->AddImage(textureData[0], task.ToMetadata());
+      _imageRepository->AddImage(results[0], task.ToMetadata());
       SelectedImageIndex(int32_t(_images.Size()) - 1);
     }
   }

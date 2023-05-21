@@ -71,8 +71,11 @@ namespace winrt::Unpaint
     auto imageBuffer = image.ToBuffer();
     auto success = try_write_file(imagePath, imageBuffer);
 
-    _images.push_back(string(fileName));
-    _events.raise(ImagesChanged, this);
+    if (success)
+    {
+      _images.push_back(string(fileName));
+      _events.raise(ImagesChanged, this);
+    }
   }
 
   bool ImageRepository::RemoveImage(std::string_view imageId)
