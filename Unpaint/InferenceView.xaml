@@ -151,7 +151,7 @@
               SelectedIndex="{x:Bind ViewModel.SelectedImageIndex, Mode=TwoWay}">
       <FlipView.ItemTemplate>
         <DataTemplate x:DataType="x:String">
-          <Image Grid.Row="1" Stretch="Uniform" Source="{x:Bind Converter={StaticResource StringToImageSourceConverter}}"/>
+          <Image Grid.Row="1" Stretch="Uniform" Source="{x:Bind Converter={StaticResource StringToImageSourceConverter}}" CanDrag="True" DragStarting="OnOutputImageDragStarting"/>
         </DataTemplate>
       </FlipView.ItemTemplate>
     </FlipView>

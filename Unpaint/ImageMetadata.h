@@ -12,6 +12,7 @@ namespace winrt::Unpaint
     Axodox::Json::json_property<uint32_t> Height;
 
     Axodox::Json::json_property<float> GuidanceStrength;
+    Axodox::Json::json_property<float> DenoisingStrength;
     Axodox::Json::json_property<uint32_t> SamplingSteps;
     Axodox::Json::json_property<uint32_t> RandomSeed;
     Axodox::Json::json_property<bool> SafeMode;

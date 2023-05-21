@@ -6,6 +6,7 @@
 using namespace Axodox::Infrastructure;
 using namespace winrt;
 using namespace winrt::Windows::ApplicationModel::Core;
+using namespace winrt::Windows::ApplicationModel::DataTransfer;
 using namespace winrt::Windows::UI::Xaml;
 using namespace winrt::Windows::UI::Xaml::Data;
 
@@ -46,6 +47,12 @@ namespace winrt::Unpaint::implementation
   void InferenceView::ToggleSettingsLock()
   {
     _viewModel.IsSettingsLocked(!_viewModel.IsSettingsLocked());
+  }
+
+  void InferenceView::OnOutputImageDragStarting(Windows::UI::Xaml::UIElement const& /*sender*/, Windows::UI::Xaml::DragStartingEventArgs const& eventArgs)
+  {
+    eventArgs.AllowedOperations(DataPackageOperation::Copy);
+    eventArgs.Data().SetStorageItems({ ViewModel().OutputImage() });
   }
 
   event_token InferenceView::PropertyChanged(Windows::UI::Xaml::Data::PropertyChangedEventHandler const& value)

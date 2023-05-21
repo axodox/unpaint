@@ -279,6 +279,7 @@ namespace winrt::Unpaint::implementation
     _propertyChanged(*this, PropertyChangedEventArgs(L"HasImageSelected"));
 
     LoadImageMetadataAsync();
+    RefreshOutputImageAsync();
   }
 
   hstring InferenceViewModel::ImagePosition()
@@ -286,17 +287,9 @@ namespace winrt::Unpaint::implementation
     return std::format(L"{} / {}", _selectedImageIndex + 1, _images.Size()).c_str();
   }
 
-  Windows::UI::Xaml::Media::ImageSource InferenceViewModel::OutputImage()
+  Windows::Storage::StorageFile InferenceViewModel::OutputImage()
   {
     return _outputImage;
-  }
-
-  void InferenceViewModel::OutputImage(Windows::UI::Xaml::Media::ImageSource const& value)
-  {
-    if (value == _outputImage) return;
-
-    _outputImage = value;
-    _propertyChanged(*this, PropertyChangedEventArgs(L"OutputImage"));
   }
 
   Windows::Foundation::Collections::IObservableVector<hstring> InferenceViewModel::Projects()
@@ -389,17 +382,10 @@ namespace winrt::Unpaint::implementation
 
     if (result)
     {
-      auto textureData = result.ToTextureData();
-      auto softwareBitmap = textureData[0].ToSoftwareBitmap();
-
-      SoftwareBitmapSource outputBitmap;
-      co_await outputBitmap.SetBitmapAsync(softwareBitmap);
-
-      OutputImage(outputBitmap);
-
       Progress(0.f);
       Status(L"");
 
+      auto textureData = result.ToTextureData();
       _imageRepository->AddImage(textureData[0], task.ToMetadata());
       SelectedImageIndex(int32_t(_images.Size()) - 1);
     }
@@ -415,16 +401,10 @@ namespace winrt::Unpaint::implementation
     _navigationService.NavigateToView(xaml_typename<SettingsView>());
   }
 
-  fire_and_forget InferenceViewModel::CopyToClipboard()
+  void InferenceViewModel::CopyToClipboard()
   {
-    auto lifetime = get_strong();
-    if (!HasImageSelected()) co_return;
-
-    auto imageId = to_string(_images.GetAt(_selectedImageIndex));
-    auto imagePath = _imageRepository->GetPath(imageId);
-
     DataPackage dataPackage{};
-    dataPackage.SetBitmap(RandomAccessStreamReference::CreateFromFile(co_await StorageFile::GetFileFromPathAsync(imagePath.c_str())));
+    dataPackage.SetStorageItems({ OutputImage() });
     Clipboard::SetContent(dataPackage);
   }
 
@@ -578,7 +558,17 @@ namespace winrt::Unpaint::implementation
     PositivePrompt(to_hstring(*imageMetadata->PositivePrompt));
     NegativePrompt(to_hstring(*imageMetadata->NegativePrompt));
     GuidanceStrength(*imageMetadata->GuidanceStrength);
+    DenoisingStrength(*imageMetadata->DenoisingStrength);
     SamplingSteps(*imageMetadata->SamplingSteps);
     RandomSeed(*imageMetadata->RandomSeed);
+  }
+
+  fire_and_forget InferenceViewModel::RefreshOutputImageAsync()
+  {
+    if (_selectedImageIndex == -1) co_return;
+
+    auto imagePath = _imageRepository->GetPath(to_string(_images.GetAt(_selectedImageIndex)));
+    _outputImage = co_await StorageFile::GetFileFromPathAsync(imagePath.c_str());
+    _propertyChanged(*this, PropertyChangedEventArgs(L"OutputImage"));
   }
 }

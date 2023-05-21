@@ -9,6 +9,7 @@ namespace winrt::Unpaint
     Width(this, "Width"),
     Height(this, "Height"),
     GuidanceStrength(this, "GuidanceStrength"),
+    DenoisingStrength(this, "DenoisingStrength", 1.f),
     SamplingSteps(this, "SamplingSteps"),
     RandomSeed(this, "RandomSeed"),
     SafeMode(this, "SafeMode"),

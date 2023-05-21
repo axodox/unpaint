@@ -89,7 +89,7 @@ namespace Unpaint
     Int32 SelectedImageIndex;
     String ImagePosition{ get; };
     
-    Windows.UI.Xaml.Media.ImageSource OutputImage{ get; };
+    Windows.Storage.StorageFile OutputImage{ get; };
 
     IObservableVector<String> Projects{ get; };
     Int32 SelectedProjectIndex;

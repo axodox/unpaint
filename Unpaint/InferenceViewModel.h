@@ -61,8 +61,7 @@ namespace winrt::Unpaint::implementation
     void SelectedImageIndex(int32_t value);
     hstring ImagePosition();
 
-    Windows::UI::Xaml::Media::ImageSource OutputImage();
-    void OutputImage(Windows::UI::Xaml::Media::ImageSource const& value);
+    Windows::Storage::StorageFile OutputImage();
 
     Windows::Foundation::Collections::IObservableVector<hstring> Projects();
     int32_t SelectedProjectIndex();
@@ -73,7 +72,7 @@ namespace winrt::Unpaint::implementation
     void ManageModels();
     void OpenSettings();
 
-    fire_and_forget CopyToClipboard();
+    void CopyToClipboard();
     fire_and_forget SaveImageAs();
     fire_and_forget DeleteImage();
     fire_and_forget ShowImageDirectory();
@@ -117,7 +116,7 @@ namespace winrt::Unpaint::implementation
     Axodox::Infrastructure::event_subscription _imagesChangedSubscription;
     Windows::Foundation::Collections::IObservableVector<hstring> _images;
     int32_t _selectedImageIndex;
-    Windows::UI::Xaml::Media::ImageSource _outputImage;
+    Windows::Storage::StorageFile _outputImage;
 
     Windows::Foundation::Collections::IObservableVector<hstring> _projects;
     int32_t _selectedProjectIndex;
@@ -125,6 +124,7 @@ namespace winrt::Unpaint::implementation
     void OnImagesChanged(ImageRepository* sender);
 
     fire_and_forget LoadImageMetadataAsync();
+    fire_and_forget RefreshOutputImageAsync();
   };
 }
 

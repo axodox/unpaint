@@ -157,6 +157,7 @@ namespace winrt::Unpaint
     *result.Height = Resolution.y;
 
     *result.GuidanceStrength = GuidanceStrength;
+    *result.DenoisingStrength = DenoisingStrength;
     *result.SamplingSteps = SamplingSteps;
     *result.RandomSeed = RandomSeed;
     *result.SafeMode = SafeMode;
