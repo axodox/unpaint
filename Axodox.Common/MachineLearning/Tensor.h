@@ -156,6 +156,15 @@ namespace Axodox::MachineLearning
 
     static Tensor CreateRandom(shape_t shape, std::span<std::minstd_rand> randoms, float scale = 1.f);
 
+    template<typename T>
+    void Fill(T value)
+    {
+      for (auto& item : AsSpan<T>())
+      {
+        item = value;
+      }
+    }
+
     Tensor Concat(const Tensor& tensor) const;
 
     bool operator==(const Tensor& other) const;

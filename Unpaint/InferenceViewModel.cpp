@@ -34,6 +34,7 @@ namespace winrt::Unpaint::implementation
     _imageRepository(dependencies.resolve<ImageRepository>()),
     _navigationService(dependencies.resolve<INavigationService>()),
     _inferenceMode(InferenceMode::Create),
+    _isSettingsLocked(true),
     _guidanceStrength(7.f),
     _denoisingStrength(0.2f),
     _models(single_threaded_observable_vector<hstring>()),
@@ -73,6 +74,21 @@ namespace winrt::Unpaint::implementation
 
     _inferenceMode = static_cast<InferenceMode>(value);
     _propertyChanged(*this, PropertyChangedEventArgs(L"SelectedModeIndex"));
+  }
+
+  bool InferenceViewModel::IsSettingsLocked()
+  {
+    return _isSettingsLocked;
+  }
+
+  void InferenceViewModel::IsSettingsLocked(bool value)
+  {
+    if (value == _isSettingsLocked) return;
+
+    _isSettingsLocked = value;
+    _propertyChanged(*this, PropertyChangedEventArgs(L"IsSettingsLocked"));
+
+    LoadImageMetadataAsync();
   }
 
   hstring InferenceViewModel::PositivePromptPlaceholder()
@@ -530,7 +546,7 @@ namespace winrt::Unpaint::implementation
   
   fire_and_forget InferenceViewModel::LoadImageMetadataAsync()
   {
-    if (_selectedImageIndex == -1) co_return;
+    if (_selectedImageIndex == -1 || _isSettingsLocked) co_return;
    
     //Capture context
     apartment_context callerContext;

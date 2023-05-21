@@ -43,6 +43,11 @@ namespace winrt::Unpaint::implementation
     return !_navigationService.IsPointerOverTitleBar() && !ViewModel().Status().empty();
   }
 
+  void InferenceView::ToggleSettingsLock()
+  {
+    _viewModel.IsSettingsLocked(!_viewModel.IsSettingsLocked());
+  }
+
   event_token InferenceView::PropertyChanged(Windows::UI::Xaml::Data::PropertyChangedEventHandler const& value)
   {
     return _propertyChanged.add(value);

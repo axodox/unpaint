@@ -206,6 +206,14 @@
           <ComboBoxItem>Create</ComboBoxItem>
           <ComboBoxItem>Modify</ComboBoxItem>
         </ComboBox>
+
+        <!-- General controls -->
+        <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right">
+          <ToggleSwitch FontFamily="Segoe Fluent Icons" FontSize="20" OnContent="&#xe718;" OffContent="&#xe77a;" VerticalAlignment="Center" Margin="0,-10" Background="Transparent"
+                        IsOn="{x:Bind ViewModel.IsSettingsLocked, Mode=TwoWay}" Style="{StaticResource FlatToggleSwitchStyle}" PointerPressed="{x:Bind ToggleSettingsLock}"
+                        ToolTipService.ToolTip="Lock custom settings or show the settings used for generating the selected image."/>
+        </StackPanel>
+
       </Grid>      
 
       <!-- Bottom section -->
@@ -309,7 +317,7 @@
         <!-- Positive prompt -->
         <TextBox Grid.Column="1" Grid.Row="0" TextWrapping="Wrap" Padding="36,4,10,0"
                  PlaceholderText="{x:Bind ViewModel.PositivePromptPlaceholder}"
-                 Text="{x:Bind ViewModel.PositivePrompt, Mode=TwoWay}">
+                 Text="{x:Bind ViewModel.PositivePrompt, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
           <ToolTipService.ToolTip>
             <StackPanel>
               <TextBlock Text="Positive prompt" FontWeight="Bold"/>
@@ -322,7 +330,7 @@
         <!-- Negative prompt -->
         <TextBox Grid.Column="1" Grid.Row="1" TextWrapping="Wrap" Padding="36,4,10,0"
                  PlaceholderText="{x:Bind ViewModel.NegativePromptPlaceholder}"
-                 Text="{x:Bind ViewModel.NegativePrompt, Mode=TwoWay}">
+                 Text="{x:Bind ViewModel.NegativePrompt, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
           <ToolTipService.ToolTip>
             <StackPanel>
               <TextBlock Text="Negative prompt" FontWeight="Bold"/>

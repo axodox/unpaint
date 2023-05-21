@@ -83,7 +83,7 @@ int main()
   //OnnxEnvironment onnxEnvironment{ L"D:/dev/stable-diffusion-2-1-fp16-onnx" };
 
   //Load source image
-  /*Tensor latentInput;
+  Tensor latentInput;
   {
     auto pngBuffer = read_file(L"bin/input.png");
     auto imageTexture = TextureData::FromBuffer(pngBuffer);
@@ -91,15 +91,15 @@ int main()
 
     VaeEncoder vaeEncoder{ onnxEnvironment };
     latentInput = vaeEncoder.EncodeVae(imageTensor);
-  }*/
+  }
 
   //Load mask image
-  /*Tensor maskInput;
+  Tensor maskInput;
   {
     auto pngBuffer = read_file(L"bin/mask.png");
     auto imageTexture = TextureData::FromBuffer(pngBuffer, TextureImageFormat::Gray8);
     maskInput = Tensor::FromTextureData(imageTexture);
-  }*/
+  }
 
   //Create text embeddings
   Tensor textEmbeddings;
@@ -129,9 +129,9 @@ int main()
       .Height = 768,
       .Seed = 88,
       .TextEmbeddings = textEmbeddings,
-      /*.LatentInput = latentInput,
-      .MaskInput = maskInput,*/
-      //.DenoisingStrength = 0.6f
+      .LatentInput = latentInput,
+      .MaskInput = maskInput,
+      .DenoisingStrength = 0.6f
     };
 
     latentResult = stableDiffusion.RunInference(options);

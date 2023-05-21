@@ -4,9 +4,11 @@
 #include "Storage/FileIO.h"
 #include "MachineLearning/TextTokenizer.h"
 #include "MachineLearning/TextEncoder.h"
+#include "MachineLearning/VaeEncoder.h"
 #include "MachineLearning/VaeDecoder.h"
 #include "Threading/Parallel.h"
 
+using namespace Axodox::Graphics;
 using namespace Axodox::Infrastructure;
 using namespace Axodox::MachineLearning;
 using namespace Axodox::Storage;
@@ -41,10 +43,23 @@ namespace winrt::Unpaint
     }
 
     //Prepare inputs
-    auto textEmbeddings = CreateTextEmbeddings(task, async);
-    auto latentImage = RunStableDiffusion(task, textEmbeddings, async);
+    StableDiffusionInputs inputs;
+    inputs.TextEmbeddings = CreateTextEmbeddings(task, async);
+
+    if (!task.InputImage.empty())
+    {
+      auto imageTensor = LoadImage(task, async);
+      inputs.InputImage = EncodeVAE(imageTensor, async);
+
+      inputs.InputMask = Tensor{ TensorType::Single, 1, 1, inputs.InputImage.Shape[2], inputs.InputImage.Shape[3] };
+      inputs.InputMask.Fill(1.f);
+    }
+
+    //Run diffusion
+    auto latentImage = RunStableDiffusion(task, inputs, async);
     if (async.is_cancelled()) return {};
 
+    //Prepare outputs
     auto decocedImage = DecodeVAE(latentImage, async);
 
     //Return results
@@ -52,10 +67,22 @@ namespace winrt::Unpaint
     return decocedImage;
   }
   
-  Axodox::Graphics::TextureData StableDiffusionModelExecutor::LoadImage(const StableDiffusionInferenceTask& task, Axodox::Threading::async_operation_source& async)
+  Axodox::MachineLearning::Tensor StableDiffusionModelExecutor::LoadImage(const StableDiffusionInferenceTask& task, Axodox::Threading::async_operation_source& async)
   {
+    async.update_state(NAN, "Loading input image...");
+    auto imageBuffer = try_read_file(task.InputImage);
+    auto imageTexture = TextureData::FromBuffer(imageBuffer);
+    imageTexture = imageTexture.Resize(task.Resolution.x, task.Resolution.y);
+    return Tensor::FromTextureData(imageTexture);
+  }
 
-    return Axodox::Graphics::TextureData();
+  Axodox::MachineLearning::Tensor StableDiffusionModelExecutor::EncodeVAE(const Axodox::MachineLearning::Tensor& colorImage, Axodox::Threading::async_operation_source& async)
+  {
+    async.update_state(NAN, "Loading VAE encoder...");
+    VaeEncoder vaeEncoder{ *_onnxEnvironment };
+
+    async.update_state("Encoding color image...");
+    return vaeEncoder.EncodeVae(colorImage);
   }
 
   Axodox::MachineLearning::Tensor StableDiffusionModelExecutor::CreateTextEmbeddings(const StableDiffusionInferenceTask& task, Axodox::Threading::async_operation_source& async)
@@ -84,7 +111,7 @@ namespace winrt::Unpaint
     return _textEmbedding;
   }
 
-  Axodox::MachineLearning::Tensor StableDiffusionModelExecutor::RunStableDiffusion(const StableDiffusionInferenceTask& task, const Axodox::MachineLearning::Tensor& textEmbeddings, Axodox::Threading::async_operation_source& async)
+  Axodox::MachineLearning::Tensor StableDiffusionModelExecutor::RunStableDiffusion(const StableDiffusionInferenceTask& task, const StableDiffusionInputs& inputs, Axodox::Threading::async_operation_source& async)
   {
     async.update_state(NAN, "Loading denoiser...");
     if (!_denoiser) _denoiser = make_unique<StableDiffusionInferer>(*_onnxEnvironment);
@@ -94,8 +121,12 @@ namespace winrt::Unpaint
       .BatchSize = 1,
       .Width = task.Resolution.x,
       .Height = task.Resolution.y,
-      .Seed = task.RandomSeed,
-      .TextEmbeddings = textEmbeddings
+      .GuidanceScale = task.GuidanceStrength,
+      .Seed = task.RandomSeed,      
+      .TextEmbeddings = inputs.TextEmbeddings,
+      .LatentInput = inputs.InputImage,
+      .MaskInput = inputs.InputMask,
+      .DenoisingStrength = task.Mode == InferenceMode::Modify ? task.DenoisingStrength : 1.f
     };
 
     async.update_state("Running denoiser...");

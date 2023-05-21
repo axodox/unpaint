@@ -29,4 +29,87 @@
     <Setter Property="HorizontalAlignment" Value="Center"/>
     <Setter Property="Margin" Value="36"/>
   </Style>
+
+  <Style x:Key="FlatToggleSwitchStyle" TargetType="ToggleSwitch">
+    <Setter Property="Padding" Value="5"/>
+    <Setter Property="CornerRadius" Value="{ThemeResource ControlCornerRadius}"/>
+    <Setter Property="Background" Value="Transparent"/>
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="ToggleSwitch">
+          <Grid x:Name="RootGrid"
+                IsHitTestVisible="True"
+                Control.IsTemplateFocusTarget="True"
+                Background="{TemplateBinding Background}"
+                Padding="{TemplateBinding Padding}"
+                BorderBrush="{TemplateBinding BorderBrush}"
+                BorderThickness="{TemplateBinding BorderThickness}"
+                CornerRadius="{TemplateBinding CornerRadius}">
+
+            <VisualStateManager.VisualStateGroups>
+              <VisualStateGroup x:Name="CommonStates">
+                <VisualState x:Name="Normal" />
+                <VisualState x:Name="PointerOver">
+                  <Storyboard>
+                    <ObjectAnimationUsingKeyFrames Storyboard.TargetName="RootGrid" Storyboard.TargetProperty="Background">
+                      <DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource ButtonBackgroundPointerOver}" />
+                    </ObjectAnimationUsingKeyFrames>
+                  </Storyboard>
+                </VisualState>
+                <VisualState x:Name="Pressed" />
+                <VisualState x:Name="Disabled" />
+              </VisualStateGroup>
+              <VisualStateGroup x:Name="ToggleStates">
+                <VisualStateGroup.Transitions>
+                  <VisualTransition x:Name="DraggingToOnTransition" From="Dragging" To="On"/>
+                  <VisualTransition x:Name="OnToDraggingTransition" From="On" To="Dragging"/>
+                  <VisualTransition x:Name="DraggingToOffTransition" From="Dragging" To="Off"/>
+                  <VisualTransition x:Name="OnToOffTransition" From="On" To="Off"/>
+                  <VisualTransition x:Name="OffToOnTransition" From="Off" To="On"/>
+                </VisualStateGroup.Transitions>
+
+                <VisualState x:Name="Dragging" />
+                <VisualState x:Name="Off"/>
+                <VisualState x:Name="On"/>
+              </VisualStateGroup>
+              <VisualStateGroup x:Name="ContentStates">
+                <VisualState x:Name="OffContent">
+                  <Storyboard>
+                    <DoubleAnimation Storyboard.TargetName="OffContentPresenter" Storyboard.TargetProperty="Opacity" To="1" Duration="{StaticResource ControlFasterAnimationDuration}"/>
+                    <DoubleAnimation Storyboard.TargetName="OnContentPresenter" Storyboard.TargetProperty="Opacity" To="0" Duration="{StaticResource ControlFasterAnimationDuration}"/>
+                  </Storyboard>
+                </VisualState>
+                <VisualState x:Name="OnContent">
+                  <Storyboard>
+                    <DoubleAnimation Storyboard.TargetName="OffContentPresenter" Storyboard.TargetProperty="Opacity" To="0" Duration="{StaticResource ControlFasterAnimationDuration}"/>
+                    <DoubleAnimation Storyboard.TargetName="OnContentPresenter" Storyboard.TargetProperty="Opacity" To="1" Duration="{StaticResource ControlFasterAnimationDuration}"/>
+                  </Storyboard>
+                </VisualState>
+              </VisualStateGroup>
+            </VisualStateManager.VisualStateGroups>
+
+            <ContentPresenter x:Name="OffContentPresenter"
+                              Opacity="0"
+                              Foreground="{TemplateBinding Foreground}"
+                              IsHitTestVisible="False"
+                              Content="{TemplateBinding OffContent}"
+                              ContentTemplate="{TemplateBinding OffContentTemplate}"
+                              HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                              VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                              AutomationProperties.AccessibilityView="Raw" />
+              
+            <ContentPresenter x:Name="OnContentPresenter"
+                              Opacity="0"
+                              Foreground="{TemplateBinding Foreground}"
+                              IsHitTestVisible="False"
+                              Content="{TemplateBinding OnContent}"
+                              ContentTemplate="{TemplateBinding OnContentTemplate}"
+                              HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                              VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                              AutomationProperties.AccessibilityView="Raw" />
+          </Grid>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
 </ResourceDictionary>

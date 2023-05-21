@@ -61,6 +61,8 @@ namespace Unpaint
 
     Int32 SelectedModeIndex;
 
+    Boolean IsSettingsLocked;
+
     String PositivePrompt;
     String PositivePromptPlaceholder{ get; };
 

@@ -88,6 +88,8 @@ namespace Axodox::Graphics
 
   TextureData TextureData::FromBuffer(std::span<const uint8_t> buffer, TextureImageFormat format, std::string* metadata)
   {
+    if (buffer.empty()) return {};
+
     auto wicFactory = WicFactory();
 
     //Load data to WIC bitmap

@@ -15,6 +15,9 @@ namespace winrt::Unpaint::implementation
     int32_t SelectedModeIndex();
     void SelectedModeIndex(int32_t value);
 
+    bool IsSettingsLocked();
+    void IsSettingsLocked(bool value);
+
     hstring PositivePromptPlaceholder();
     hstring PositivePrompt();
     void PositivePrompt(hstring const& value);
@@ -93,6 +96,8 @@ namespace winrt::Unpaint::implementation
     event<Windows::UI::Xaml::Data::PropertyChangedEventHandler> _propertyChanged;
 
     InferenceMode _inferenceMode;
+
+    bool _isSettingsLocked;
 
     hstring _positivePrompt, _negativePrompt;
     

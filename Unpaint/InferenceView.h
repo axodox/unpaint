@@ -17,6 +17,8 @@ namespace winrt::Unpaint::implementation
 
     bool IsStatusVisible();
 
+    void ToggleSettingsLock();
+
     event_token PropertyChanged(Windows::UI::Xaml::Data::PropertyChangedEventHandler const& value);
     void PropertyChanged(event_token const& token);
 

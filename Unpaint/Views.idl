@@ -28,6 +28,7 @@ namespace Unpaint
     InferenceViewModel ViewModel{ get; };
 
     Boolean IsStatusVisible{ get; };
+    void ToggleSettingsLock();
   }
 
   [default_interface]
