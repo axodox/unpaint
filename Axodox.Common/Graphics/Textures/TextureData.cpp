@@ -154,7 +154,7 @@ namespace Axodox::Graphics
     //Define result
     TextureData result;
     check_hresult(wicBitmap->GetSize(&result.Width, &result.Height));
-    result.Stride = result.Width * uint32_t(BitsPerPixel(dxgiFormat));
+    result.Stride = result.Width * uint32_t(BitsPerPixel(dxgiFormat)) / 8;
     result.Buffer.resize(result.ByteCount());
     result.Format = dxgiFormat;
 

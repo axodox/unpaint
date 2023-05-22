@@ -522,8 +522,8 @@ namespace winrt::Unpaint::implementation
 
     if (texture)
     {
-      auto fileName = filesystem::path(file.Name().c_str()).replace_extension(".png");
-      _imageRepository->AddImage(texture, fileName.string());
+      //auto fileName = filesystem::path(file.Name().c_str()).replace_extension(".png");
+      _imageRepository->AddImage(texture, ImageMetadata{});
       SelectedImageIndex(int32_t(_images.Size()) - 1);
     }
   }
