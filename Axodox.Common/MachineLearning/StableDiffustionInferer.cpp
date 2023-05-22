@@ -19,7 +19,7 @@ namespace Axodox::MachineLearning
   {
     if (options.LatentInput && options.LatentInput.Shape[0] != options.BatchSize) throw logic_error("Batch size and latent input size must match!");
     if (options.MaskInput && !options.LatentInput) throw logic_error("Mask input cannot be set without latent input!");
-    if (options.MaskInput.Shape[2] != options.LatentInput.Shape[2] || options.MaskInput.Shape[3] != options.LatentInput.Shape[3]) throw logic_error("Mask and latent inputs must have a matching width and height.");
+    if (options.MaskInput && (options.MaskInput.Shape[2] != options.LatentInput.Shape[2] || options.MaskInput.Shape[3] != options.LatentInput.Shape[3])) throw logic_error("Mask and latent inputs must have a matching width and height.");
 
     if (async) async->update_state("Preparing latent sample...");
 
@@ -34,15 +34,15 @@ namespace Axodox::MachineLearning
     }
 
     list<Tensor> derivatives;
+    auto steps = context.Scheduler.GetSteps(options.StepCount);
 
     auto initialStep = size_t(clamp(int(options.StepCount - options.StepCount * options.DenoisingStrength - 1), 0, int(options.StepCount)));
-    auto latentSample = options.LatentInput ? PrepareLatentSample(context, options.LatentInput, initialStep) : GenerateLatentSample(context);
+    auto latentSample = options.LatentInput ? PrepareLatentSample(context, options.LatentInput, steps.Sigmas[initialStep]) : GenerateLatentSample(context);
 
     IoBinding binding{ _session };
     binding.BindOutput("out_sample", _environment.MemoryInfo());
     binding.BindInput("encoder_hidden_states", options.TextEmbeddings.ToOrtValue(_environment.MemoryInfo()));
 
-    auto steps = context.Scheduler.GetSteps(options.StepCount);
     for (size_t i = initialStep; i < steps.Timesteps.size(); i++)
     {
       if (async)
@@ -72,7 +72,7 @@ namespace Axodox::MachineLearning
 
       if (options.MaskInput)
       {
-        auto maskedSample = PrepareLatentSample(context, options.LatentInput, i);
+        auto maskedSample = PrepareLatentSample(context, options.LatentInput, steps.Sigmas[i]);
         latentSample = BlendLatentSamples(maskedSample, latentSample, options.MaskInput);
       }
     }
@@ -81,14 +81,10 @@ namespace Axodox::MachineLearning
     return latentSample;
   }
 
-  Tensor StableDiffusionInferer::PrepareLatentSample(StableDiffusionContext& context, const Tensor& latents, size_t initialStep)
+  Tensor StableDiffusionInferer::PrepareLatentSample(StableDiffusionContext& context, const Tensor& latents, float initialSigma)
   {
-    auto cumulativeAlpha = context.Scheduler.CumulativeAlphas()[initialStep];
-    auto inputFactor = sqrt(cumulativeAlpha) * 0.18215f;
-    auto noiseFactor = sqrt(1 - cumulativeAlpha);
-
     auto result = Tensor::CreateRandom(latents.Shape, context.Randoms);
-    result.UnaryOperation<float>(latents, [=](float a, float b) { return a * noiseFactor + b * inputFactor; });
+    result.UnaryOperation<float>(latents, [=](float a, float b) { return a * initialSigma + b * 0.18215f; });
     return result;
   }
 

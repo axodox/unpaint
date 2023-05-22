@@ -53,8 +53,8 @@ namespace winrt::Unpaint
       auto imageTensor = LoadImage(task, resolutionOverride, async);
       inputs.InputImage = EncodeVAE(imageTensor, async);
 
-      inputs.InputMask = Tensor{ TensorType::Single, 1, 1, inputs.InputImage.Shape[2], inputs.InputImage.Shape[3] };
-      inputs.InputMask.Fill(1.f);
+      /*inputs.InputMask = Tensor{ TensorType::Single, 1, 1, inputs.InputImage.Shape[2], inputs.InputImage.Shape[3] };
+      inputs.InputMask.Fill(1.f);*/
     }
 
     //Run diffusion

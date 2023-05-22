@@ -377,7 +377,7 @@ namespace Axodox::Graphics
     TextureData result{ Width, height, Format };
 
     auto offset = Stride * (Height - height) / 2;
-    for (uint32_t row = 0; row < Height; row++)
+    for (uint32_t row = 0; row < height; row++)
     {
       auto pSource = Buffer.data() + row * Stride + offset;
       auto pTarget = result.Buffer.data() + row * result.Stride;

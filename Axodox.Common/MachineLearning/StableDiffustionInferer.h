@@ -40,7 +40,7 @@ namespace Axodox::MachineLearning
     Ort::Session _session;
 
     static Tensor GenerateLatentSample(StableDiffusionContext& context);
-    static Tensor PrepareLatentSample(StableDiffusionContext& context, const Tensor& latents, size_t initialStep);
+    static Tensor PrepareLatentSample(StableDiffusionContext& context, const Tensor& latents, float initialSigma);
     static Tensor BlendLatentSamples(const Tensor& a, const Tensor& b, const Tensor& weights);
   };
 }
