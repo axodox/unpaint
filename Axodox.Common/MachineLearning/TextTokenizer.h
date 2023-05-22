@@ -8,6 +8,7 @@ namespace Axodox::MachineLearning
   class TextTokenizer
   {
   public:
+    static const int32_t StartToken;
     static const int32_t BlankToken;
     static const size_t MaxTokenCount;
 

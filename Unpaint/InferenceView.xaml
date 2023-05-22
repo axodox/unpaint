@@ -88,12 +88,8 @@
       <StackPanel x:Name="CommandPanel" Grid.Column="1" HorizontalAlignment="Center" Spacing="6" Orientation="Horizontal" Padding="0,3" Opacity="0">
         <!-- Copy image -->
         <Button Content="&#xe8c8;" ToolTipService.ToolTip="Copy image" Style="{StaticResource HeaderButtonStyle}"
-                Click="{x:Bind ViewModel.CopyToClipboard}" IsEnabled="{x:Bind ViewModel.HasImageSelected, Mode=OneWay}">
-          <Button.KeyboardAccelerators>
-            <KeyboardAccelerator Key="C" Modifiers="Control"/>
-          </Button.KeyboardAccelerators>
-        </Button>
-        
+                Click="{x:Bind ViewModel.CopyToClipboard}" IsEnabled="{x:Bind ViewModel.HasImageSelected, Mode=OneWay}"/>
+
         <!-- Save image as -->
         <Button Content="&#xe792;" ToolTipService.ToolTip="Save image as..." Style="{StaticResource HeaderButtonStyle}"
                 Click="{x:Bind ViewModel.SaveImageAs}" IsEnabled="{x:Bind ViewModel.HasImageSelected, Mode=OneWay}">

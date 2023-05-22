@@ -173,25 +173,29 @@ namespace Axodox::MachineLearning
     Tensor tokenizedTensor{ TensorType::Int32, 1, TextTokenizer::MaxTokenCount };
     auto tokenTarget = tokenizedTensor.AsSpan<int32_t>();
     auto pTokenTarget = tokenTarget.data();
+    *pTokenTarget++ = TextTokenizer::StartToken;
 
     vector<float> attentionMask;
     attentionMask.resize(TextTokenizer::MaxTokenCount);
     auto pAttention = attentionMask.data();
+    *pAttention++ = 1;
 
-    auto availableSpace = TextTokenizer::MaxTokenCount;
+    auto availableSpace = int32_t(TextTokenizer::MaxTokenCount) - 1;
     for (size_t i = 0; i < tokenizedChunks.Shape[0]; i++)
     {
       auto tokenizedChunk = tokenizedChunks.AsSubSpan<int32_t>(i);
       auto lastToken = tokenizedChunk.end() - 1;
       while (lastToken > tokenizedChunk.begin() && *lastToken == TextTokenizer::BlankToken) lastToken--;
 
-      auto tokensToCopy = size_t(distance(tokenizedChunk.begin(), lastToken)) + 1;
+      auto tokensToCopy = int32_t(distance(tokenizedChunk.begin(), lastToken));
       auto copiableLength = min(tokensToCopy, availableSpace);
-      copy(tokenizedChunk.begin(), tokenizedChunk.begin() + copiableLength, pTokenTarget);
-      fill(pAttention, pAttention + copiableLength, textChunks[i].Attention);
-
+            
+      copy(tokenizedChunk.begin() + 1, tokenizedChunk.begin() + 1 + copiableLength, pTokenTarget);
       pTokenTarget += copiableLength;
+      
+      fill(pAttention, pAttention + copiableLength, textChunks[i].Attention);
       pAttention += copiableLength;
+
       availableSpace -= copiableLength;
     }
 

@@ -9,6 +9,7 @@ using namespace std;
 namespace Axodox::MachineLearning
 {
   const size_t TextTokenizer::MaxTokenCount = 77;
+  const int32_t TextTokenizer::StartToken = 49406;
   const int32_t TextTokenizer::BlankToken = 49407;
 
   TextTokenizer::TextTokenizer(OnnxEnvironment& environment, const std::filesystem::path& sourcePath) :
@@ -51,6 +52,7 @@ namespace Axodox::MachineLearning
     //Get result
     auto outputValues = bindings.GetOutputValues();
     auto outputSpan = Tensor::FromOrtValue(outputValues[0]);
+    auto attentionMask = Tensor::FromOrtValue(outputValues[1]);
 
     //Pad results to a fixed size
     Tensor result{ TensorType::Int32, outputSpan.Shape[0], MaxTokenCount};
@@ -59,9 +61,12 @@ namespace Axodox::MachineLearning
     {
       auto sToken = result.AsPointer<int32_t>(i);
       auto pToken = sToken;
-      for (auto token : outputSpan.AsSubSpan<int64_t>(i))
+
+      auto pSource = outputSpan.AsPointer<int64_t>(i);
+      auto pMask = attentionMask.AsPointer<int64_t>(i);
+      for (size_t j = 0; j < outputSpan.Shape[1]; j++)
       {
-        *pToken++ = int32_t(token);
+        *pToken++ = *pMask++ ? int32_t(*pSource++) : BlankToken;
       }
 
       auto eToken = result.AsPointer<int32_t>(i + 1);
