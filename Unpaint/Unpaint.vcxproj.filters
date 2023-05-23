@@ -166,7 +166,7 @@
     <None Include="ortextensions.dll">
       <Filter>Data</Filter>
     </None>
-    <None Include="Unpaint_TemporaryKey.pfx" />
+    <None Include="key.pfx" />
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">

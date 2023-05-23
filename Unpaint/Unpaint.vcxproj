@@ -97,7 +97,7 @@
     <AppxBundle>Always</AppxBundle>
     <AppxBundlePlatforms>x64</AppxBundlePlatforms>
     <HoursBetweenUpdateChecks>0</HoursBetweenUpdateChecks>
-    <PackageCertificateKeyFile>Unpaint_TemporaryKey.pfx</PackageCertificateKeyFile>
+    <PackageCertificateKeyFile>key.pfx</PackageCertificateKeyFile>
   </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
@@ -292,7 +292,7 @@
     </None>
     <None Include="packages.config" />
     <None Include="PropertySheet.props" />
-    <None Include="Unpaint_TemporaryKey.pfx" />
+    <None Include="key.pfx" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
