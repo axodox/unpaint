@@ -83,6 +83,7 @@ namespace winrt::Unpaint::implementation
     fire_and_forget DeleteProject();
     fire_and_forget AddImage(Windows::Storage::StorageFile file);
     void UseCurrentImageAsInput();
+    void LoadSettingsFromCurrentImage();
 
     event_token PropertyChanged(Windows::UI::Xaml::Data::PropertyChangedEventHandler const& value);
     void PropertyChanged(event_token const& token);
@@ -128,7 +129,7 @@ namespace winrt::Unpaint::implementation
 
     void OnImagesChanged(ImageRepository* sender);
 
-    fire_and_forget LoadImageMetadataAsync();
+    fire_and_forget LoadImageMetadataAsync(bool force = false);
     fire_and_forget RefreshOutputImageAsync();
   };
 }

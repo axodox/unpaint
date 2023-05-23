@@ -140,6 +140,7 @@
     <ClInclude Include="DownloadModelViewModel.h" />
     <ClInclude Include="EqualsConverter.h" />
     <ClInclude Include="ImageMetadata.h" />
+    <ClInclude Include="IsNullConverter.h" />
     <ClInclude Include="SettingControl.h">
       <DependentUpon>SettingControl.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -242,6 +243,7 @@
     </ClCompile>
     <ClCompile Include="InferenceViewModel.cpp" />
     <ClCompile Include="IsNanToBooleanConverter.cpp" />
+    <ClCompile Include="IsNullConverter.cpp" />
     <ClCompile Include="SettingControl.cpp">
       <DependentUpon>SettingControl.xaml</DependentUpon>
       <SubType>Code</SubType>

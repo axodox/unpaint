@@ -109,6 +109,9 @@
     <ClCompile Include="BooleanSwitchConverter.cpp">
       <Filter>Converters</Filter>
     </ClCompile>
+    <ClCompile Include="IsNullConverter.cpp">
+      <Filter>Converters</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\Wide310x150Logo.scale-200.png">
@@ -246,6 +249,9 @@
       <Filter>Converters</Filter>
     </ClInclude>
     <ClInclude Include="BooleanSwitchConverter.h">
+      <Filter>Converters</Filter>
+    </ClInclude>
+    <ClInclude Include="IsNullConverter.h">
       <Filter>Converters</Filter>
     </ClInclude>
   </ItemGroup>

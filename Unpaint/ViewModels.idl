@@ -108,6 +108,7 @@ namespace Unpaint
     void DeleteProject();
     void AddImage(Windows.Storage.StorageFile file);
     void UseCurrentImageAsInput();
+    void LoadSettingsFromCurrentImage();
   }
 
   [default_interface]

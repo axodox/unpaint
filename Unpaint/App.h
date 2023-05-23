@@ -10,6 +10,7 @@
 #include "BooleanToGridLengthConverter.h"
 #include "StorageFileToImageSourceConverter.h"
 #include "BooleanSwitchConverter.h"
+#include "IsNullConverter.h"
 
 namespace winrt::Unpaint::implementation
 {

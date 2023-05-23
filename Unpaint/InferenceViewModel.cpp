@@ -555,6 +555,11 @@ namespace winrt::Unpaint::implementation
     InputImage(OutputImage());
   }
 
+  void InferenceViewModel::LoadSettingsFromCurrentImage()
+  {
+    LoadImageMetadataAsync(true);
+  }
+
   event_token InferenceViewModel::PropertyChanged(PropertyChangedEventHandler const& value)
   {
     return _propertyChanged.add(value);
@@ -580,9 +585,9 @@ namespace winrt::Unpaint::implementation
     }
   }
   
-  fire_and_forget InferenceViewModel::LoadImageMetadataAsync()
+  fire_and_forget InferenceViewModel::LoadImageMetadataAsync(bool force)
   {
-    if (_selectedImageIndex == -1 || _isSettingsLocked) co_return;
+    if (_selectedImageIndex == -1 || (!force && _isSettingsLocked)) co_return;
    
     //Capture context
     apartment_context callerContext;
@@ -621,12 +626,18 @@ namespace winrt::Unpaint::implementation
 
   fire_and_forget InferenceViewModel::RefreshOutputImageAsync()
   {
-    if (_selectedImageIndex == -1) co_return;
+    StorageFile outputImage{nullptr};
 
-    auto imagePath = _imageRepository->GetPath(to_string(_images.GetAt(_selectedImageIndex)));
-    if (imagePath.empty() || !filesystem::exists(imagePath)) co_return;
+    if (_selectedImageIndex != -1)
+    {
+      auto imagePath = _imageRepository->GetPath(to_string(_images.GetAt(_selectedImageIndex)));
+      if (!imagePath.empty() && filesystem::exists(imagePath)) 
+      {
+        outputImage = co_await StorageFile::GetFileFromPathAsync(imagePath.c_str());
+      }
+    }
 
-    _outputImage = co_await StorageFile::GetFileFromPathAsync(imagePath.c_str());
+    _outputImage = outputImage;
     _propertyChanged(*this, PropertyChangedEventArgs(L"OutputImage"));
   }
 }
