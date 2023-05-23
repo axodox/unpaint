@@ -17,7 +17,8 @@ namespace winrt::Unpaint::implementation
 {
   InferenceView::InferenceView() :
     _navigationService(dependencies.resolve<INavigationService>()),
-    _isPointerOverStatusBar(false)
+    _isPointerOverStatusBar(false),
+    _isInputPaneVisible(false)
   {
     InitializeComponent();
 
@@ -32,9 +33,9 @@ namespace winrt::Unpaint::implementation
     _isPointerOverTitleBarChangedRevoker = _navigationService.IsPointerOverTitleBarChanged(auto_revoke, [=](auto&, auto&) {
       UpdateStatusVisibility();
       });
-    _viewModelPropertyChangedRevoker = ViewModel().PropertyChanged(auto_revoke, [=](auto&, auto&) {
-      UpdateStatusVisibility();
-      });
+
+    //Configure view model
+    _viewModelPropertyChangedRevoker = _viewModel.PropertyChanged(auto_revoke, { this, &InferenceView::OnViewModelPropertyChanged });
   }
 
   InferenceViewModel InferenceView::ViewModel()
@@ -52,31 +53,70 @@ namespace winrt::Unpaint::implementation
     _viewModel.IsSettingsLocked(!_viewModel.IsSettingsLocked());
   }
 
-  void InferenceView::OnOutputImageDragStarting(Windows::UI::Xaml::UIElement const& /*sender*/, Windows::UI::Xaml::DragStartingEventArgs const& eventArgs)
+  bool InferenceView::IsInputPaneVisible()
   {
-    eventArgs.AllowedOperations(DataPackageOperation::Copy);
-    eventArgs.Data().SetStorageItems({ ViewModel().OutputImage() });
+    return _isInputPaneVisible;
   }
 
-  void InferenceView::OnOutputImageDragOver(Windows::Foundation::IInspectable const& /*sender*/, Windows::UI::Xaml::DragEventArgs const& eventArgs)
+  void InferenceView::ToggleInputPane()
+  {
+    _isInputPaneVisible = !_isInputPaneVisible;
+    _propertyChanged(*this, PropertyChangedEventArgs(L"IsInputPaneVisible"));
+
+    const auto& viewModel = ViewModel();
+    if (_isInputPaneVisible && !viewModel.InputImage())
+    {
+      viewModel.InputImage(viewModel.OutputImage());
+    }
+    else
+    {
+      viewModel.InputImage(nullptr);
+    }
+  }
+
+  void InferenceView::OnOutputImageDragStarting(Windows::UI::Xaml::UIElement const& /*sender*/, Windows::UI::Xaml::DragStartingEventArgs const& eventArgs)
+  {
+    auto outputImage = ViewModel().OutputImage();
+    if (!outputImage) return;
+
+    eventArgs.AllowedOperations(DataPackageOperation::Copy);
+    eventArgs.Data().SetStorageItems({ outputImage });
+
+    OutputImagesView().AllowDrop(false);
+  }
+
+  void InferenceView::OnOutputImageDropCompleted(Windows::UI::Xaml::UIElement const& /*sender*/, Windows::UI::Xaml::DropCompletedEventArgs const& /*eventArgs*/)
+  {
+    OutputImagesView().AllowDrop(true);
+  }
+
+  void InferenceView::OnImageDragOver(Windows::Foundation::IInspectable const& /*sender*/, Windows::UI::Xaml::DragEventArgs const& eventArgs)
   {
     if (!eventArgs.DataView().Contains(StandardDataFormats::StorageItems())) return;
 
     eventArgs.AcceptedOperation(DataPackageOperation::Copy);
   }
 
-  fire_and_forget InferenceView::OnOutputImageDrop(Windows::Foundation::IInspectable const& sender, Windows::UI::Xaml::DragEventArgs const& eventArgs)
+  fire_and_forget InferenceView::OnImageDrop(Windows::Foundation::IInspectable const& sender, Windows::UI::Xaml::DragEventArgs const& eventArgs)
   {
     const auto& dataView = eventArgs.DataView();
     if (!dataView.Contains(StandardDataFormats::StorageItems())) co_return;
 
+    auto isOutput = sender == OutputImagesView();
     auto items = co_await dataView.GetStorageItemsAsync();
     for (const auto& item : items)
     {
       auto file = item.try_as<StorageFile>();
       if (!file) continue;
 
-      ViewModel().AddImage(file);
+      if (isOutput)
+      {
+        ViewModel().AddImage(file);
+      }
+      else
+      {
+        ViewModel().InputImage(file);
+      }
     }
   }
 
@@ -93,5 +133,15 @@ namespace winrt::Unpaint::implementation
   void InferenceView::UpdateStatusVisibility()
   {
     _propertyChanged(*this, PropertyChangedEventArgs(L"IsStatusVisible"));
+  }
+
+  void InferenceView::OnViewModelPropertyChanged(Windows::Foundation::IInspectable const& /*sender*/, Windows::UI::Xaml::Data::PropertyChangedEventArgs const& eventArgs)
+  {
+    UpdateStatusVisibility();
+
+    if (eventArgs.PropertyName() == L"SelectedModeIndex" && ViewModel().SelectedModeIndex() == 0 && IsInputPaneVisible())
+    {
+      ToggleInputPane();
+    }
   }
 }

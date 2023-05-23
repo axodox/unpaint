@@ -20,6 +20,11 @@ namespace Unpaint
     StringToImageSourceConverter();
   };
 
+  runtimeclass StorageFileToImageSourceConverter : [default] Windows.UI.Xaml.Data.IValueConverter
+  {
+    StorageFileToImageSourceConverter();
+  };
+
   runtimeclass BooleanInverter : [default] Windows.UI.Xaml.Data.IValueConverter
   {
     BooleanInverter();
@@ -32,4 +37,20 @@ namespace Unpaint
 
     EqualsConverter();
   };
+
+  runtimeclass BooleanToGridLengthConverter : [default] Windows.UI.Xaml.Data.IValueConverter
+  {
+    BooleanToGridLengthConverter();
+
+    Windows.UI.Xaml.GridLength TrueValue;
+    Windows.UI.Xaml.GridLength FalseValue;
+  }
+
+  runtimeclass BooleanSwitchConverter : [default] Windows.UI.Xaml.Data.IValueConverter
+  {
+    BooleanSwitchConverter();
+
+    Object TrueValue;
+    Object FalseValue;
+  }
 }

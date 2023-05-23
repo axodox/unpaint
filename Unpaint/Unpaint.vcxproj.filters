@@ -100,6 +100,15 @@
     <ClCompile Include="EqualsConverter.cpp">
       <Filter>Converters</Filter>
     </ClCompile>
+    <ClCompile Include="BooleanToGridLengthConverter.cpp">
+      <Filter>Converters</Filter>
+    </ClCompile>
+    <ClCompile Include="StorageFileToImageSourceConverter.cpp">
+      <Filter>Converters</Filter>
+    </ClCompile>
+    <ClCompile Include="BooleanSwitchConverter.cpp">
+      <Filter>Converters</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\Wide310x150Logo.scale-200.png">
@@ -228,6 +237,15 @@
       <Filter>Models</Filter>
     </ClInclude>
     <ClInclude Include="EqualsConverter.h">
+      <Filter>Converters</Filter>
+    </ClInclude>
+    <ClInclude Include="BooleanToGridLengthConverter.h">
+      <Filter>Converters</Filter>
+    </ClInclude>
+    <ClInclude Include="StorageFileToImageSourceConverter.h">
+      <Filter>Converters</Filter>
+    </ClInclude>
+    <ClInclude Include="BooleanSwitchConverter.h">
       <Filter>Converters</Filter>
     </ClInclude>
   </ItemGroup>

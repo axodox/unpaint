@@ -15,6 +15,17 @@
     <local:NanToZeroConverter x:Key="NanToZeroConverter"/>
     <local:StringToImageSourceConverter x:Key="StringToImageSourceConverter"/>
     <local:BooleanInverter x:Key="BooleanInverter"/>
+    <local:BooleanToGridLengthConverter x:Key="BooleanToGridLengthConverter"/>
+    <local:StorageFileToImageSourceConverter x:Key="StorageFileToImageSourceConverter"/>
+    <local:BooleanSwitchConverter x:Key="BooleanToPaneSpacingConverter">
+      <local:BooleanSwitchConverter.TrueValue>
+        <x:Double>42</x:Double>
+      </local:BooleanSwitchConverter.TrueValue>
+      <local:BooleanSwitchConverter.FalseValue>
+        <x:Double>0</x:Double>
+      </local:BooleanSwitchConverter.FalseValue>
+    </local:BooleanSwitchConverter>
+    
     <local:EqualsConverter x:Key="IsCreateModeSelectedConverter">
       <local:EqualsConverter.Value>
         <x:Int32>0</x:Int32>
@@ -39,6 +50,17 @@
       <Setter Property="Padding" Value="4,0"/>
       <Setter Property="FontFamily" Value="Segoe Fluent Icons"/>
       <Setter Property="VerticalAlignment" Value="Stretch"/>
+    </Style>
+
+    <Style x:Key="PaneHeaderStyle" TargetType="Border">
+      <Setter Property="Background" Value="{StaticResource LayerFillColorDefaultBrush}"/>
+      <Setter Property="BorderBrush" Value="{StaticResource ControlElevationBorderBrush}"/>
+      <Setter Property="CornerRadius" Value="6"/>
+      <Setter Property="BorderThickness" Value="1"/>
+      <Setter Property="Padding" Value="6"/>
+      <Setter Property="Margin" Value="12"/>
+      <Setter Property="HorizontalAlignment" Value="Center"/>
+      <Setter Property="VerticalAlignment" Value="Top"/>
     </Style>
   </Page.Resources>
 
@@ -141,19 +163,44 @@
       <TextBlock x:Name="StatusMessage" Grid.Column="1" Text="{x:Bind ViewModel.Status, Mode=OneWay}" HorizontalAlignment="Center" VerticalAlignment="Center" IsHitTestVisible="False" Opacity="0"/>
     </Grid>
 
-    <!-- Output image -->
-    <FlipView Grid.Row="1" Background="Transparent" AllowDrop="True" DragOver="OnOutputImageDragOver" Drop="OnOutputImageDrop"
-              ItemsSource="{x:Bind ViewModel.Images, Mode=OneWay}"
-              SelectedIndex="{x:Bind ViewModel.SelectedImageIndex, Mode=TwoWay}">
-      <FlipView.ItemTemplate>
-        <DataTemplate x:DataType="x:String">
-          <Image Grid.Row="1" Stretch="Uniform" Source="{x:Bind Converter={StaticResource StringToImageSourceConverter}}" CanDrag="True" DragStarting="OnOutputImageDragStarting"/>
-        </DataTemplate>
-      </FlipView.ItemTemplate>
-    </FlipView>
+    <!-- Main section -->
+    <Grid ColumnSpacing="{x:Bind IsInputPaneVisible, Converter={StaticResource BooleanToPaneSpacingConverter}, Mode=OneWay}" Grid.Row="1">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="{x:Bind IsInputPaneVisible, Converter={StaticResource BooleanToGridLengthConverter}, Mode=OneWay}"/>
+        <ColumnDefinition Width="*"/>
+      </Grid.ColumnDefinitions>
+      
+      <!-- Output image -->
+      <FlipView x:Name="OutputImagesView" Grid.Column="1" Background="Transparent" AllowDrop="True" DragOver="OnImageDragOver" Drop="OnImageDrop"
+                ItemsSource="{x:Bind ViewModel.Images, Mode=OneWay}"
+                SelectedIndex="{x:Bind ViewModel.SelectedImageIndex, Mode=TwoWay}">
+        <FlipView.ItemTemplate>
+          <DataTemplate x:DataType="x:String">
+            <Image Grid.Row="1" Stretch="Uniform" Source="{x:Bind Converter={StaticResource StringToImageSourceConverter}}" CanDrag="True" DragStarting="OnOutputImageDragStarting" DropCompleted="OnOutputImageDropCompleted"/>
+          </DataTemplate>
+        </FlipView.ItemTemplate>
+      </FlipView>
+
+      <!-- Input image -->
+      <Grid x:Name="InputImageView"  Grid.Column="0" Visibility="{x:Bind IsInputPaneVisible, Mode=OneWay}" AllowDrop="True" DragOver="OnImageDragOver" Drop="OnImageDrop">
+        <Image Source="{x:Bind ViewModel.InputImage, Converter={StaticResource StorageFileToImageSourceConverter}, Mode=OneWay}"/>
+
+        <Button Margin="6,0,-36,0" Width="30" Height="30" HorizontalAlignment="Right" VerticalAlignment="Center" Content="&#xe76b;" FontFamily="Segoe Fluent Icons" Padding="0"
+                Click="{x:Bind ViewModel.UseCurrentImageAsInput}" ToolTipService.ToolTip="Use current image as input"/>
+      </Grid>
+
+      <!-- Headers -->
+      <Border Grid.Column="0" Style="{StaticResource PaneHeaderStyle}" Visibility="{x:Bind IsInputPaneVisible, Mode=OneWay}">
+        <TextBlock Text="Input"/>
+      </Border>
+
+      <Border Grid.Column="1" Style="{StaticResource PaneHeaderStyle}" Visibility="{x:Bind IsInputPaneVisible, Mode=OneWay}">
+        <TextBlock Text="Output"/>
+      </Border>
+    </Grid>
 
     <!-- Inference options -->
-    <Grid Grid.Row="2" CornerRadius="6,6,0,0" MaxWidth="800" BorderThickness="1" 
+    <Grid Grid.Row="2" CornerRadius="6,6,0,0" MaxWidth="800" BorderThickness="1"
           Background="{ThemeResource LayerFillColorDefaultBrush}"
           BorderBrush="{ThemeResource ControlElevationBorderBrush}">
       
@@ -163,7 +210,7 @@
       </Grid.RowDefinitions>
 
       <!-- Top section -->
-      <Grid Margin="6" ColumnSpacing="3">
+      <Grid Margin="6" ColumnSpacing="12">
         <Grid.ColumnDefinitions>
           <ColumnDefinition Width="*"/>
           <ColumnDefinition Width="Auto"/>
@@ -175,10 +222,24 @@
           <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
           </Grid.ColumnDefinitions>
 
+          <!-- Open input pane -->
+          <Button Grid.Column="0" FontFamily="Segoe Fluent Icons" FontSize="20" Content="&#xe91b;" Style="{StaticResource FlatButtonStyle}"
+                  Click="{x:Bind ToggleInputPane}">
+            <ToolTipService.ToolTip>
+              <StackPanel>
+                <TextBlock Text="Input image" FontWeight="Bold"/>
+                <TextBlock Text="Open the input pane to define inputs, or use the current image." TextWrapping="WrapWholeWords"/>
+              </StackPanel>
+            </ToolTipService.ToolTip>
+          </Button>
+          
           <!-- Denoising strength -->
-          <FontIcon FontFamily="Segoe Fluent Icons" FontSize="20" Glyph="&#xf4a5;" VerticalAlignment="Center" Margin="0,-10">
+          <Slider Grid.Column="1" Minimum="0" Maximum="1" SmallChange="0.01" LargeChange="0.1" StepFrequency="0.01" VerticalAlignment="Center" Margin="6,-10"
+                  Value="{x:Bind ViewModel.DenoisingStrength, Mode=TwoWay}"/>
+          <FontIcon Grid.Column="2" FontFamily="Segoe Fluent Icons" FontSize="20" Glyph="&#xf4a5;" VerticalAlignment="Center" Margin="6,-10,0,-10">
             <ToolTipService.ToolTip>
               <StackPanel>
                 <TextBlock Text="Denoising strength" FontWeight="Bold"/>
@@ -186,8 +247,6 @@
               </StackPanel>
             </ToolTipService.ToolTip>
           </FontIcon>
-          <Slider Grid.Column="1" Minimum="0" Maximum="1" SmallChange="0.01" LargeChange="0.1" StepFrequency="0.01" VerticalAlignment="Center" Margin="6,-10"
-                  Value="{x:Bind ViewModel.DenoisingStrength, Mode=TwoWay}"/>
         </Grid>
         
         <!-- Mode selector -->

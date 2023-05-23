@@ -89,6 +89,7 @@ namespace Unpaint
     Int32 SelectedImageIndex;
     String ImagePosition{ get; };
     
+    Windows.Storage.StorageFile InputImage;
     Windows.Storage.StorageFile OutputImage{ get; };
 
     IObservableVector<String> Projects{ get; };
@@ -106,6 +107,7 @@ namespace Unpaint
     void CreateNewProject();
     void DeleteProject();
     void AddImage(Windows.Storage.StorageFile file);
+    void UseCurrentImageAsInput();
   }
 
   [default_interface]

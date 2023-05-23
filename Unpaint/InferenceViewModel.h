@@ -61,6 +61,9 @@ namespace winrt::Unpaint::implementation
     void SelectedImageIndex(int32_t value);
     hstring ImagePosition();
 
+    Windows::Storage::StorageFile InputImage();
+    fire_and_forget InputImage(Windows::Storage::StorageFile value);
+
     Windows::Storage::StorageFile OutputImage();
 
     Windows::Foundation::Collections::IObservableVector<hstring> Projects();
@@ -79,6 +82,7 @@ namespace winrt::Unpaint::implementation
     fire_and_forget CreateNewProject();
     fire_and_forget DeleteProject();
     fire_and_forget AddImage(Windows::Storage::StorageFile file);
+    void UseCurrentImageAsInput();
 
     event_token PropertyChanged(Windows::UI::Xaml::Data::PropertyChangedEventHandler const& value);
     void PropertyChanged(event_token const& token);
@@ -117,7 +121,7 @@ namespace winrt::Unpaint::implementation
     Axodox::Infrastructure::event_subscription _imagesChangedSubscription;
     Windows::Foundation::Collections::IObservableVector<hstring> _images;
     int32_t _selectedImageIndex;
-    Windows::Storage::StorageFile _outputImage;
+    Windows::Storage::StorageFile _outputImage, _inputImage;
 
     Windows::Foundation::Collections::IObservableVector<hstring> _projects;
     int32_t _selectedProjectIndex;

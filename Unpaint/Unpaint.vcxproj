@@ -131,6 +131,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="BooleanInverter.h" />
+    <ClInclude Include="BooleanSwitchConverter.h" />
+    <ClInclude Include="BooleanToGridLengthConverter.h" />
     <ClInclude Include="DownloadModelDialog.h">
       <DependentUpon>DownloadModelDialog.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -147,6 +149,7 @@
       <SubType>Code</SubType>
     </ClInclude>
     <ClInclude Include="SettingsViewModel.h" />
+    <ClInclude Include="StorageFileToImageSourceConverter.h" />
     <ClInclude Include="StringMapper.h" />
     <ClInclude Include="ImageRepository.h" />
     <ClInclude Include="InferenceView.h">
@@ -223,6 +226,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BooleanInverter.cpp" />
+    <ClCompile Include="BooleanSwitchConverter.cpp" />
+    <ClCompile Include="BooleanToGridLengthConverter.cpp" />
     <ClCompile Include="DownloadModelDialog.cpp">
       <DependentUpon>DownloadModelDialog.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -265,6 +270,7 @@
     </ClCompile>
     <ClCompile Include="$(GeneratedFilesDir)module.g.cpp" />
     <ClCompile Include="SizeToStringConverter.cpp" />
+    <ClCompile Include="StorageFileToImageSourceConverter.cpp" />
     <ClCompile Include="StringMapper.cpp" />
     <ClCompile Include="StringToImageSourceConverter.cpp" />
     <ClCompile Include="UnpaintOptions.cpp" />

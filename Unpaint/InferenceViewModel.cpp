@@ -52,6 +52,7 @@ namespace winrt::Unpaint::implementation
     _images(single_threaded_observable_vector<hstring>()),
     _projects(single_threaded_observable_vector<hstring>()),
     _outputImage(nullptr),
+    _inputImage(nullptr),
     _imagesChangedSubscription(_imageRepository->ImagesChanged(event_handler{ this, &InferenceViewModel::OnImagesChanged }))
   {
     for (auto& model : _modelRepository->Models())
@@ -275,7 +276,7 @@ namespace winrt::Unpaint::implementation
 
   void InferenceViewModel::SelectedImageIndex(int32_t value)
   {
-    if (value == _selectedImageIndex) return;
+    //if (value == _selectedImageIndex) return;
 
     _selectedImageIndex = value;
     _propertyChanged(*this, PropertyChangedEventArgs(L"SelectedImageIndex"));
@@ -289,6 +290,27 @@ namespace winrt::Unpaint::implementation
   hstring InferenceViewModel::ImagePosition()
   {
     return std::format(L"{} / {}", _selectedImageIndex + 1, _images.Size()).c_str();
+  }
+
+  Windows::Storage::StorageFile InferenceViewModel::InputImage()
+  {
+    return _inputImage;
+  }
+
+  fire_and_forget InferenceViewModel::InputImage(Windows::Storage::StorageFile value)
+  {
+    auto lifetime = get_strong();
+
+    if (value == _inputImage) co_return;
+
+    error_code ec;
+    if (value && !filesystem::exists(value.Path().c_str(), ec))
+    {
+      value = co_await value.CopyAsync(ApplicationData::Current().TemporaryFolder());
+    }
+
+    _inputImage = value;
+    _propertyChanged(*this, PropertyChangedEventArgs(L"InputImage"));
   }
 
   Windows::Storage::StorageFile InferenceViewModel::OutputImage()
@@ -357,7 +379,7 @@ namespace winrt::Unpaint::implementation
     {
       if (_selectedImageIndex != -1)
       {
-        task.InputImage = _imageRepository->GetPath(to_string(_images.GetAt(_selectedImageIndex)));
+        task.InputImage = _inputImage ? _inputImage.Path().c_str() : _imageRepository->GetPath(to_string(_images.GetAt(_selectedImageIndex))).c_str();
       }
       else
       {
@@ -526,6 +548,11 @@ namespace winrt::Unpaint::implementation
       _imageRepository->AddImage(texture, ImageMetadata{});
       SelectedImageIndex(int32_t(_images.Size()) - 1);
     }
+  }
+
+  void InferenceViewModel::UseCurrentImageAsInput()
+  {
+    InputImage(OutputImage());
   }
 
   event_token InferenceViewModel::PropertyChanged(PropertyChangedEventHandler const& value)

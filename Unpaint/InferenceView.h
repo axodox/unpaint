@@ -1,11 +1,5 @@
 ﻿#pragma once
 #include "InferenceView.g.h"
-#include "SizeToStringConverter.h"
-#include "IsNanToBooleanConverter.h"
-#include "NanToZeroConverter.h"
-#include "StringToImageSourceConverter.h"
-#include "BooleanInverter.h"
-#include "EqualsConverter.h"
 
 namespace winrt::Unpaint::implementation
 {
@@ -19,9 +13,14 @@ namespace winrt::Unpaint::implementation
 
     void ToggleSettingsLock();
 
+    bool IsInputPaneVisible();
+    void ToggleInputPane();
+
     void OnOutputImageDragStarting(Windows::UI::Xaml::UIElement const& sender, Windows::UI::Xaml::DragStartingEventArgs const& eventArgs);
-    void OnOutputImageDragOver(Windows::Foundation::IInspectable const& sender, Windows::UI::Xaml::DragEventArgs const& eventArgs);
-    fire_and_forget OnOutputImageDrop(Windows::Foundation::IInspectable const& sender, Windows::UI::Xaml::DragEventArgs const& eventArgs);
+    void OnOutputImageDropCompleted(Windows::UI::Xaml::UIElement const& sender, Windows::UI::Xaml::DropCompletedEventArgs const& eventArgs);
+
+    void OnImageDragOver(Windows::Foundation::IInspectable const& sender, Windows::UI::Xaml::DragEventArgs const& eventArgs);
+    fire_and_forget OnImageDrop(Windows::Foundation::IInspectable const& sender, Windows::UI::Xaml::DragEventArgs const& eventArgs);
 
     event_token PropertyChanged(Windows::UI::Xaml::Data::PropertyChangedEventHandler const& value);
     void PropertyChanged(event_token const& token);
@@ -37,7 +36,10 @@ namespace winrt::Unpaint::implementation
     bool _isPointerOverStatusBar;
     InferenceViewModel _viewModel;
 
+    bool _isInputPaneVisible;
+
     void UpdateStatusVisibility();
+    void OnViewModelPropertyChanged(Windows::Foundation::IInspectable const& sender, Windows::UI::Xaml::Data::PropertyChangedEventArgs const& eventArgs);
   };
 }
 

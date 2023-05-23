@@ -29,6 +29,9 @@ namespace Unpaint
 
     Boolean IsStatusVisible{ get; };
     void ToggleSettingsLock();
+
+    Boolean IsInputPaneVisible{ get; };
+    void ToggleInputPane();
   }
 
   [default_interface]
