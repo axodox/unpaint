@@ -86,6 +86,19 @@ namespace Axodox::Graphics
     return !Buffer.empty();
   }
 
+  enum class JpegImageOrientation : uint16_t
+  {
+    Unknown = 0,
+    Normal = 1,
+    FlipHorizontal = 2,
+    Rotate180 = 3,
+    FlipVertical = 4,
+    FlipHorizontalRotate270 = 5,
+    Rotate90 = 6,
+    FlipHorizontalRotate90 = 7,
+    Rotate270 = 8
+  };
+
   TextureData TextureData::FromBuffer(std::span<const uint8_t> buffer, TextureImageFormat format, std::string* metadata)
   {
     if (buffer.empty()) return {};
@@ -93,6 +106,7 @@ namespace Axodox::Graphics
     auto wicFactory = WicFactory();
 
     //Load data to WIC bitmap
+    auto tranformation = WICBitmapTransformRotate0;
     com_ptr<IWICBitmapSource> wicBitmap;
     {
       auto stream = to_stream(buffer);
@@ -107,11 +121,17 @@ namespace Axodox::Graphics
 
       check_hresult(wicBitmapDecoder->GetFrame(0, reinterpret_cast<IWICBitmapFrameDecode**>(wicBitmap.put())));
       
+      //Get container format
+      GUID containerFormat;
+      check_hresult(wicBitmapDecoder->GetContainerFormat(&containerFormat));
+
+      //Read metadata
+      com_ptr<IWICMetadataQueryReader> metadataQueryReader;
+      check_hresult(reinterpret_cast<IWICBitmapFrameDecode*>(wicBitmap.get())->GetMetadataQueryReader(metadataQueryReader.put()));
+
+      //Parse generation metadata
       if (metadata)
       {
-        com_ptr<IWICMetadataQueryReader> metadataQueryReader;
-        check_hresult(reinterpret_cast<IWICBitmapFrameDecode*>(wicBitmap.get())->GetMetadataQueryReader(metadataQueryReader.put()));
-
         PROPVARIANT metadataProperty;
         zero_memory(metadataProperty);
         metadataQueryReader->GetMetadataByName(L"/tEXt/{str=Metadata}", &metadataProperty);
@@ -120,6 +140,46 @@ namespace Axodox::Graphics
         {
           *metadata = metadataProperty.pszVal;
         }
+      }
+
+      //Read orientation metadata
+      {
+        if (containerFormat == GUID_ContainerFormatJpeg)
+        {
+          PROPVARIANT metadataProperty;
+          zero_memory(metadataProperty);
+          metadataQueryReader->GetMetadataByName(L"/app1/ifd/{ushort=274}", &metadataProperty);
+
+          if (metadataProperty.vt == VT_UI2)
+          {
+            JpegImageOrientation orientation{ metadataProperty.uiVal };
+
+            switch (orientation)
+            {
+            case JpegImageOrientation::FlipHorizontal:
+              tranformation = WICBitmapTransformFlipHorizontal;
+              break;
+            case JpegImageOrientation::Rotate180:
+              tranformation = WICBitmapTransformRotate180;
+              break;
+            case JpegImageOrientation::FlipVertical:
+              tranformation = WICBitmapTransformFlipVertical;
+              break;
+            case JpegImageOrientation::FlipHorizontalRotate270:
+              tranformation = bitwise_or(WICBitmapTransformFlipHorizontal, WICBitmapTransformRotate270);
+              break;
+            case JpegImageOrientation::Rotate90:
+              tranformation = WICBitmapTransformRotate90;
+              break;
+            case JpegImageOrientation::FlipHorizontalRotate90:
+              tranformation = bitwise_or(WICBitmapTransformFlipHorizontal, WICBitmapTransformRotate90);
+              break;
+            case JpegImageOrientation::Rotate270:
+              tranformation = WICBitmapTransformRotate270;
+              break;
+            }
+          }
+        }        
       }
     }
 
@@ -149,6 +209,16 @@ namespace Axodox::Graphics
         WICBitmapDitherTypeNone, nullptr, 0.f,
         WICBitmapPaletteTypeMedianCut));
       wicBitmap = move(wicFormatConverter);
+    }
+
+    //Rotate & flip
+    if (tranformation != WICBitmapTransformRotate0)
+    {
+      com_ptr<IWICBitmapFlipRotator> wicFlipRotator;
+      check_hresult(wicFactory->CreateBitmapFlipRotator(wicFlipRotator.put()));
+
+      check_hresult(wicFlipRotator->Initialize(wicBitmap.get(), tranformation));
+      wicBitmap = move(wicFlipRotator);
     }
 
     //Define result
