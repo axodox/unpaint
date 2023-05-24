@@ -324,7 +324,7 @@ namespace Axodox::Graphics
     TextureData result{ width, Height, Format };
 
     auto bytesPerPixel = BitsPerPixel(Format) / 8;
-    auto offset = bytesPerPixel * (width - Width) / 2;
+    auto offset = bytesPerPixel * ((width - Width) / 2);
     for (uint32_t row = 0; row < Height; row++)
     {
       auto pSource = Buffer.data() + row * Stride;
@@ -341,7 +341,7 @@ namespace Axodox::Graphics
 
     TextureData result{ Width, height, Format };
 
-    auto offset = Stride * (height - Height) / 2;
+    auto offset = Stride * ((height - Height) / 2);
     for (uint32_t row = 0; row < Height; row++)
     {
       auto pSource = Buffer.data() + row * Stride;
@@ -359,7 +359,7 @@ namespace Axodox::Graphics
     TextureData result{ width, Height, Format };
 
     auto bytesPerPixel = BitsPerPixel(Format) / 8;
-    auto offset = bytesPerPixel * (Width - width) / 2;
+    auto offset = bytesPerPixel * ((Width - width) / 2);
     for (uint32_t row = 0; row < Height; row++)
     {
       auto pSource = Buffer.data() + row * Stride + offset;
@@ -376,7 +376,7 @@ namespace Axodox::Graphics
 
     TextureData result{ Width, height, Format };
 
-    auto offset = Stride * (Height - height) / 2;
+    auto offset = Stride * ((Height - height) / 2);
     for (uint32_t row = 0; row < height; row++)
     {
       auto pSource = Buffer.data() + row * Stride + offset;

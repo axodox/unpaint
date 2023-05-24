@@ -29,7 +29,7 @@ namespace winrt::Unpaint
   {
     //Set up async source
     lock_guard lock(_mutex);
-    thread_name_context threadName{L"* inference"};
+    thread_name_context threadName{ L"* inference" };
 
     async_operation_source async;
     operation.set_source(async);
@@ -72,7 +72,7 @@ namespace winrt::Unpaint
         {
           output = output.TruncateHorizontally(resolutionOverride->x);
         }
-        
+
         if (output.Height > resolutionOverride->y)
         {
           output = output.TruncateVertically(resolutionOverride->y);
@@ -84,7 +84,7 @@ namespace winrt::Unpaint
     async.update_state(1.f, "Done.");
     return outputs;
   }
-  
+
   Axodox::MachineLearning::Tensor StableDiffusionModelExecutor::LoadImage(const StableDiffusionInferenceTask& task, std::optional<DirectX::XMUINT2>& resolutionOverride, Axodox::Threading::async_operation_source& async)
   {
     async.update_state(NAN, "Loading input image...");
@@ -148,7 +148,7 @@ namespace winrt::Unpaint
     _positivePrompt = task.PositivePrompt;
     _negativePrompt = task.NegativePrompt;
     _textEmbedding = encodedNegativePrompt.Concat(encodedPositivePrompt);
-    
+
     async.update_state("Text embedding created.");
 
     return _textEmbedding;
@@ -165,7 +165,7 @@ namespace winrt::Unpaint
       .Width = task.Resolution.x,
       .Height = task.Resolution.y,
       .GuidanceScale = task.GuidanceStrength,
-      .Seed = task.RandomSeed,      
+      .Seed = task.RandomSeed,
       .TextEmbeddings = inputs.TextEmbeddings,
       .LatentInput = inputs.InputImage,
       .MaskInput = inputs.InputMask,
@@ -179,7 +179,7 @@ namespace winrt::Unpaint
 
     return result;
   }
-  
+
   Axodox::MachineLearning::Tensor StableDiffusionModelExecutor::DecodeVAE(const Axodox::MachineLearning::Tensor& latentImage, Axodox::Threading::async_operation_source& async)
   {
     async.update_state(NAN, "Loading VAE decoder...");
@@ -188,7 +188,7 @@ namespace winrt::Unpaint
     async.update_state("Decoding latent image...");
     return vaeDecoder.DecodeVae(latentImage);
   }
-  
+
   ImageMetadata StableDiffusionInferenceTask::ToMetadata() const
   {
     ImageMetadata result{};

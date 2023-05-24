@@ -303,10 +303,12 @@ namespace winrt::Unpaint::implementation
 
     if (value == _inputImage) co_return;
 
+    filesystem::path targetPath{ value.Path().c_str() };
+
     error_code ec;
-    if (value && !filesystem::exists(value.Path().c_str(), ec))
+    if (value && !filesystem::exists(targetPath, ec))
     {
-      value = co_await value.CopyAsync(ApplicationData::Current().TemporaryFolder());
+      value = co_await value.CopyAsync(ApplicationData::Current().TemporaryFolder(), targetPath.filename().c_str(), NameCollisionOption::ReplaceExisting);
     }
 
     _inputImage = value;
