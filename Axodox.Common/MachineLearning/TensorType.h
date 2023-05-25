@@ -1,5 +1,6 @@
 #pragma once
 #include "pch.h"
+#include "Infrastructure/Half.h"
 
 namespace Axodox::MachineLearning
 {
@@ -58,6 +59,10 @@ namespace Axodox::MachineLearning
     else if constexpr (std::is_same_v<T, int64_t>)
     {
       return TensorType::Int64;
+    }
+    else if constexpr (std::is_same_v<T, Infrastructure::half>)
+    {
+      return TensorType::Half;
     }
     else if constexpr (std::is_same_v<T, float>)
     {

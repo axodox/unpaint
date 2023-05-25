@@ -22,7 +22,7 @@ namespace Axodox::MachineLearning
     {
       //Bind values
       IoBinding bindings{ _session };
-      bindings.BindInput("sample", inputValues[i].ToOrtValue(_environment.MemoryInfo()));
+      bindings.BindInput("sample", inputValues[i].ToHalf().ToOrtValue(_environment.MemoryInfo()));
       bindings.BindOutput("latent_sample", _environment.MemoryInfo());
 
       //Run inference
@@ -30,7 +30,7 @@ namespace Axodox::MachineLearning
 
       //Get result
       auto outputValues = bindings.GetOutputValues();
-      auto result = Tensor::FromOrtValue(outputValues[0]);
+      auto result = Tensor::FromOrtValue(outputValues[0]).ToSingle();
 
       if (!results.IsValid())
       {

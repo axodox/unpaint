@@ -151,6 +151,30 @@ namespace Axodox::MachineLearning
     return !(*this == other);
   }
 
+  Tensor Tensor::ToSingle() const
+  {
+    if (Type != TensorType::Half) throw bad_cast();
+
+    auto size = Size();
+
+    Tensor result{ TensorType::Single, Shape };
+    XMConvertHalfToFloatStream(reinterpret_cast<float*>(result.Buffer.data()), 4, reinterpret_cast<const HALF*>(Buffer.data()), 2, size);
+
+    return result;
+  }
+
+  Tensor Tensor::ToHalf() const
+  {
+    if (Type != TensorType::Single) throw bad_cast();
+
+    auto size = Size();
+
+    Tensor result{ TensorType::Half, Shape };
+    XMConvertFloatToHalfStream(reinterpret_cast<HALF*>(result.Buffer.data()), 2, reinterpret_cast<const float*>(Buffer.data()), 4, size);
+
+    return result;
+  }
+
   size_t Tensor::GetDimensionFromIndex(size_t& x, size_t& y, size_t& z, size_t& w)
   {
     auto dimension = 4;

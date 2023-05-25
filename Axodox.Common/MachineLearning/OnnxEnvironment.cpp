@@ -55,17 +55,17 @@ namespace Axodox::MachineLearning
     optimizedModelPath.make_preferred();
 
     const filesystem::path* sourcePath;
-    if (filesystem::exists(optimizedModelPath))
-    {
-      sourcePath = &optimizedModelPath;
+    /*if (filesystem::exists(optimizedModelPath))
+    {*/
+      //sourcePath = &optimizedModelPath;
       sessionOptions.SetGraphOptimizationLevel(GraphOptimizationLevel::ORT_DISABLE_ALL);
-    }
+    /*}
     else
-    {
+    {*/
       sourcePath = &modelPath;
-      sessionOptions.SetGraphOptimizationLevel(GraphOptimizationLevel::ORT_ENABLE_ALL);
-      sessionOptions.SetOptimizedModelFilePath(optimizedModelPath.c_str());
-    }
+      //sessionOptions.SetGraphOptimizationLevel(GraphOptimizationLevel::ORT_ENABLE_ALL);
+      //sessionOptions.SetOptimizedModelFilePath(optimizedModelPath.c_str());
+    //}
 
     return Session{ _environment, sourcePath->c_str(), sessionOptions};
   }

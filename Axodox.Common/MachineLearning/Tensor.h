@@ -1,6 +1,7 @@
 #pragma once
 #include "TensorType.h"
 #include "Graphics/Textures/TextureData.h"
+#include "Collections/AlignedAllocator.h"
 
 namespace Axodox::MachineLearning
 {
@@ -11,7 +12,7 @@ namespace Axodox::MachineLearning
 
     TensorType Type;
     shape_t Shape;
-    std::vector<uint8_t> Buffer;
+    std::vector<uint8_t, Collections::aligned_allocator<uint8_t>> Buffer;
 
     Tensor();
     explicit Tensor(TensorType type, size_t x = 0, size_t y = 0, size_t z = 0, size_t w = 0);
@@ -169,6 +170,9 @@ namespace Axodox::MachineLearning
 
     bool operator==(const Tensor& other) const;
     bool operator!=(const Tensor& other) const;
+
+    Tensor ToSingle() const;
+    Tensor ToHalf() const;
 
 #ifdef USE_ONNX
     static Tensor FromOrtValue(const Ort::Value& value);

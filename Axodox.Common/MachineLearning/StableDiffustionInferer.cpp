@@ -41,7 +41,7 @@ namespace Axodox::MachineLearning
 
     IoBinding binding{ _session };
     binding.BindOutput("out_sample", _environment.MemoryInfo());
-    binding.BindInput("encoder_hidden_states", options.TextEmbeddings.ToOrtValue(_environment.MemoryInfo()));
+    binding.BindInput("encoder_hidden_states", options.TextEmbeddings.ToHalf().ToOrtValue(_environment.MemoryInfo()));
 
     for (size_t i = initialStep; i < steps.Timesteps.size(); i++)
     {
@@ -53,13 +53,13 @@ namespace Axodox::MachineLearning
 
       auto scaledSample = latentSample.Duplicate().Swizzle(options.BatchSize) / sqrt(steps.Sigmas[i] * steps.Sigmas[i] + 1);
 
-      binding.BindInput("sample", scaledSample.ToOrtValue(_environment.MemoryInfo()));
-      binding.BindInput("timestep", Tensor(steps.Timesteps[i]).ToOrtValue(_environment.MemoryInfo()));
+      binding.BindInput("sample", scaledSample.ToHalf().ToOrtValue(_environment.MemoryInfo()));
+      binding.BindInput("timestep", Tensor(steps.Timesteps[i]).ToHalf().ToOrtValue(_environment.MemoryInfo()));
 
       _session.Run({}, binding);
 
       auto outputs = binding.GetOutputValues();
-      auto output = Tensor::FromOrtValue(outputs[0]);
+      auto output = Tensor::FromOrtValue(outputs[0]).ToSingle();
 
       auto outputComponents = output.Swizzle().Split();
 

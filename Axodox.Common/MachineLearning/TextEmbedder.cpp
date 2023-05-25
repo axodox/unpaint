@@ -2,6 +2,7 @@
 #ifdef USE_ONNX
 #include "TextEmbedder.h"
 
+using namespace Axodox::Infrastructure;
 using namespace std;
 
 namespace Axodox::MachineLearning
@@ -26,7 +27,7 @@ namespace Axodox::MachineLearning
 
     auto tokenizedTexts = _textTokenizer.TokenizeText(texts);
     auto [tokenizedText, attentionMask] = MergeTokenizedChunks(tokenizedTexts, chunks);
-    auto encodedText = _textEncoder.EncodeText(tokenizedText);
+    auto encodedText = _textEncoder.EncodeText(tokenizedText).ToSingle();
     ApplyAttention(encodedText, attentionMask);
 
     return encodedText;
@@ -217,7 +218,7 @@ namespace Axodox::MachineLearning
       auto scale = attentionMask[i];
       for (auto& encodedSubtoken : encodedToken)
       {
-        encodedSubtoken *= scale;
+        encodedSubtoken = encodedSubtoken * scale;
       }
     }
 
@@ -225,7 +226,7 @@ namespace Axodox::MachineLearning
     auto compensation = oldAverage / newAverage;
     for (auto& encodedSubtoken : encodedTokens)
     {
-      encodedSubtoken *= compensation;
+      encodedSubtoken = encodedSubtoken * compensation;
     }
   }
 }
