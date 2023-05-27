@@ -16,6 +16,7 @@
 #include "MachineLearning/VaeDecoder.h"
 #include "MachineLearning/VaeEncoder.h"
 #include "MachineLearning/TextEmbedder.h"
+#include "MachineLearning/PromptScheduler.h"
 
 using namespace Axodox::Graphics;
 using namespace Axodox::Infrastructure;
@@ -79,8 +80,17 @@ int main()
 
   OnnxEnvironment onnxEnvironment{ L"C:/dev/ai/realistic_vision_v1.4-fp16-vram" };
 
-  TextEmbedder embedder{onnxEnvironment};
-  embedder.ProcessText("a (simple (not so much:15) :0.1) prompt");
+  //TextEmbedder embedder{onnxEnvironment};
+  //embedder.ProcessText("a (simple (not so much:15) :0.1) prompt");
+
+  PromptScheduler scheduler;
+  auto r0 = scheduler.ParseFrames("this is a test");
+  auto r1 = scheduler.ParseFrames("this is a []");
+  auto r2 = scheduler.ParseFrames("this is a [test]");
+  auto r3 = scheduler.ParseFrames("this is a [0.2<test]");
+  auto r4 = scheduler.ParseFrames("this is a [test < 0.8 ]");
+  auto r5 = scheduler.ParseFrames("this is a [0.2<test < 0.8 ]");
+  return 0;
 
   //OnnxEnvironment onnxEnvironment{ L"D:/dev/Stable-Diffusion-USE_ONNX-FP16/model/safetensors-sd15-fp16" };
   //OnnxEnvironment onnxEnvironment{ L"D:/dev/Stable-Diffusion-USE_ONNX-FP16/model/safetensors-protogenX53Photorealism_10-fp16" };

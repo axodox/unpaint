@@ -59,6 +59,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Infrastructure\DependencyContainer.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Infrastructure\Events.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Infrastructure\Half.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\PromptScheduler.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\TextEmbedder.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Storage\SettingManager.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Infrastructure\Traits.h" />
@@ -140,6 +141,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Infrastructure\BitwiseOperations.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Infrastructure\DependencyContainer.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Infrastructure\Half.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\PromptScheduler.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)MachineLearning\TextEmbedder.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Storage\SettingManager.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Infrastructure\Win32.cpp" />
