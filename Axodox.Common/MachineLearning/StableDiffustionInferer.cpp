@@ -17,7 +17,6 @@ namespace Axodox::MachineLearning
 
   Tensor StableDiffusionInferer::RunInference(const StableDiffusionOptions& options, Threading::async_operation_source* async)
   {
-    if (options.LatentInput && options.LatentInput.Shape[0] != options.BatchSize) throw logic_error("Batch size and latent input size must match!");
     if (options.MaskInput && !options.LatentInput) throw logic_error("Mask input cannot be set without latent input!");
     if (options.MaskInput && (options.MaskInput.Shape[2] != options.LatentInput.Shape[2] || options.MaskInput.Shape[3] != options.LatentInput.Shape[3])) throw logic_error("Mask and latent inputs must have a matching width and height.");
 
@@ -41,7 +40,7 @@ namespace Axodox::MachineLearning
 
     IoBinding binding{ _session };
     binding.BindOutput("out_sample", _environment.MemoryInfo());
-    binding.BindInput("encoder_hidden_states", options.TextEmbeddings.ToHalf().ToOrtValue(_environment.MemoryInfo()));
+    binding.BindInput("encoder_hidden_states", options.TextEmbeddings.ToHalf().Duplicate(options.BatchSize).ToOrtValue(_environment.MemoryInfo()));
 
     for (size_t i = initialStep; i < steps.Timesteps.size(); i++)
     {
@@ -83,8 +82,10 @@ namespace Axodox::MachineLearning
 
   Tensor StableDiffusionInferer::PrepareLatentSample(StableDiffusionContext& context, const Tensor& latents, float initialSigma)
   {
-    auto result = Tensor::CreateRandom(latents.Shape, context.Randoms);
-    result.UnaryOperation<float>(latents, [=](float a, float b) { return a * initialSigma + b * 0.18215f; });
+    auto replicatedLatents = latents.DuplicateToSize(context.Options.BatchSize);
+
+    auto result = Tensor::CreateRandom(replicatedLatents.Shape, context.Randoms);
+    result.UnaryOperation<float>(replicatedLatents, [=](float a, float b) { return a * initialSigma + b * 0.18215f; });
     return result;
   }
 

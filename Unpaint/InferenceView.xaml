@@ -334,6 +334,7 @@
                   <RowDefinition Height="Auto"/>
                   <RowDefinition Height="Auto"/>
                   <RowDefinition Height="Auto"/>
+                  <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
                 <Grid.ColumnDefinitions>
@@ -370,20 +371,31 @@
                     </DataTemplate>
                   </ComboBox.ItemTemplate>
                 </ComboBox>
+                
+                <!-- Batch size -->
+                <CheckBox Grid.Row="3" Content="Batch size" VerticalAlignment="Center" HorizontalAlignment="Right" FlowDirection="RightToLeft"
+                          IsChecked="{x:Bind ViewModel.IsBatchGenerationEnabled, Mode=TwoWay}">
+                  <ToolTipService.ToolTip>
+                    <TextBlock Text="Generate multiple images in one run: this can increase per image efficiency significantly, however generation will take longer and have increased video memory usage. The efficiency improvement diminishes at higher values." TextWrapping="WrapWholeWords" FlowDirection="LeftToRight"/>
+                  </ToolTipService.ToolTip>
+                </CheckBox>
+                <muxc:NumberBox Grid.Row="3" Grid.Column="1" Minimum="1" Maximum="128" SmallChange="1" SpinButtonPlacementMode="Inline"
+                                IsEnabled="{x:Bind ViewModel.IsBatchGenerationEnabled, Mode=OneWay}"
+                                Value="{x:Bind ViewModel.BatchSize, Mode=TwoWay}"/>
 
                 <!-- Guidance scale -->
-                <TextBlock Grid.Row="3" Text="Guidance strength" Style="{StaticResource SettingTextBlockStyle}" ToolTipService.ToolTip="Controls the strength of human input when forming the output. Low values can result in more creative results, while higher values will conform to the input more strictly. Selecting values too high or low degrade the quality of the output."/>
-                <Slider Grid.Row="3" Grid.Column="1" Minimum="0" Maximum="20" SmallChange="0.1" LargeChange="1" StepFrequency="0.1"
+                <TextBlock Grid.Row="4" Text="Guidance strength" Style="{StaticResource SettingTextBlockStyle}" ToolTipService.ToolTip="Controls the strength of human input when forming the output. Low values can result in more creative results, while higher values will conform to the input more strictly. Selecting values too high or low degrade the quality of the output."/>
+                <Slider Grid.Row="4" Grid.Column="1" Minimum="0" Maximum="20" SmallChange="0.1" LargeChange="1" StepFrequency="0.1"
                         Value="{x:Bind ViewModel.GuidanceStrength, Mode=TwoWay}"/>
 
                 <!-- Sampling steps -->
-                <TextBlock Grid.Row="4" Text="Sampling steps" Style="{StaticResource SettingTextBlockStyle}" ToolTipService.ToolTip="Reducing this value speeds up image generation time, however it also degrades image quality."/>
-                <muxc:NumberBox Grid.Row="4" Grid.Column="1" Minimum="5" Maximum="100" SmallChange="1" SpinButtonPlacementMode="Inline"
+                <TextBlock Grid.Row="5" Text="Sampling steps" Style="{StaticResource SettingTextBlockStyle}" ToolTipService.ToolTip="Reducing this value speeds up image generation time, however it also degrades image quality."/>
+                <muxc:NumberBox Grid.Row="5" Grid.Column="1" Minimum="5" Maximum="100" SmallChange="1" SpinButtonPlacementMode="Inline"
                                 Value="{x:Bind ViewModel.SamplingSteps, Mode=TwoWay}"/>
 
                 <!-- Random seed -->
-                <TextBlock Grid.Row="5" Text="Random seed" Style="{StaticResource SettingTextBlockStyle}" ToolTipService.ToolTip="Affects random numbers used in the image generation process. Using the same seed number with the same settings will result in the same image being generated. Useful for testing how different settings affect the output image."/>
-                <Grid Grid.Row="5" Grid.Column="1" ColumnSpacing="6">
+                <TextBlock Grid.Row="6" Text="Random seed" Style="{StaticResource SettingTextBlockStyle}" ToolTipService.ToolTip="Affects random numbers used in the image generation process. Using the same seed number with the same settings will result in the same image being generated. Useful for testing how different settings affect the output image."/>
+                <Grid Grid.Row="6" Grid.Column="1" ColumnSpacing="6">
                   <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>

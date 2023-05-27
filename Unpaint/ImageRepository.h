@@ -21,7 +21,7 @@ namespace winrt::Unpaint
     std::span<const std::string> Images() const;
     Axodox::Infrastructure::event_publisher<ImageRepository*> ImagesChanged;
 
-    std::string AddImage(const Axodox::Graphics::TextureData& image, const ImageMetadata& metadata);
+    std::string AddImage(const Axodox::Graphics::TextureData& image, std::optional<int32_t> batchIndex, const ImageMetadata& metadata);
     void AddImage(const Axodox::Graphics::TextureData& image, std::string_view fileName);
     bool RemoveImage(std::string_view imageId);
     Axodox::Graphics::TextureData GetImage(std::string_view imageId) const;

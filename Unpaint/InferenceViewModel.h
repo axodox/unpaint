@@ -34,6 +34,12 @@ namespace winrt::Unpaint::implementation
     int32_t SelectedResolutionIndex();
     void SelectedResolutionIndex(int32_t value);
 
+    bool IsBatchGenerationEnabled();
+    void IsBatchGenerationEnabled(bool value);
+
+    uint32_t BatchSize();
+    void BatchSize(uint32_t value);
+
     float GuidanceStrength();
     void GuidanceStrength(float value);
 
@@ -111,7 +117,10 @@ namespace winrt::Unpaint::implementation
 
     Windows::Foundation::Collections::IObservableVector<Windows::Graphics::SizeInt32> _resolutions;
     int32_t _selectedResolutionIndex;
-    
+   
+    bool _isBatchGenerationEnabled;
+    uint32_t _batchSize;
+
     float _guidanceStrength, _denoisingStrength;
     uint32_t _samplingSteps, _randomSeed;
     bool _isSeedFrozen;

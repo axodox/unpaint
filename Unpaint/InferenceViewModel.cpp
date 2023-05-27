@@ -44,6 +44,8 @@ namespace winrt::Unpaint::implementation
     _models(single_threaded_observable_vector<hstring>()),
     _resolutions(single_threaded_observable_vector<SizeInt32>()),
     _selectedResolutionIndex(1),
+    _isBatchGenerationEnabled(false),
+    _batchSize(8),
     _samplingSteps(15),
     _random(uint32_t(time(nullptr))),
     _isSeedFrozen(false),
@@ -166,6 +168,32 @@ namespace winrt::Unpaint::implementation
 
     _selectedResolutionIndex = value;
     _propertyChanged(*this, PropertyChangedEventArgs(L"SelectedResolutionIndex"));
+  }
+
+  bool InferenceViewModel::IsBatchGenerationEnabled()
+  {
+    return _isBatchGenerationEnabled;
+  }
+
+  void InferenceViewModel::IsBatchGenerationEnabled(bool value)
+  {
+    if (value == _isBatchGenerationEnabled) return;
+
+    _isBatchGenerationEnabled = value;
+    _propertyChanged(*this, PropertyChangedEventArgs(L"IsBatchGenerationEnabled"));
+  }
+
+  uint32_t InferenceViewModel::BatchSize()
+  {
+    return _batchSize;
+  }
+
+  void InferenceViewModel::BatchSize(uint32_t value)
+  {
+    if (value == _batchSize) return;
+
+    _batchSize = value;
+    _propertyChanged(*this, PropertyChangedEventArgs(L"BatchSize"));
   }
 
   float InferenceViewModel::GuidanceStrength()
@@ -373,6 +401,7 @@ namespace winrt::Unpaint::implementation
       .DenoisingStrength = _denoisingStrength,
       .SamplingSteps = _samplingSteps,
       .RandomSeed = _randomSeed,
+      .BatchSize = _isBatchGenerationEnabled ? _batchSize : 1,
       .SafeMode = _unpaintOptions->IsSafeModeEnabled(),
       .ModelId = to_string(_models.GetAt(_selectedModelIndex))
     };
@@ -413,7 +442,16 @@ namespace winrt::Unpaint::implementation
       Progress(0.f);
       Status(L"");
 
-      _imageRepository->AddImage(results[0], task.ToMetadata());
+      for (int32_t i = 0; auto& result : results)
+      {
+        optional<int32_t> index;
+        if (results.size() > 1)
+        {
+          index = i++;
+        }
+
+        _imageRepository->AddImage(result, index, task.ToMetadata());
+      }
       SelectedImageIndex(int32_t(_images.Size()) - 1);
     }
   }
@@ -546,8 +584,7 @@ namespace winrt::Unpaint::implementation
 
     if (texture)
     {
-      //auto fileName = filesystem::path(file.Name().c_str()).replace_extension(".png");
-      _imageRepository->AddImage(texture, ImageMetadata{});
+      _imageRepository->AddImage(texture, nullopt, ImageMetadata{});
       SelectedImageIndex(int32_t(_images.Size()) - 1);
     }
   }

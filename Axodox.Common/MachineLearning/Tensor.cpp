@@ -329,6 +329,15 @@ namespace Axodox::MachineLearning
     return const_cast<uint8_t*>(static_cast<const Tensor*>(this)->AsPointer(x, y, z, w));
   }
 
+  Tensor Tensor::DuplicateToSize(size_t instances) const
+  {
+    if (Shape[0] == instances) return *this;
+
+    if (instances % Shape[0] != 0) throw out_of_range("The instance count must be a multiple of the current shape[0].");
+
+    return Duplicate(instances / Shape[0]);
+  }
+
   Tensor Tensor::Duplicate(size_t instances) const
   {
     Tensor tensor{ Type, Shape[0] * instances, Shape[1], Shape[2], Shape[3] };

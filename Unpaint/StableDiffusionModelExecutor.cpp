@@ -161,7 +161,7 @@ namespace winrt::Unpaint
 
     StableDiffusionOptions options{
       .StepCount = task.SamplingSteps,
-      .BatchSize = 1,
+      .BatchSize = task.BatchSize,
       .Width = task.Resolution.x,
       .Height = task.Resolution.y,
       .GuidanceScale = task.GuidanceStrength,

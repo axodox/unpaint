@@ -114,6 +114,8 @@ namespace Axodox::MachineLearning
       return *this * (T(1) / value);
     }
 
+    Tensor DuplicateToSize(size_t instances) const;
+
     Tensor Duplicate(size_t instances = 2) const;
 
     Tensor Swizzle(size_t blockCount = 2) const;

@@ -75,6 +75,9 @@ namespace Unpaint
     IObservableVector<Windows.Graphics.SizeInt32> Resolutions{ get; };
     Int32 SelectedResolutionIndex;
 
+    Boolean IsBatchGenerationEnabled;
+    UInt32 BatchSize;
+
     Single GuidanceStrength;
     Single DenoisingStrength;
     UInt32 SamplingSteps;

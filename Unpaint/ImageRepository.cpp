@@ -42,12 +42,24 @@ namespace winrt::Unpaint
     return _images;
   }
 
-  std::string ImageRepository::AddImage(const Axodox::Graphics::TextureData& image, const ImageMetadata& metadata)
+  std::string ImageRepository::AddImage(const Axodox::Graphics::TextureData& image, std::optional<int32_t> batchIndex, const ImageMetadata& metadata)
   {
     auto now = zoned_time{ current_zone(), time_point_cast<seconds>(system_clock::now()) };
-    auto fileName = format("{:%Y-%m-%d %H-%M-%S}.png", now);
+    auto fileName = format("{:%Y-%m-%d %H-%M-%S}", now);
 
-    auto imageMetadata = stringify_json(metadata);
+    string imageMetadata;
+    if (batchIndex)
+    {
+      fileName += std::format(" b{:02}", *batchIndex);
+      auto batchMetadata = metadata;
+      *batchMetadata.RandomSeed += *batchIndex;
+      imageMetadata = stringify_json(batchMetadata);
+    }
+    else
+    {
+      imageMetadata = stringify_json(metadata);
+    }
+    fileName += ".png";
 
     auto imagePath = GetPath(fileName);
     auto imageBuffer = image.ToBuffer(imageMetadata);

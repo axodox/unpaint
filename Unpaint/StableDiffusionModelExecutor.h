@@ -28,6 +28,7 @@ namespace winrt::Unpaint
     float DenoisingStrength;
     uint32_t SamplingSteps;
     uint32_t RandomSeed;
+    uint32_t BatchSize;
     bool SafeMode;
 
     std::string ModelId;
