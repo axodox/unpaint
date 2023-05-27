@@ -9,7 +9,7 @@ namespace Axodox::MachineLearning
 {
   VaeEncoder::VaeEncoder(OnnxEnvironment& environment) :
     _environment(environment),
-    _session(environment.CreateOptimizedSession(_environment.RootPath() / L"vae_encoder/model.onnx"))
+    _session(environment.CreateSession(_environment.RootPath() / L"vae_encoder/model.onnx"))
   { }
 
   Tensor VaeEncoder::EncodeVae(const Tensor& image)

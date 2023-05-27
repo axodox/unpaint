@@ -46,6 +46,17 @@ namespace Axodox::MachineLearning
     return options;
   }
   
+  Ort::Session OnnxEnvironment::CreateSession(const std::filesystem::path& modelPath)
+  {
+    auto sessionOptions = DefaultSessionOptions();
+    sessionOptions.SetGraphOptimizationLevel(GraphOptimizationLevel::ORT_DISABLE_ALL);
+
+    auto preferredModelPath = modelPath;
+    preferredModelPath.make_preferred();
+
+    return Session{ _environment, preferredModelPath.c_str(), sessionOptions };
+  }
+
   Ort::Session OnnxEnvironment::CreateOptimizedSession(const std::filesystem::path& modelPath)
   {
     auto sessionOptions = DefaultSessionOptions();
@@ -55,17 +66,17 @@ namespace Axodox::MachineLearning
     optimizedModelPath.make_preferred();
 
     const filesystem::path* sourcePath;
-    /*if (filesystem::exists(optimizedModelPath))
-    {*/
-      //sourcePath = &optimizedModelPath;
+    if (filesystem::exists(optimizedModelPath))
+    {
+      sourcePath = &optimizedModelPath;
       sessionOptions.SetGraphOptimizationLevel(GraphOptimizationLevel::ORT_DISABLE_ALL);
-    /*}
+    }
     else
-    {*/
+    {
       sourcePath = &modelPath;
-      //sessionOptions.SetGraphOptimizationLevel(GraphOptimizationLevel::ORT_ENABLE_ALL);
-      //sessionOptions.SetOptimizedModelFilePath(optimizedModelPath.c_str());
-    //}
+      sessionOptions.SetGraphOptimizationLevel(GraphOptimizationLevel::ORT_ENABLE_ALL);
+      sessionOptions.SetOptimizedModelFilePath(optimizedModelPath.c_str());
+    }
 
     return Session{ _environment, sourcePath->c_str(), sessionOptions};
   }

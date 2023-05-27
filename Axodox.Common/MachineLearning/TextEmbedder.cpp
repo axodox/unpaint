@@ -27,7 +27,7 @@ namespace Axodox::MachineLearning
 
     auto tokenizedTexts = _textTokenizer.TokenizeText(texts);
     auto [tokenizedText, attentionMask] = MergeTokenizedChunks(tokenizedTexts, chunks);
-    auto encodedText = _textEncoder.EncodeText(tokenizedText).ToSingle();
+    auto encodedText = _textEncoder.EncodeText(tokenizedText);
     ApplyAttention(encodedText, attentionMask);
 
     return encodedText;
@@ -218,7 +218,7 @@ namespace Axodox::MachineLearning
       auto scale = attentionMask[i];
       for (auto& encodedSubtoken : encodedToken)
       {
-        encodedSubtoken = encodedSubtoken * scale;
+        encodedSubtoken *= scale;
       }
     }
 
@@ -226,7 +226,7 @@ namespace Axodox::MachineLearning
     auto compensation = oldAverage / newAverage;
     for (auto& encodedSubtoken : encodedTokens)
     {
-      encodedSubtoken = encodedSubtoken * compensation;
+      encodedSubtoken *= compensation;
     }
   }
 }

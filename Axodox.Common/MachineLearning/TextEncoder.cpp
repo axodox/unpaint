@@ -11,7 +11,7 @@ namespace Axodox::MachineLearning
 
   TextEncoder::TextEncoder(OnnxEnvironment& environment) :
     _environment(environment),
-    _session(environment.CreateOptimizedSession(_environment.RootPath() / L"text_encoder/model.onnx"))
+    _session(environment.CreateSession(_environment.RootPath() / L"text_encoder/model.onnx"))
   { }
 
   Tensor TextEncoder::EncodeText(const Tensor& text)
@@ -30,7 +30,7 @@ namespace Axodox::MachineLearning
     //Get result
     auto outputValues = bindings.GetOutputValues();
 
-    return Tensor::FromOrtValue(outputValues[0]);
+    return Tensor::FromOrtValue(outputValues[0]).ToSingle();
   }
 }
 #endif
