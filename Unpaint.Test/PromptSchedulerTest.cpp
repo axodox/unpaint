@@ -1,8 +1,8 @@
 #include "pch.h"
 #include "CppUnitTest.h"
-#include "MachineLearning/PromptScheduler.h"
+#include "MachineLearning/Prompts/PromptScheduler.h"
 
-using namespace Axodox::MachineLearning;
+using namespace Axodox::MachineLearning::Prompts;
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 using namespace std;
 
@@ -13,30 +13,30 @@ namespace UnpaintTest
   public:
     TEST_METHOD(TestEmptyPrompt)
     {
-      auto result = PromptScheduler::ParseFrames("");
-      Assert::IsTrue(result == vector<PromptFrame>{});
+      auto result = ParseTimeFrames("");
+      Assert::IsTrue(result == vector<PromptTimeFrame>{});
     }
 
     TEST_METHOD(TestBasicPrompt)
     {
-      auto result = PromptScheduler::ParseFrames("test");
-      Assert::IsTrue(result == vector<PromptFrame>{
-        {"test", 0.f, 1.f}
+      auto result = ParseTimeFrames("test");
+      Assert::IsTrue(result == vector<PromptTimeFrame>{
+        { "test", 0.f, 1.f }
       });
     }
 
     TEST_METHOD(TestEmptyBrackets)
     {
-      auto result = PromptScheduler::ParseFrames("test[]");
-      Assert::IsTrue(result == vector<PromptFrame>{
+      auto result = ParseTimeFrames("test[]");
+      Assert::IsTrue(result == vector<PromptTimeFrame>{
         { "test", 0.f, 1.f }
       });
     }
 
     TEST_METHOD(TestFromPrompt)
     {
-      auto result = PromptScheduler::ParseFrames("test[0.2<this]");
-      Assert::IsTrue(result == vector<PromptFrame>{
+      auto result = ParseTimeFrames("test[0.2<this]");
+      Assert::IsTrue(result == vector<PromptTimeFrame>{
         { "test", 0.f, 1.f },
         { "this", 0.2f, 1.f }
       });
@@ -44,8 +44,8 @@ namespace UnpaintTest
 
     TEST_METHOD(TestToPrompt)
     {
-      auto result = PromptScheduler::ParseFrames("test [this < 0.8 ]");
-      Assert::IsTrue(result == vector<PromptFrame>{
+      auto result = ParseTimeFrames("test [this < 0.8 ]");
+      Assert::IsTrue(result == vector<PromptTimeFrame>{
         { "test ", 0.f, 1.f },
         { "this ", 0.f, 0.8f }
       });
@@ -53,8 +53,8 @@ namespace UnpaintTest
 
     TEST_METHOD(TestFromToPrompt)
     {
-      auto result = PromptScheduler::ParseFrames("test [0.2<this < 0.8 ]");
-      Assert::IsTrue(result == vector<PromptFrame>{
+      auto result = ParseTimeFrames("test [0.2<this < 0.8 ]");
+      Assert::IsTrue(result == vector<PromptTimeFrame>{
         { "test ", 0.f, 1.f },
         { "this ", 0.2f, 0.8f }
       });
@@ -62,8 +62,8 @@ namespace UnpaintTest
 
     TEST_METHOD(TestTwoPrompts)
     {
-      auto result = PromptScheduler::ParseFrames("test [0.2<this < 0.8 ] at [0.2<once]");
-      Assert::IsTrue(result == vector<PromptFrame>{
+      auto result = ParseTimeFrames("test [0.2<this < 0.8 ] at [0.2<once]");
+      Assert::IsTrue(result == vector<PromptTimeFrame>{
         { "test ", 0.f, 1.f },
         { "this ", 0.2f, 0.8f },
         { " at ", 0.f, 1.f },
@@ -73,8 +73,8 @@ namespace UnpaintTest
 
     TEST_METHOD(TestTightPrompts)
     {
-      auto result = PromptScheduler::ParseFrames("test [0.2<this at< 0.8 ][0.2<once]");
-      Assert::IsTrue(result == vector<PromptFrame>{
+      auto result = ParseTimeFrames("test [0.2<this at< 0.8 ][0.2<once]");
+      Assert::IsTrue(result == vector<PromptTimeFrame>{
         { "test ", 0.f, 1.f },
         { "this at", 0.2f, 0.8f },
         { "once", 0.2f, 1.f }
@@ -83,8 +83,8 @@ namespace UnpaintTest
 
     TEST_METHOD(TestNestedPrompts)
     {
-      auto result = PromptScheduler::ParseFrames("test [0.2<this [0.5<at]< 0.8 ][0.2<once]");
-      Assert::IsTrue(result == vector<PromptFrame>{
+      auto result = ParseTimeFrames("test [0.2<this [0.5<at]< 0.8 ][0.2<once]");
+      Assert::IsTrue(result == vector<PromptTimeFrame>{
         { "test ", 0.f, 1.f },
         { "this ", 0.2f, 0.8f },
         { "at", 0.5f, 0.8f },
@@ -96,7 +96,7 @@ namespace UnpaintTest
     {
       try
       {
-        PromptScheduler::ParseFrames("test [ asd");
+        ParseTimeFrames("test [ asd");
         Assert::Fail();
       }
       catch(...)
@@ -107,7 +107,7 @@ namespace UnpaintTest
     {
       try
       {
-        PromptScheduler::ParseFrames("test [ asd]]");
+        ParseTimeFrames("test [ asd]]");
         Assert::Fail();
       }
       catch (...)
@@ -118,7 +118,7 @@ namespace UnpaintTest
     {
       try
       {
-        PromptScheduler::ParseFrames("test [ asd<asd]");
+        ParseTimeFrames("test [ asd<asd]");
         Assert::Fail();
       }
       catch (...)
@@ -129,7 +129,7 @@ namespace UnpaintTest
     {
       try
       {
-        PromptScheduler::ParseFrames("test [ 0.1<0.2<0.3<0.4]");
+        ParseTimeFrames("test [ 0.1<0.2<0.3<0.4]");
         Assert::Fail();
       }
       catch (...)

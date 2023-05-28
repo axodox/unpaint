@@ -4,6 +4,7 @@
 #include "Tensor.h"
 #include "TextTokenizer.h"
 #include "TextEncoder.h"
+#include "Prompts/PromptAttention.h"
 
 namespace Axodox::MachineLearning
 {
@@ -20,20 +21,12 @@ namespace Axodox::MachineLearning
 
     Tensor ProcessText(std::string_view text);
 
-
   private:
     static const std::set<char> _specialChars;
     TextTokenizer _textTokenizer;
     TextEncoder _textEncoder;
 
-    std::vector<TextChunk> ParseChunks(const char* text);
-    float ReadNumber(const char*& text);
-    float ReadAttention(const char* text);
-
-    std::string TrimWhitespace(std::string_view text);
-    std::vector<TextChunk> CleanChunks(std::vector<TextChunk>& chunks);
-
-    std::pair<Tensor, std::vector<float>> MergeTokenizedChunks(const Tensor& tokenizedChunks, std::span<const TextChunk> textChunks);
+    std::pair<Tensor, std::vector<float>> MergeTokenizedChunks(const Tensor& tokenizedChunks, std::span<const Prompts::PromptAttentionFrame> textChunks);
     void ApplyAttention(Tensor& encodedText, std::span<const float> attentionMask);
   };
 }
