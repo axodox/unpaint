@@ -37,7 +37,7 @@ namespace winrt::Unpaint
 
   bool UnpaintOptions::IsDenoiserPinned() const
   {
-    return _settingManager->LoadSettingOr(_isDenoiserPinnedKey, false);
+    return _settingManager->LoadSettingOr(_isDenoiserPinnedKey, true);
   }
 
   void UnpaintOptions::IsDenoiserPinned(bool value)
