@@ -20,11 +20,13 @@ namespace winrt::Unpaint::implementation
 
     hstring PositivePromptPlaceholder();
     hstring PositivePrompt();
-    void PositivePrompt(hstring const& value);
+    fire_and_forget PositivePrompt(hstring const& value);
+    int32_t AvailablePositiveTokenCount();
 
     hstring NegativePromptPlaceholder();
     hstring NegativePrompt();
-    void NegativePrompt(hstring const& value);
+    fire_and_forget NegativePrompt(hstring const& value);
+    int32_t AvailableNegativeTokenCount();
 
     Windows::Foundation::Collections::IObservableVector<hstring> Models();
     int32_t SelectedModelIndex();
@@ -108,9 +110,11 @@ namespace winrt::Unpaint::implementation
 
     InferenceMode _inferenceMode;
 
+    bool _isBusy;
     bool _isSettingsLocked;
 
     hstring _positivePrompt, _negativePrompt;
+    int32_t _availablePositiveTokenCount, _availableNegativeTokenCount;
     
     Windows::Foundation::Collections::IObservableVector<hstring> _models;
     int32_t _selectedModelIndex;
@@ -140,6 +144,8 @@ namespace winrt::Unpaint::implementation
 
     fire_and_forget LoadImageMetadataAsync(bool force = false);
     fire_and_forget RefreshOutputImageAsync();
+
+    Windows::Foundation::IAsyncOperation<int32_t> ValidatePromptAsync(hstring prompt);
   };
 }
 

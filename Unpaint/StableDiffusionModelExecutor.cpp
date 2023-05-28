@@ -3,11 +3,12 @@
 #include "Infrastructure/BitwiseOperations.h"
 #include "Infrastructure/DependencyContainer.h"
 #include "Storage/FileIO.h"
-#include "MachineLearning/TextEmbedder.h"
 #include "MachineLearning/VaeEncoder.h"
 #include "MachineLearning/VaeDecoder.h"
 #include "Threading/Parallel.h"
+#include "Collections/Hasher.h"
 
+using namespace Axodox::Collections;
 using namespace Axodox::Graphics;
 using namespace Axodox::Infrastructure;
 using namespace Axodox::MachineLearning;
@@ -22,8 +23,18 @@ namespace winrt::Unpaint
 
   StableDiffusionModelExecutor::StableDiffusionModelExecutor() :
     _unpaintOptions(dependencies.resolve<UnpaintOptions>()),
-    _modelRepository(dependencies.resolve<ModelRepository>())
+    _modelRepository(dependencies.resolve<ModelRepository>()),
+    _stepCount(0)
   { }
+
+  int32_t StableDiffusionModelExecutor::ValidatePrompt(std::string_view modelId, std::string_view prompt)
+  {
+    lock_guard lock(_mutex);
+    EnsureEnvironment(modelId);
+    if (!_textEmbedder) _textEmbedder = make_unique<TextEmbedder>(*_onnxEnvironment, app_folder());
+
+    return _textEmbedder->ValidatePrompt(prompt);
+  }
 
   std::vector<Axodox::Graphics::TextureData> StableDiffusionModelExecutor::TryRunInference(const StableDiffusionInferenceTask& task, Axodox::Threading::async_operation& operation)
   {
@@ -34,55 +45,70 @@ namespace winrt::Unpaint
     async_operation_source async;
     operation.set_source(async);
 
-    //Initialize execution environment
-    if (_modelId != task.ModelId || !_onnxEnvironment)
+    try
     {
+      //Initialize execution environment
       async.update_state(NAN, "Initializing execution environment...");
+      EnsureEnvironment(task.ModelId);
 
-      _onnxEnvironment = make_unique<OnnxEnvironment>(_modelRepository->Root() / task.ModelId);
-      _modelId = task.ModelId;
-    }
+      //Prepare inputs
+      StableDiffusionInputs inputs;
+      inputs.TextEmbeddings = CreateTextEmbeddings(task, async);
 
-    //Prepare inputs
-    StableDiffusionInputs inputs;
-    inputs.TextEmbeddings = CreateTextEmbeddings(task, async);
-
-    std::optional<XMUINT2> resolutionOverride;
-    if (!task.InputImage.empty())
-    {
-      auto imageTensor = LoadImage(task, resolutionOverride, async);
-      inputs.InputImage = EncodeVAE(imageTensor, async);
-
-      /*inputs.InputMask = Tensor{ TensorType::Single, 1, 1, inputs.InputImage.Shape[2], inputs.InputImage.Shape[3] };
-      inputs.InputMask.Fill(1.f);*/
-    }
-
-    //Run diffusion
-    auto latentImage = RunStableDiffusion(task, inputs, async);
-    if (async.is_cancelled()) return {};
-
-    //Prepare outputs
-    auto decodedImage = DecodeVAE(latentImage, async);
-    auto outputs = decodedImage.ToTextureData();
-    if (resolutionOverride)
-    {
-      for (auto& output : outputs)
+      std::optional<XMUINT2> resolutionOverride;
+      if (!task.InputImage.empty())
       {
-        if (output.Width > resolutionOverride->x)
-        {
-          output = output.TruncateHorizontally(resolutionOverride->x);
-        }
+        auto imageTensor = LoadImage(task, resolutionOverride, async);
+        inputs.InputImage = EncodeVAE(imageTensor, async);
 
-        if (output.Height > resolutionOverride->y)
+        /*inputs.InputMask = Tensor{ TensorType::Single, 1, 1, inputs.InputImage.Shape[2], inputs.InputImage.Shape[3] };
+        inputs.InputMask.Fill(1.f);*/
+      }
+
+      //Run diffusion
+      auto latentImage = RunStableDiffusion(task, inputs, async);
+      if (async.is_cancelled()) return {};
+
+      //Prepare outputs
+      auto decodedImage = DecodeVAE(latentImage, async);
+      auto outputs = decodedImage.ToTextureData();
+      if (resolutionOverride)
+      {
+        for (auto& output : outputs)
         {
-          output = output.TruncateVertically(resolutionOverride->y);
+          if (output.Width > resolutionOverride->x)
+          {
+            output = output.TruncateHorizontally(resolutionOverride->x);
+          }
+
+          if (output.Height > resolutionOverride->y)
+          {
+            output = output.TruncateVertically(resolutionOverride->y);
+          }
         }
       }
-    }
 
-    //Return results
-    async.update_state(1.f, "Done.");
-    return outputs;
+      //Return results
+      async.update_state(1.f, "Done.");
+      return outputs;
+    }
+    catch (...)
+    {
+      async.update_state(1.f, "Generation failed.");
+      return {};
+    }
+  }
+
+  void StableDiffusionModelExecutor::EnsureEnvironment(std::string_view modelId)
+  {
+    if (_modelId != modelId || !_onnxEnvironment)
+    {
+      _textEmbedder.reset();
+      _denoiser.reset();
+
+      _onnxEnvironment = make_unique<OnnxEnvironment>(_modelRepository->Root() / modelId);      
+      _modelId = modelId;
+    }
   }
 
   Axodox::MachineLearning::Tensor StableDiffusionModelExecutor::LoadImage(const StableDiffusionInferenceTask& task, std::optional<DirectX::XMUINT2>& resolutionOverride, Axodox::Threading::async_operation_source& async)
@@ -134,23 +160,41 @@ namespace winrt::Unpaint
     return vaeEncoder.EncodeVae(colorImage);
   }
 
-  Axodox::MachineLearning::Tensor StableDiffusionModelExecutor::CreateTextEmbeddings(const StableDiffusionInferenceTask& task, Axodox::Threading::async_operation_source& async)
+  Axodox::MachineLearning::ScheduledTensor StableDiffusionModelExecutor::CreateTextEmbeddings(const StableDiffusionInferenceTask& task, Axodox::Threading::async_operation_source& async)
   {
-    if (_textEmbedding && _positivePrompt == task.PositivePrompt && _negativePrompt == task.NegativePrompt) return _textEmbedding;
+    //Check if the prompt has changed
+    if (!_textEmbedding.empty() && _positivePrompt == task.PositivePrompt && _negativePrompt == task.NegativePrompt && task.SamplingSteps == _stepCount) return _textEmbedding;
 
+    //Load embedder
     async.update_state(NAN, "Loading text embedder...");
-    TextEmbedder textEmbedder{ *_onnxEnvironment, app_folder() };
+    if (!_textEmbedder) _textEmbedder = make_unique<TextEmbedder>(*_onnxEnvironment, app_folder());
 
+    //Parse and schedule prompt
     async.update_state("Creating text embedding...");
-    auto encodedNegativePrompt = textEmbedder.ProcessText((task.SafeMode ? _safetyFilter : "") + task.NegativePrompt);
-    auto encodedPositivePrompt = textEmbedder.ProcessText(task.PositivePrompt);
+    auto encodedNegativePrompt = _textEmbedder->SchedulePrompt((task.SafeMode ? _safetyFilter : "") + task.NegativePrompt, task.SamplingSteps);
+    auto encodedPositivePrompt = _textEmbedder->SchedulePrompt(task.PositivePrompt, task.SamplingSteps);
 
+    //Concatenate negative and position prompts
+    _textEmbedding.resize(task.SamplingSteps);
+    trivial_map<pair<void*, void*>, shared_ptr<Tensor>> embeddingBuffer;
+    for (auto i = 0u; i < task.SamplingSteps; i++)
+    {
+      auto& concatenatedTensor = embeddingBuffer[{ encodedNegativePrompt[i].get(), encodedPositivePrompt[i].get() }];
+      if (!concatenatedTensor)
+      {
+        concatenatedTensor = make_shared<Tensor>(encodedNegativePrompt[i]->Concat(*encodedPositivePrompt[i]));
+      }
+
+      _textEmbedding[i] = concatenatedTensor;
+    }
+
+    //Update cache key
     _positivePrompt = task.PositivePrompt;
     _negativePrompt = task.NegativePrompt;
-    _textEmbedding = encodedNegativePrompt.Concat(encodedPositivePrompt);
+    _stepCount = task.SamplingSteps;
 
+    //Return result
     async.update_state("Text embedding created.");
-
     return _textEmbedding;
   }
 

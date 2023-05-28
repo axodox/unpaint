@@ -5,6 +5,7 @@
 #include "MachineLearning/Tensor.h"
 #include "MachineLearning/OnnxEnvironment.h"
 #include "MachineLearning/StableDiffustionInferer.h"
+#include "MachineLearning/TextEmbedder.h"
 #include "ModelRepository.h"
 #include "UnpaintOptions.h"
 #include "ImageMetadata.h"
@@ -43,11 +44,13 @@ namespace winrt::Unpaint
     {
       Axodox::MachineLearning::Tensor InputImage;
       Axodox::MachineLearning::Tensor InputMask;
-      Axodox::MachineLearning::Tensor TextEmbeddings;
+      Axodox::MachineLearning::ScheduledTensor TextEmbeddings;
     };
 
   public:
     StableDiffusionModelExecutor();
+
+    int32_t ValidatePrompt(std::string_view modelId, std::string_view prompt);
 
     std::vector<Axodox::Graphics::TextureData> TryRunInference(const StableDiffusionInferenceTask& task, Axodox::Threading::async_operation& operation);
 
@@ -57,17 +60,21 @@ namespace winrt::Unpaint
     std::shared_ptr<ModelRepository> _modelRepository;
 
     std::unique_ptr<Axodox::MachineLearning::OnnxEnvironment> _onnxEnvironment;
+    std::unique_ptr<Axodox::MachineLearning::TextEmbedder> _textEmbedder;
     std::unique_ptr<Axodox::MachineLearning::StableDiffusionInferer> _denoiser;
     std::mutex _mutex;
 
     std::string _modelId;
 
+    uint32_t _stepCount;
     std::string _positivePrompt, _negativePrompt;
-    Axodox::MachineLearning::Tensor _textEmbedding;
+    Axodox::MachineLearning::ScheduledTensor _textEmbedding;
+
+    void EnsureEnvironment(std::string_view modelId);
 
     Axodox::MachineLearning::Tensor LoadImage(const StableDiffusionInferenceTask& task, std::optional<DirectX::XMUINT2>& resolutionOverride, Axodox::Threading::async_operation_source& async);
     Axodox::MachineLearning::Tensor EncodeVAE(const Axodox::MachineLearning::Tensor& colorImage, Axodox::Threading::async_operation_source& async);
-    Axodox::MachineLearning::Tensor CreateTextEmbeddings(const StableDiffusionInferenceTask& task, Axodox::Threading::async_operation_source& async);
+    Axodox::MachineLearning::ScheduledTensor CreateTextEmbeddings(const StableDiffusionInferenceTask& task, Axodox::Threading::async_operation_source& async);
     Axodox::MachineLearning::Tensor RunStableDiffusion(const StableDiffusionInferenceTask& task, const StableDiffusionInputs& inputs, Axodox::Threading::async_operation_source& async);
     Axodox::MachineLearning::Tensor DecodeVAE(const Axodox::MachineLearning::Tensor& latentImage, Axodox::Threading::async_operation_source& async);
   };

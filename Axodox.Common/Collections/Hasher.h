@@ -34,4 +34,7 @@ namespace Axodox::Collections
       return memcmp(&a, &b, sizeof(TValue)) == 0;
     }
   };
+
+  template <typename TKey, typename TValue>
+  using trivial_map = std::unordered_map<TKey, TValue, trivial_hasher<TKey>, trivial_comparer<TKey>>;
 }

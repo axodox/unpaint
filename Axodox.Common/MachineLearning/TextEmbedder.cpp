@@ -1,175 +1,73 @@
 #include "pch.h"
 #ifdef USE_ONNX
 #include "TextEmbedder.h"
+#include "Prompts/PromptScheduler.h"
+#include "Prompts/PromptParser.h"
 
 using namespace Axodox::Infrastructure;
+using namespace Axodox::MachineLearning::Prompts;
 using namespace std;
 
 namespace Axodox::MachineLearning
 {
-  const std::set<char> TextEmbedder::_specialChars = { ',', '.', '_', '\'', '"', '-' };
-
   TextEmbedder::TextEmbedder(OnnxEnvironment& environment, const std::filesystem::path& sourcePath) :
     _textTokenizer(environment, sourcePath),
     _textEncoder(environment)
   { }
 
-  Tensor TextEmbedder::ProcessText(std::string_view text)
+  int32_t TextEmbedder::ValidatePrompt(std::string_view text)
   {
-    auto chunks = ParseChunks(text.data());
 
-    vector<const char*> texts;
-    texts.reserve(chunks.size());
-    for (auto& chunk : chunks)
+    int32_t availableTokenCount = int32_t(TextTokenizer::MaxTokenCount);
+    try
     {
-      texts.push_back(chunk.Text.c_str());
+      auto frames = ::SchedulePrompt(text);
+
+      for (auto& frame : frames)
+      {
+        auto tokenizedPrompt = TokenizePrompt(frame.Text);
+        if (availableTokenCount > tokenizedPrompt.AvailableTokenCount) availableTokenCount = tokenizedPrompt.AvailableTokenCount;
+      }
+    }
+    catch (...)
+    {
+      availableTokenCount = -1;
     }
 
-    auto tokenizedTexts = _textTokenizer.TokenizeText(texts);
-    auto [tokenizedText, attentionMask] = MergeTokenizedChunks(tokenizedTexts, chunks);
-    auto encodedText = _textEncoder.EncodeText(tokenizedText);
-    ApplyAttention(encodedText, attentionMask);
+    return availableTokenCount;
+  }
+
+  std::vector<std::shared_ptr<Tensor>> TextEmbedder::SchedulePrompt(std::string_view text, uint32_t stepCount)
+  {
+    auto prompts = ::SchedulePrompt(text, stepCount);
+    
+    unordered_map<string, shared_ptr<Tensor>> embeddingsByPrompt;
+    vector<shared_ptr<Tensor>> embeddings;
+    embeddings.reserve(stepCount);
+    for (auto& prompt : prompts)
+    {
+      auto& embedding = embeddingsByPrompt[prompt];
+      if (!embedding)
+      {
+        embedding = make_shared<Tensor>(ProcessPrompt(prompt));
+      }
+
+      embeddings.push_back(embedding);
+    }
+
+    return embeddings;
+  }
+
+  Tensor TextEmbedder::ProcessPrompt(std::string_view text)
+  {
+    auto tokenizedPrompt = TokenizePrompt(text);
+    auto encodedText = _textEncoder.EncodeText(tokenizedPrompt.TokenizedText);
+    ApplyAttention(encodedText, tokenizedPrompt.AttentionMask);
 
     return encodedText;
   }
 
-  std::vector<TextChunk> TextEmbedder::ParseChunks(const char* text)
-  {
-    vector<TextChunk> results;
-        
-    string textChunk;
-    stack<float> attention;
-    attention.push(1.f);
-
-    auto addChunk = [&] {
-      if (!textChunk.empty())
-      {
-        results.push_back(TextChunk{
-          .Text = move(textChunk),
-          .Attention = attention.top()
-          });
-      }
-    };
-
-    while (*text != '\0' && !attention.empty())
-    {
-      if (isalnum(*text) || isspace(*text) || _specialChars.contains(*text))
-      {
-        textChunk += *text++;
-      }
-      else
-      {
-        switch (*text)
-        {
-        case '(':
-          addChunk();
-          text++;
-
-          attention.push(attention.top() * ReadAttention(text));
-          break;
-        case ')':
-          addChunk();
-          text++;
-
-          attention.pop();
-          break;
-        case ':':
-          ReadNumber(++text);
-          break;
-        default:
-          text++;
-          break;
-        }
-      }
-    }
-
-    addChunk();
-
-    return CleanChunks(results);
-  }
-
-  float TextEmbedder::ReadNumber(const char*& text)
-  {
-    while (isspace(*text)) text++;
-
-    auto start = text;
-    while (isdigit(*text) || *text == '.') text++;
-    auto end = text;
-
-    while (isspace(*text)) text++;
-
-    float result;
-    from_chars(start, end, result);
-    return result;
-  }
-
-  float TextEmbedder::ReadAttention(const char* text)
-  {
-    auto level = 0;
-    while (*text != '\0')
-    {
-      switch (*text)
-      {
-      case '(':
-        level++;
-        break;
-      case ')':
-        level--;
-        if (level < 0) return 1.f;
-        break;
-      case ':':
-        if (level == 0)
-        {
-          text++;
-          return ReadNumber(text);
-        }
-      }
-
-      text++;
-    }
-    return 1.f;
-  }
-
-  std::string TextEmbedder::TrimWhitespace(std::string_view text)
-  {
-    if (text.empty()) return{};
-
-    auto start = text.data();
-    auto end = start + text.size();
-
-    while (start != end && isspace(*start)) start++;
-    while (start != end && isspace(*(end - 1))) end--;
-
-    return { start, end };
-  }
-
-  std::vector<TextChunk> TextEmbedder::CleanChunks(std::vector<TextChunk>& chunks)
-  {
-    vector<TextChunk> results;
-    results.reserve(chunks.size());
-
-    for (auto i = 0; i < chunks.size(); i++)
-    {
-      auto& chunk = chunks[i];
-      chunk.Text = TrimWhitespace(chunk.Text);
-
-      if (!chunk.Text.empty() && chunk.Attention > 0.f)
-      {
-        if (!results.empty() && results.back().Attention == chunk.Attention)
-        {
-          results.back().Text += " " + chunk.Text;
-        }
-        else
-        {
-          results.push_back(chunk);
-        }
-      }
-    }
-
-    return results;
-  }
-
-  std::pair<Tensor, vector<float>> TextEmbedder::MergeTokenizedChunks(const Tensor& tokenizedChunks, std::span<const TextChunk> textChunks)
+  TextEmbedder::TokenizedPrompt TextEmbedder::MergeTokenizedChunks(const Tensor& tokenizedChunks, std::span<const PromptAttentionFrame> textChunks)
   {
     Tensor tokenizedTensor{ TensorType::Int32, 1, TextTokenizer::MaxTokenCount };
     auto tokenTarget = tokenizedTensor.AsSpan<int32_t>();
@@ -181,7 +79,7 @@ namespace Axodox::MachineLearning
     auto pAttention = attentionMask.data();
     *pAttention++ = 1;
 
-    auto availableSpace = int32_t(TextTokenizer::MaxTokenCount) - 1;
+    int32_t availableSpace = int32_t(TextTokenizer::MaxTokenCount) - 1;
     for (size_t i = 0; i < tokenizedChunks.Shape[0]; i++)
     {
       auto tokenizedChunk = tokenizedChunks.AsSubSpan<int32_t>(i);
@@ -203,7 +101,7 @@ namespace Axodox::MachineLearning
     fill(pTokenTarget, tokenTarget.data() + tokenTarget.size(), TextTokenizer::BlankToken);
     fill(pAttention, attentionMask.data() + attentionMask.size(), 1.f);
 
-    return { tokenizedTensor, attentionMask };
+    return { tokenizedTensor, attentionMask, availableSpace };
   }
 
   void TextEmbedder::ApplyAttention(Tensor& encodedText, std::span<const float> attentionMask)
@@ -228,6 +126,22 @@ namespace Axodox::MachineLearning
     {
       encodedSubtoken *= compensation;
     }
+  }
+
+  TextEmbedder::TokenizedPrompt TextEmbedder::TokenizePrompt(std::string_view text)
+  {
+    auto chunks = ParseAttentionFrames(text.data());
+
+    vector<const char*> texts;
+    texts.reserve(chunks.size());
+    for (auto& chunk : chunks)
+    {
+      CheckPromptCharacters(chunk.Text);
+      texts.push_back(chunk.Text.c_str());
+    }
+
+    auto tokenizedTexts = _textTokenizer.TokenizeText(texts);
+    return MergeTokenizedChunks(tokenizedTexts, chunks);
   }
 }
 #endif

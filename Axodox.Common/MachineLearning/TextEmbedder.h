@@ -4,6 +4,7 @@
 #include "Tensor.h"
 #include "TextTokenizer.h"
 #include "TextEncoder.h"
+#include "Prompts/PromptAttention.h"
 
 namespace Axodox::MachineLearning
 {
@@ -15,26 +16,30 @@ namespace Axodox::MachineLearning
 
   class TextEmbedder
   {
+    struct TokenizedPrompt
+    {
+      Tensor TokenizedText;
+      std::vector<float> AttentionMask;
+      int32_t AvailableTokenCount = 0;
+    };
+
   public:
     TextEmbedder(OnnxEnvironment& environment, const std::filesystem::path& sourcePath = {});
 
-    Tensor ProcessText(std::string_view text);
+    int32_t ValidatePrompt(std::string_view text);
 
+    std::vector<std::shared_ptr<Tensor>> SchedulePrompt(std::string_view text, uint32_t stepCount);
+
+    Tensor ProcessPrompt(std::string_view text);
 
   private:
-    static const std::set<char> _specialChars;
     TextTokenizer _textTokenizer;
     TextEncoder _textEncoder;
 
-    std::vector<TextChunk> ParseChunks(const char* text);
-    float ReadNumber(const char*& text);
-    float ReadAttention(const char* text);
-
-    std::string TrimWhitespace(std::string_view text);
-    std::vector<TextChunk> CleanChunks(std::vector<TextChunk>& chunks);
-
-    std::pair<Tensor, std::vector<float>> MergeTokenizedChunks(const Tensor& tokenizedChunks, std::span<const TextChunk> textChunks);
+    TokenizedPrompt MergeTokenizedChunks(const Tensor& tokenizedChunks, std::span<const Prompts::PromptAttentionFrame> textChunks);
     void ApplyAttention(Tensor& encodedText, std::span<const float> attentionMask);
+
+    TokenizedPrompt TokenizePrompt(std::string_view text);
   };
 }
 #endif

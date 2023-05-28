@@ -71,6 +71,14 @@
       <Setter Property="TextWrapping" Value="WrapWholeWords"/>
       <Setter Property="Margin" Value="24"/>
     </Style>
+    
+    <Style x:Key="AvailableTokenCountStyle" TargetType="TextBlock">
+      <Setter Property="HorizontalAlignment" Value="Right"/>
+      <Setter Property="VerticalAlignment" Value="Top"/>
+      <Setter Property="Margin" Value="6,7"/>
+      <Setter Property="Opacity" Value="0.5"/>
+      <Setter Property="FontFamily" Value="Segoe UI Mono"/>
+    </Style>
   </Page.Resources>
 
   <Grid Grid.RowSpacing="3">
@@ -362,7 +370,7 @@
 
                 <!-- Resolution -->
                 <TextBlock Grid.Row="2" Text="Resolution" Style="{StaticResource SettingTextBlockStyle}" ToolTipService.ToolTip="Controls the size of the output image. Using higher resolutions will increase memory usage and reduce image generation speed."/>
-                <ComboBox Grid.Row="2" Grid.Column="1"
+                <ComboBox Grid.Row="2" Grid.Column="1" HorizontalAlignment="Stretch"
                           ItemsSource="{x:Bind ViewModel.Resolutions, Mode=OneWay}"
                           SelectedIndex="{x:Bind ViewModel.SelectedResolutionIndex, Mode=TwoWay}">
                   <ComboBox.ItemTemplate>
@@ -373,7 +381,7 @@
                 </ComboBox>
                 
                 <!-- Batch size -->
-                <CheckBox Grid.Row="3" Content="Batch size" VerticalAlignment="Center" HorizontalAlignment="Right" FlowDirection="RightToLeft"
+                <CheckBox Grid.Row="3" Content="Batching" VerticalAlignment="Center" HorizontalAlignment="Right" FlowDirection="RightToLeft"
                           IsChecked="{x:Bind ViewModel.IsBatchGenerationEnabled, Mode=TwoWay}">
                   <ToolTipService.ToolTip>
                     <TextBlock Text="Generate multiple images in one run: this can increase per image efficiency significantly, however generation will take longer and have increased video memory usage. The efficiency improvement diminishes at higher values." TextWrapping="WrapWholeWords" FlowDirection="LeftToRight"/>
@@ -411,29 +419,31 @@
         </Button>
 
         <!-- Positive prompt -->
-        <TextBox Grid.Column="1" Grid.Row="0" TextWrapping="Wrap" Padding="36,4,10,0"
+        <TextBox Grid.Column="1" Grid.Row="0" TextWrapping="Wrap" Padding="36,4,25,0"
                  PlaceholderText="{x:Bind ViewModel.PositivePromptPlaceholder}"
                  Text="{x:Bind ViewModel.PositivePrompt, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
           <ToolTipService.ToolTip>
             <StackPanel>
               <TextBlock Text="Positive prompt" FontWeight="Bold"/>
-              <TextBlock Text="Describe what you would like to see on the image. You can control the attention (like this:1.2)." TextWrapping="WrapWholeWords"/>
+              <TextBlock Text="Describe what you would like to see on the image. You can control the attention (like this:1.2). You may also restrict a part of the prompt to certain samples, like this: [at the beginning &lt; 0.2], [0.8 &lt; at the end] or [0.2 &lt; in the middle &lt; 0.8]." TextWrapping="WrapWholeWords"/>
             </StackPanel>
           </ToolTipService.ToolTip>
         </TextBox>
+        <TextBlock Grid.Column="1" Grid.Row="0" Text="{x:Bind ViewModel.AvailablePositiveTokenCount, Mode=OneWay}" Style="{StaticResource AvailableTokenCountStyle}"/>
         <FontIcon Grid.Column="1" Grid.Row="0" FontFamily="Segoe Fluent Icons" FontSize="20" Glyph="&#xe948;" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,6,0,0"/>
 
         <!-- Negative prompt -->
-        <TextBox Grid.Column="1" Grid.Row="1" TextWrapping="Wrap" Padding="36,4,10,0"
+        <TextBox Grid.Column="1" Grid.Row="1" TextWrapping="Wrap" Padding="36,4,25,0"
                  PlaceholderText="{x:Bind ViewModel.NegativePromptPlaceholder}"
                  Text="{x:Bind ViewModel.NegativePrompt, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
           <ToolTipService.ToolTip>
             <StackPanel>
               <TextBlock Text="Negative prompt" FontWeight="Bold"/>
-              <TextBlock Text="Describe what you would not like to see on the image. You can control the attention (like this:1.2)." TextWrapping="WrapWholeWords"/>
+              <TextBlock Text="Describe what you would not like to see on the image. You can control the attention (like this:1.2). You may also restrict a part of the prompt to certain samples, like this: [at the beginning &lt; 0.2], [0.8 &lt; at the end] or [0.2 &lt; in the middle &lt; 0.8]." TextWrapping="WrapWholeWords"/>
             </StackPanel>
           </ToolTipService.ToolTip>
         </TextBox>
+        <TextBlock Grid.Column="1" Grid.Row="1" Text="{x:Bind ViewModel.AvailableNegativeTokenCount, Mode=OneWay}" Style="{StaticResource AvailableTokenCountStyle}"/>
         <FontIcon Grid.Column="1" Grid.Row="1" FontFamily="Segoe Fluent Icons" FontSize="20" Glyph="&#xe949;" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,6,0,0"/>
 
         <!-- Execute -->
