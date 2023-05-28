@@ -16,20 +16,31 @@ namespace Axodox::MachineLearning
 
   class TextEmbedder
   {
+    struct TokenizedPrompt
+    {
+      Tensor TokenizedText;
+      std::vector<float> AttentionMask;
+      int32_t AvailableTokenCount = 0;
+    };
+
   public:
     TextEmbedder(OnnxEnvironment& environment, const std::filesystem::path& sourcePath = {});
 
-    std::vector<std::shared_ptr<Tensor>> ScheduleText(std::string_view text, uint32_t stepCount);
+    int32_t ValidatePrompt(std::string_view text);
 
-    Tensor ProcessText(std::string_view text);
+    std::vector<std::shared_ptr<Tensor>> SchedulePrompt(std::string_view text, uint32_t stepCount);
+
+    Tensor ProcessPrompt(std::string_view text);
 
   private:
     static const std::set<char> _specialChars;
     TextTokenizer _textTokenizer;
     TextEncoder _textEncoder;
 
-    std::pair<Tensor, std::vector<float>> MergeTokenizedChunks(const Tensor& tokenizedChunks, std::span<const Prompts::PromptAttentionFrame> textChunks);
+    TokenizedPrompt MergeTokenizedChunks(const Tensor& tokenizedChunks, std::span<const Prompts::PromptAttentionFrame> textChunks);
     void ApplyAttention(Tensor& encodedText, std::span<const float> attentionMask);
+
+    TokenizedPrompt TokenizePrompt(std::string_view text);
   };
 }
 #endif

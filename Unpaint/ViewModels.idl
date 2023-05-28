@@ -65,9 +65,11 @@ namespace Unpaint
 
     String PositivePrompt;
     String PositivePromptPlaceholder{ get; };
+    Int32 AvailablePositiveTokenCount{ get; };
 
     String NegativePrompt;
     String NegativePromptPlaceholder{ get; };
+    Int32 AvailableNegativeTokenCount{ get; };
 
     IObservableVector<String> Models{ get; };
     Int32 SelectedModelIndex;

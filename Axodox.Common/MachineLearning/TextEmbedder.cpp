@@ -14,9 +14,31 @@ namespace Axodox::MachineLearning
     _textEncoder(environment)
   { }
 
-  std::vector<std::shared_ptr<Tensor>> TextEmbedder::ScheduleText(std::string_view text, uint32_t stepCount)
+  int32_t TextEmbedder::ValidatePrompt(std::string_view text)
   {
-    auto prompts = SchedulePrompt(text, stepCount);
+
+    int32_t availableTokenCount = int32_t(TextTokenizer::MaxTokenCount);
+    try
+    {
+      auto frames = ::SchedulePrompt(text);
+
+      for (auto& frame : frames)
+      {
+        auto tokenizedPrompt = TokenizePrompt(frame.Text);
+        if (availableTokenCount > tokenizedPrompt.AvailableTokenCount) availableTokenCount = tokenizedPrompt.AvailableTokenCount;
+      }
+    }
+    catch (...)
+    {
+      availableTokenCount = -1;
+    }
+
+    return availableTokenCount;
+  }
+
+  std::vector<std::shared_ptr<Tensor>> TextEmbedder::SchedulePrompt(std::string_view text, uint32_t stepCount)
+  {
+    auto prompts = ::SchedulePrompt(text, stepCount);
     
     unordered_map<string, shared_ptr<Tensor>> embeddingsByPrompt;
     vector<shared_ptr<Tensor>> embeddings;
@@ -26,7 +48,7 @@ namespace Axodox::MachineLearning
       auto& embedding = embeddingsByPrompt[prompt];
       if (!embedding)
       {
-        embedding = make_shared<Tensor>(ProcessText(prompt));
+        embedding = make_shared<Tensor>(ProcessPrompt(prompt));
       }
 
       embeddings.push_back(embedding);
@@ -35,26 +57,16 @@ namespace Axodox::MachineLearning
     return embeddings;
   }
 
-  Tensor TextEmbedder::ProcessText(std::string_view text)
+  Tensor TextEmbedder::ProcessPrompt(std::string_view text)
   {
-    auto chunks = ParseAttentionFrames(text.data());
-
-    vector<const char*> texts;
-    texts.reserve(chunks.size());
-    for (auto& chunk : chunks)
-    {
-      texts.push_back(chunk.Text.c_str());
-    }
-
-    auto tokenizedTexts = _textTokenizer.TokenizeText(texts);
-    auto [tokenizedText, attentionMask] = MergeTokenizedChunks(tokenizedTexts, chunks);
-    auto encodedText = _textEncoder.EncodeText(tokenizedText);
-    ApplyAttention(encodedText, attentionMask);
+    auto tokenizedPrompt = TokenizePrompt(text);
+    auto encodedText = _textEncoder.EncodeText(tokenizedPrompt.TokenizedText);
+    ApplyAttention(encodedText, tokenizedPrompt.AttentionMask);
 
     return encodedText;
   }
 
-  std::pair<Tensor, vector<float>> TextEmbedder::MergeTokenizedChunks(const Tensor& tokenizedChunks, std::span<const PromptAttentionFrame> textChunks)
+  TextEmbedder::TokenizedPrompt TextEmbedder::MergeTokenizedChunks(const Tensor& tokenizedChunks, std::span<const PromptAttentionFrame> textChunks)
   {
     Tensor tokenizedTensor{ TensorType::Int32, 1, TextTokenizer::MaxTokenCount };
     auto tokenTarget = tokenizedTensor.AsSpan<int32_t>();
@@ -66,7 +78,7 @@ namespace Axodox::MachineLearning
     auto pAttention = attentionMask.data();
     *pAttention++ = 1;
 
-    auto availableSpace = int32_t(TextTokenizer::MaxTokenCount) - 1;
+    int32_t availableSpace = int32_t(TextTokenizer::MaxTokenCount) - 1;
     for (size_t i = 0; i < tokenizedChunks.Shape[0]; i++)
     {
       auto tokenizedChunk = tokenizedChunks.AsSubSpan<int32_t>(i);
@@ -88,7 +100,7 @@ namespace Axodox::MachineLearning
     fill(pTokenTarget, tokenTarget.data() + tokenTarget.size(), TextTokenizer::BlankToken);
     fill(pAttention, attentionMask.data() + attentionMask.size(), 1.f);
 
-    return { tokenizedTensor, attentionMask };
+    return { tokenizedTensor, attentionMask, availableSpace };
   }
 
   void TextEmbedder::ApplyAttention(Tensor& encodedText, std::span<const float> attentionMask)
@@ -113,6 +125,21 @@ namespace Axodox::MachineLearning
     {
       encodedSubtoken *= compensation;
     }
+  }
+
+  TextEmbedder::TokenizedPrompt TextEmbedder::TokenizePrompt(std::string_view text)
+  {
+    auto chunks = ParseAttentionFrames(text.data());
+
+    vector<const char*> texts;
+    texts.reserve(chunks.size());
+    for (auto& chunk : chunks)
+    {
+      texts.push_back(chunk.Text.c_str());
+    }
+
+    auto tokenizedTexts = _textTokenizer.TokenizeText(texts);
+    return MergeTokenizedChunks(tokenizedTexts, chunks);
   }
 }
 #endif

@@ -146,10 +146,15 @@ namespace Axodox::MachineLearning::Prompts
     return results;
   }
 
-  std::vector<std::string> SchedulePrompt(std::string_view prompt, uint32_t steps)
+  std::vector<PromptTimeFrame> SchedulePrompt(std::string_view prompt)
   {
     auto textFrames = ParseTimeFrames(prompt);
-    auto timeFrames = ConvertTextFramesToTimeFrames(textFrames);
+    return ConvertTextFramesToTimeFrames(textFrames);
+  }
+
+  std::vector<std::string> SchedulePrompt(std::string_view prompt, uint32_t steps)
+  {
+    auto timeFrames = SchedulePrompt(prompt);
 
     vector<string> results;
     for (uint32_t i = 0; i < steps; i++)

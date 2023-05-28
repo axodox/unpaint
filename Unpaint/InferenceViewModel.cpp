@@ -13,6 +13,7 @@
 using namespace Axodox::Collections;
 using namespace Axodox::Graphics;
 using namespace Axodox::Infrastructure;
+using namespace Axodox::MachineLearning;
 using namespace Axodox::Json;
 using namespace Axodox::Storage;
 using namespace Axodox::Threading;
@@ -38,7 +39,10 @@ namespace winrt::Unpaint::implementation
     _imageRepository(dependencies.resolve<ImageRepository>()),
     _navigationService(dependencies.resolve<INavigationService>()),
     _inferenceMode(InferenceMode::Create),
+    _isBusy(false),
     _isSettingsLocked(true),
+    _availablePositiveTokenCount(int32_t(TextTokenizer::MaxTokenCount)),
+    _availableNegativeTokenCount(int32_t(TextTokenizer::MaxTokenCount)),
     _guidanceStrength(7.f),
     _denoisingStrength(0.2f),
     _models(single_threaded_observable_vector<hstring>()),
@@ -108,12 +112,20 @@ namespace winrt::Unpaint::implementation
     return _positivePrompt;
   }
 
-  void InferenceViewModel::PositivePrompt(hstring const& value)
+  fire_and_forget InferenceViewModel::PositivePrompt(hstring const& value)
   {
-    if (value == _positivePrompt) return;
+    if (value == _positivePrompt) co_return;
 
     _positivePrompt = value;
     _propertyChanged(*this, PropertyChangedEventArgs(L"PositivePrompt"));
+
+    _availablePositiveTokenCount = co_await ValidatePromptAsync(value);
+    _propertyChanged(*this, PropertyChangedEventArgs(L"AvailablePositiveTokenCount"));
+  }
+
+  int32_t InferenceViewModel::AvailablePositiveTokenCount()
+  {
+    return _availablePositiveTokenCount;
   }
 
   hstring InferenceViewModel::NegativePromptPlaceholder()
@@ -126,12 +138,20 @@ namespace winrt::Unpaint::implementation
     return _negativePrompt;
   }
 
-  void InferenceViewModel::NegativePrompt(hstring const& value)
+  fire_and_forget InferenceViewModel::NegativePrompt(hstring const& value)
   {
-    if (value == _negativePrompt) return;
+    if (value == _negativePrompt) co_return;
 
     _negativePrompt = value;
     _propertyChanged(*this, PropertyChangedEventArgs(L"NegativePrompt"));
+
+    _availableNegativeTokenCount = co_await ValidatePromptAsync(value);
+    _propertyChanged(*this, PropertyChangedEventArgs(L"AvailableNegativeTokenCount"));
+  }
+
+  int32_t InferenceViewModel::AvailableNegativeTokenCount()
+  {
+    return _availableNegativeTokenCount;
   }
 
   Windows::Foundation::Collections::IObservableVector<hstring> InferenceViewModel::Models()
@@ -380,6 +400,9 @@ namespace winrt::Unpaint::implementation
 
   fire_and_forget InferenceViewModel::GenerateImage()
   {
+    if (_isBusy) co_return;
+    _isBusy = true;
+
     //Capture caller context
     apartment_context callerContext;
     auto lifetime = get_strong();
@@ -454,6 +477,8 @@ namespace winrt::Unpaint::implementation
       }
       SelectedImageIndex(int32_t(_images.Size()) - 1);
     }
+
+    _isBusy = false;
   }
 
   void InferenceViewModel::ManageModels()
@@ -678,5 +703,21 @@ namespace winrt::Unpaint::implementation
 
     _outputImage = outputImage;
     _propertyChanged(*this, PropertyChangedEventArgs(L"OutputImage"));
+  }
+
+  Windows::Foundation::IAsyncOperation<int32_t> InferenceViewModel::ValidatePromptAsync(hstring prompt)
+  {
+    apartment_context callingContext{};
+
+    auto modelId = to_string(_models.GetAt(_selectedModelIndex));
+
+    auto lifetime = get_strong();
+    co_await resume_background();
+
+    auto result = _modelExecutor->ValidatePrompt(modelId, to_string(prompt));
+
+    co_await callingContext;
+
+    co_return result;
   }
 }
