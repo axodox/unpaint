@@ -2,6 +2,7 @@
 #ifdef USE_ONNX
 #include "TextEmbedder.h"
 #include "Prompts/PromptScheduler.h"
+#include "Prompts/PromptParser.h"
 
 using namespace Axodox::Infrastructure;
 using namespace Axodox::MachineLearning::Prompts;
@@ -135,6 +136,7 @@ namespace Axodox::MachineLearning
     texts.reserve(chunks.size());
     for (auto& chunk : chunks)
     {
+      CheckPromptCharacters(chunk.Text);
       texts.push_back(chunk.Text.c_str());
     }
 

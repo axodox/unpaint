@@ -19,8 +19,9 @@ namespace Axodox::MachineLearning::Prompts
 
     auto [start, end] = ToRange(text);
 
-    while (isspace(*start) && start < end) start++;
-    while (isspace(*(end - 1)) && start < end) end--;
+    auto loc = locale();
+    while (isspace(*start, loc) && start < end) start++;
+    while (isspace(*(end - 1), loc) && start < end) end--;
 
     return { start, end };
   }
@@ -85,5 +86,19 @@ namespace Axodox::MachineLearning::Prompts
     if (depth > 0) throw runtime_error("Unclosed bracket encountered.");
 
     return segments;
+  }
+
+  void CheckPromptCharacters(std::string_view text)
+  {
+    static set<char> specialCharacters{',', '.', ':', '?', '!', '/', '(', ')', '<', '>', '[', ']' };
+
+    auto loc = locale();
+    for (auto c : text)
+    {
+      if (!isalnum(c, loc) &&
+        !isspace(c, loc) &&
+        !specialCharacters.contains(c))
+        throw runtime_error("Invalid character encountered.");
+    }
   }
 }

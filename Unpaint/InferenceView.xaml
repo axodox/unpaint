@@ -370,7 +370,7 @@
 
                 <!-- Resolution -->
                 <TextBlock Grid.Row="2" Text="Resolution" Style="{StaticResource SettingTextBlockStyle}" ToolTipService.ToolTip="Controls the size of the output image. Using higher resolutions will increase memory usage and reduce image generation speed."/>
-                <ComboBox Grid.Row="2" Grid.Column="1"
+                <ComboBox Grid.Row="2" Grid.Column="1" HorizontalAlignment="Stretch"
                           ItemsSource="{x:Bind ViewModel.Resolutions, Mode=OneWay}"
                           SelectedIndex="{x:Bind ViewModel.SelectedResolutionIndex, Mode=TwoWay}">
                   <ComboBox.ItemTemplate>
@@ -381,7 +381,7 @@
                 </ComboBox>
                 
                 <!-- Batch size -->
-                <CheckBox Grid.Row="3" Content="Batch size" VerticalAlignment="Center" HorizontalAlignment="Right" FlowDirection="RightToLeft"
+                <CheckBox Grid.Row="3" Content="Batching" VerticalAlignment="Center" HorizontalAlignment="Right" FlowDirection="RightToLeft"
                           IsChecked="{x:Bind ViewModel.IsBatchGenerationEnabled, Mode=TwoWay}">
                   <ToolTipService.ToolTip>
                     <TextBlock Text="Generate multiple images in one run: this can increase per image efficiency significantly, however generation will take longer and have increased video memory usage. The efficiency improvement diminishes at higher values." TextWrapping="WrapWholeWords" FlowDirection="LeftToRight"/>

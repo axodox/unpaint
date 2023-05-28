@@ -33,7 +33,6 @@ namespace Axodox::MachineLearning
     Tensor ProcessPrompt(std::string_view text);
 
   private:
-    static const std::set<char> _specialChars;
     TextTokenizer _textTokenizer;
     TextEncoder _textEncoder;
 
