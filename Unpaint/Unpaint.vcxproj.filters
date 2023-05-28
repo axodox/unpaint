@@ -25,6 +25,9 @@
     <Page Include="SettingControl.xaml">
       <Filter>Controls</Filter>
     </Page>
+    <Page Include="MaskEditor.xaml">
+      <Filter>Controls</Filter>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Midl Include="App.idl" />

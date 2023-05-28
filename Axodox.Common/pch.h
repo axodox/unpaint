@@ -1,7 +1,15 @@
 #pragma once
+#ifndef USE_UWP_UI
 #define USE_UWP_UI
+#endif
+
+#ifndef USE_GLOBAL_DEPENDENCIES
 #define USE_GLOBAL_DEPENDENCIES
+#endif
+
+#ifndef USE_ONNX
 #define USE_ONNX
+#endif
 
 #include <variant>
 #include <array>

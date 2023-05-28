@@ -14,4 +14,31 @@ namespace Unpaint
     String Subtitle;
     static Windows.UI.Xaml.DependencyProperty SubtitleProperty{ get; };
   }
+
+  [default_interface]
+  runtimeclass MaskEditor : Windows.UI.Xaml.Controls.ContentControl, Windows.UI.Xaml.Data.INotifyPropertyChanged
+  {
+    MaskEditor();
+
+    Windows.Graphics.Imaging.BitmapSize MaskResolution;
+    static Windows.UI.Xaml.DependencyProperty MaskResolutionProperty{ get; };
+
+    Double BrushSize;
+    Double BrushEdge;
+    Double BrushOpacity;
+
+    Boolean IsBrushSelected{ get; };
+    Boolean IsEraserSelected{ get; };
+
+    void SelectBrush();
+    void SelectEraser();
+
+    void ClearMask();
+
+    Boolean IsUndoAvailable{ get; };
+    void UndoAction();
+
+    Boolean IsRedoAvailable{ get; };
+    void RedoAction();
+  }
 }

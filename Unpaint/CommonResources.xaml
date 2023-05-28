@@ -121,4 +121,75 @@
       </Setter.Value>
     </Setter>
   </Style>
+
+  <Style x:Key="RadioToggleButtonStyle" TargetType="RadioButton">
+    <Setter Property="Background" Value="Transparent"/>
+    <Setter Property="HorizontalContentAlignment" Value="Center"/>
+    <Setter Property="VerticalContentAlignment" Value="Center"/>
+    <Setter Property="MinWidth" Value="0"/>
+    <Setter Property="MinHeight" Value="0"/>
+    <Setter Property="Padding" Value="5"/>
+    <Setter Property="Margin" Value="0"/>
+    <Setter Property="CornerRadius" Value="{ThemeResource ControlCornerRadius}"/>
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="RadioButton">
+          <Grid x:Name="RootGrid" BorderBrush="{TemplateBinding BorderBrush}"
+                                  BorderThickness="{TemplateBinding BorderThickness}"
+                                  Padding="{TemplateBinding Padding}"
+                                  CornerRadius="{TemplateBinding CornerRadius}">
+            <VisualStateManager.VisualStateGroups>
+              <VisualStateGroup x:Name="CommonStates">
+                <VisualState x:Name="Normal">
+                  <Storyboard>
+                    <PointerUpThemeAnimation Storyboard.TargetName="RootGrid"/>
+                  </Storyboard>
+                </VisualState>
+                <VisualState x:Name="PointerOver">
+                  <VisualState.Setters>
+                    <Setter Target="RootGrid.Background" Value="{ThemeResource ButtonBackgroundPointerOver}"/>
+                    <Setter Target="RootGrid.BorderBrush" Value="{ThemeResource ButtonBorderBrushPointerOver}"/>
+                    <!--<Setter Target="ContentPresenter.Foreground" Value="{ThemeResource ButtonForegroundPointerOver}"/>-->
+                  </VisualState.Setters>
+                  <Storyboard>
+                    <PointerUpThemeAnimation Storyboard.TargetName="RootGrid"/>
+                  </Storyboard>
+                </VisualState>
+                <VisualState x:Name="Pressed">
+                  <VisualState.Setters>
+                    <Setter Target="RootGrid.Background" Value="{ThemeResource ButtonBackgroundPressed}"/>
+                    <Setter Target="RootGrid.BorderBrush" Value="{ThemeResource ButtonBorderBrushPressed}"/>
+                    <!--<Setter Target="ContentPresenter.Foreground" Value="{ThemeResource ButtonForegroundPressed}"/>-->
+                  </VisualState.Setters>
+                  <Storyboard>
+                    <PointerDownThemeAnimation Storyboard.TargetName="RootGrid"/>
+                  </Storyboard>
+                </VisualState>
+                <VisualState x:Name="Disabled">
+                  <VisualState.Setters>
+                    <Setter Target="RootGrid.Background" Value="{ThemeResource ButtonBackgroundDisabled}"/>
+                    <Setter Target="RootGrid.BorderBrush" Value="{ThemeResource ButtonBorderBrushDisabled}"/>
+                    <Setter Target="ContentPresenter.Foreground" Value="{ThemeResource ButtonForegroundDisabled}"/>
+                  </VisualState.Setters>
+                </VisualState>
+              </VisualStateGroup>
+              <VisualStateGroup x:Name="CheckStates">
+                <VisualState x:Name="Checked">
+                  <VisualState.Setters>
+                    <Setter Target="ContentPresenter.Foreground" Value="{ThemeResource SystemAccentColor}"/>
+                  </VisualState.Setters>
+                </VisualState>
+                <VisualState x:Name="Unchecked"/>
+                <VisualState x:Name="Indeterminate"/>
+              </VisualStateGroup>
+            </VisualStateManager.VisualStateGroups>
+            <ContentPresenter x:Name="ContentPresenter" 
+                              HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                              VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}">
+            </ContentPresenter>
+          </Grid>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
 </ResourceDictionary>

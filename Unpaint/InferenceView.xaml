@@ -209,7 +209,9 @@
 
       <!-- Input image -->
       <Grid x:Name="InputImageView"  Grid.Column="0" Visibility="{x:Bind IsInputPaneVisible, Mode=OneWay}" AllowDrop="True" DragOver="OnImageDragOver" Drop="OnImageDrop">
-        <Image Source="{x:Bind ViewModel.InputImage, Converter={StaticResource StorageFileToImageSourceConverter}, Mode=OneWay}"/>
+        <local:MaskEditor>
+          <Image Source="{x:Bind ViewModel.InputImage, Converter={StaticResource StorageFileToImageSourceConverter}, Mode=OneWay}"/>
+        </local:MaskEditor>
 
         <Button Margin="6,0,-36,0" Width="30" Height="30" HorizontalAlignment="Right" VerticalAlignment="Center" Content="&#xe76b;" FontFamily="Segoe Fluent Icons" Padding="0"
                 Click="{x:Bind ViewModel.UseCurrentImageAsInput}" IsEnabled="{x:Bind ViewModel.HasImageSelected, Mode=OneWay}" ToolTipService.ToolTip="Use current image as input"/>

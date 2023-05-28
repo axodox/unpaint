@@ -34,3 +34,7 @@
 #include "winrt/Microsoft.UI.Xaml.Controls.Primitives.h"
 #include "winrt/Microsoft.UI.Xaml.Media.h"
 #include "winrt/Microsoft.UI.Xaml.XamlTypeInfo.h"
+
+#include "winrt/Microsoft.Graphics.Canvas.Brushes.h"
+#include "winrt/Microsoft.Graphics.Canvas.Effects.h"
+#include "winrt/Microsoft.Graphics.Canvas.UI.Xaml.h"
