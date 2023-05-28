@@ -417,7 +417,7 @@
           <ToolTipService.ToolTip>
             <StackPanel>
               <TextBlock Text="Positive prompt" FontWeight="Bold"/>
-              <TextBlock Text="Describe what you would like to see on the image. You can control the attention (like this:1.2)." TextWrapping="WrapWholeWords"/>
+              <TextBlock Text="Describe what you would like to see on the image. You can control the attention (like this:1.2). You may also restrict a part of the prompt to certain samples, like this: [at the beginning < 0.2], [0.8 < at the end] or [0.2 < in the middle < 0.8]." TextWrapping="WrapWholeWords"/>
             </StackPanel>
           </ToolTipService.ToolTip>
         </TextBox>
@@ -430,7 +430,7 @@
           <ToolTipService.ToolTip>
             <StackPanel>
               <TextBlock Text="Negative prompt" FontWeight="Bold"/>
-              <TextBlock Text="Describe what you would not like to see on the image. You can control the attention (like this:1.2)." TextWrapping="WrapWholeWords"/>
+              <TextBlock Text="Describe what you would not like to see on the image. You can control the attention (like this:1.2). You may also restrict a part of the prompt to certain samples, like this: [at the beginning < 0.2], [0.8 < at the end] or [0.2 < in the middle < 0.8]." TextWrapping="WrapWholeWords"/>
             </StackPanel>
           </ToolTipService.ToolTip>
         </TextBox>
