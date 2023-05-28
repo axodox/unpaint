@@ -55,7 +55,7 @@ namespace Axodox::MachineLearning
     auto attentionMask = Tensor::FromOrtValue(outputValues[1]);
 
     //Pad results to a fixed size
-    Tensor result{ TensorType::Int32, outputSpan.Shape[0], MaxTokenCount};
+    Tensor result{ TensorType::Int32, outputSpan.Shape[0], outputSpan.Shape[1] };
 
     for (size_t i = 0; i < outputSpan.Shape[0]; i++)
     {
@@ -68,9 +68,6 @@ namespace Axodox::MachineLearning
       {
         *pToken++ = *pMask++ ? int32_t(*pSource++) : BlankToken;
       }
-
-      auto eToken = result.AsPointer<int32_t>(i + 1);
-      fill(pToken, eToken, BlankToken);
     }
 
     return result;
