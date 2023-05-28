@@ -7,7 +7,9 @@
 #include "MachineLearning/VaeEncoder.h"
 #include "MachineLearning/VaeDecoder.h"
 #include "Threading/Parallel.h"
+#include "Collections/Hasher.h"
 
+using namespace Axodox::Collections;
 using namespace Axodox::Graphics;
 using namespace Axodox::Infrastructure;
 using namespace Axodox::MachineLearning;
@@ -22,7 +24,8 @@ namespace winrt::Unpaint
 
   StableDiffusionModelExecutor::StableDiffusionModelExecutor() :
     _unpaintOptions(dependencies.resolve<UnpaintOptions>()),
-    _modelRepository(dependencies.resolve<ModelRepository>())
+    _modelRepository(dependencies.resolve<ModelRepository>()),
+    _stepCount(0)
   { }
 
   std::vector<Axodox::Graphics::TextureData> StableDiffusionModelExecutor::TryRunInference(const StableDiffusionInferenceTask& task, Axodox::Threading::async_operation& operation)
@@ -134,23 +137,41 @@ namespace winrt::Unpaint
     return vaeEncoder.EncodeVae(colorImage);
   }
 
-  Axodox::MachineLearning::Tensor StableDiffusionModelExecutor::CreateTextEmbeddings(const StableDiffusionInferenceTask& task, Axodox::Threading::async_operation_source& async)
+  Axodox::MachineLearning::ScheduledTensor StableDiffusionModelExecutor::CreateTextEmbeddings(const StableDiffusionInferenceTask& task, Axodox::Threading::async_operation_source& async)
   {
-    if (_textEmbedding && _positivePrompt == task.PositivePrompt && _negativePrompt == task.NegativePrompt) return _textEmbedding;
+    //Check if the prompt has changed
+    if (!_textEmbedding.empty() && _positivePrompt == task.PositivePrompt && _negativePrompt == task.NegativePrompt && task.SamplingSteps == _stepCount) return _textEmbedding;
 
+    //Load embedder
     async.update_state(NAN, "Loading text embedder...");
     TextEmbedder textEmbedder{ *_onnxEnvironment, app_folder() };
 
+    //Parse and schedule prompt
     async.update_state("Creating text embedding...");
-    auto encodedNegativePrompt = textEmbedder.ProcessText((task.SafeMode ? _safetyFilter : "") + task.NegativePrompt);
-    auto encodedPositivePrompt = textEmbedder.ProcessText(task.PositivePrompt);
+    auto encodedNegativePrompt = textEmbedder.ScheduleText((task.SafeMode ? _safetyFilter : "") + task.NegativePrompt, task.SamplingSteps);
+    auto encodedPositivePrompt = textEmbedder.ScheduleText(task.PositivePrompt, task.SamplingSteps);
 
+    //Concatenate negative and position prompts
+    _textEmbedding.resize(task.SamplingSteps);
+    trivial_map<pair<void*, void*>, shared_ptr<Tensor>> embeddingBuffer;
+    for (auto i = 0u; i < task.SamplingSteps; i++)
+    {
+      auto& concatenatedTensor = embeddingBuffer[{ encodedNegativePrompt[i].get(), encodedPositivePrompt[i].get() }];
+      if (!concatenatedTensor)
+      {
+        concatenatedTensor = make_shared<Tensor>(encodedNegativePrompt[i]->Concat(*encodedPositivePrompt[i]));
+      }
+
+      _textEmbedding[i] = concatenatedTensor;
+    }
+
+    //Update cache key
     _positivePrompt = task.PositivePrompt;
     _negativePrompt = task.NegativePrompt;
-    _textEmbedding = encodedNegativePrompt.Concat(encodedPositivePrompt);
+    _stepCount = task.SamplingSteps;
 
+    //Return result
     async.update_state("Text embedding created.");
-
     return _textEmbedding;
   }
 

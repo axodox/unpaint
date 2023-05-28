@@ -17,11 +17,14 @@ namespace Axodox::MachineLearning
 
   Tensor StableDiffusionInferer::RunInference(const StableDiffusionOptions& options, Threading::async_operation_source* async)
   {
+    //Validate inputs
     if (options.MaskInput && !options.LatentInput) throw logic_error("Mask input cannot be set without latent input!");
     if (options.MaskInput && (options.MaskInput.Shape[2] != options.LatentInput.Shape[2] || options.MaskInput.Shape[3] != options.LatentInput.Shape[3])) throw logic_error("Mask and latent inputs must have a matching width and height.");
+    if (holds_alternative<ScheduledTensor>(options.TextEmbeddings) && get<ScheduledTensor>(options.TextEmbeddings).size() != options.StepCount) throw logic_error("Scehduled text embedding size must match sample count.");
 
     if (async) async->update_state("Preparing latent sample...");
 
+    //Build context
     StableDiffusionContext context{
       .Options = options
     };
@@ -32,43 +35,71 @@ namespace Axodox::MachineLearning
       context.Randoms.push_back(minstd_rand{ options.Seed + uint32_t(i) });
     }
 
+    //Schedule steps
     list<Tensor> derivatives;
     auto steps = context.Scheduler.GetSteps(options.StepCount);
-
     auto initialStep = size_t(clamp(int(options.StepCount - options.StepCount * options.DenoisingStrength - 1), 0, int(options.StepCount)));
+
+    //Create initial sample
     auto latentSample = options.LatentInput ? PrepareLatentSample(context, options.LatentInput, steps.Sigmas[initialStep]) : GenerateLatentSample(context);
 
+    //Bind constant inputs    
     IoBinding binding{ _session };
     binding.BindOutput("out_sample", _environment.MemoryInfo());
-    binding.BindInput("encoder_hidden_states", options.TextEmbeddings.ToHalf().Duplicate(options.BatchSize).ToOrtValue(_environment.MemoryInfo()));
 
+    if (holds_alternative<Tensor>(options.TextEmbeddings))
+    {
+      binding.BindInput("encoder_hidden_states", get<Tensor>(options.TextEmbeddings).ToHalf().Duplicate(options.BatchSize).ToOrtValue(_environment.MemoryInfo()));
+    }
+
+    //Run iteration
+    const Tensor* currentEmbedding = nullptr;
     for (size_t i = initialStep; i < steps.Timesteps.size(); i++)
     {
+      //Update status
       if (async)
       {
         async->update_state((i + 1.f) / options.StepCount, format("Denoising {}/{}...", i + 1, options.StepCount));
         if (async->is_cancelled()) return {};
       }
 
-      auto scaledSample = latentSample.Duplicate().Swizzle(options.BatchSize) / sqrt(steps.Sigmas[i] * steps.Sigmas[i] + 1);
+      //Update embeddings
+      if (holds_alternative<ScheduledTensor>(options.TextEmbeddings))
+      {
+        auto embedding = get<ScheduledTensor>(options.TextEmbeddings)[i].get();
+        if (currentEmbedding != embedding)
+        {
+          currentEmbedding = embedding;
+          binding.BindInput("encoder_hidden_states", currentEmbedding->ToHalf().Duplicate(options.BatchSize).ToOrtValue(_environment.MemoryInfo()));
+        }
+      }
 
+      //Update sample
+      auto scaledSample = latentSample.Duplicate().Swizzle(options.BatchSize) / sqrt(steps.Sigmas[i] * steps.Sigmas[i] + 1);
       binding.BindInput("sample", scaledSample.ToHalf().ToOrtValue(_environment.MemoryInfo()));
+
+      //Update timestep
       binding.BindInput("timestep", Tensor(steps.Timesteps[i]).ToHalf().ToOrtValue(_environment.MemoryInfo()));
 
+      //Run inference
       _session.Run({}, binding);
 
+      //Read output
       auto outputs = binding.GetOutputValues();
       auto output = Tensor::FromOrtValue(outputs[0]).ToSingle();
 
       auto outputComponents = output.Swizzle().Split();
 
+      //Calculate guidance
       auto& blankNoise = outputComponents[0];
       auto& textNoise = outputComponents[1];
       auto guidedNoise = blankNoise.BinaryOperation<float>(textNoise, [guidanceScale = options.GuidanceScale](float a, float b)
         { return a + guidanceScale * (b - a); });
 
+      //Refine latent image
       latentSample = steps.ApplyStep(latentSample, guidedNoise, derivatives, context.Randoms, i);
 
+      //Apply mask
       if (options.MaskInput)
       {
         auto maskedSample = PrepareLatentSample(context, options.LatentInput, steps.Sigmas[i]);
@@ -76,6 +107,7 @@ namespace Axodox::MachineLearning
       }
     }
 
+    //Decode sample
     latentSample = latentSample * (1.0f / 0.18215f);
     return latentSample;
   }

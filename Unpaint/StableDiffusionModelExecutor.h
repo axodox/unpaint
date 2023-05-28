@@ -43,7 +43,7 @@ namespace winrt::Unpaint
     {
       Axodox::MachineLearning::Tensor InputImage;
       Axodox::MachineLearning::Tensor InputMask;
-      Axodox::MachineLearning::Tensor TextEmbeddings;
+      Axodox::MachineLearning::ScheduledTensor TextEmbeddings;
     };
 
   public:
@@ -62,12 +62,13 @@ namespace winrt::Unpaint
 
     std::string _modelId;
 
+    uint32_t _stepCount;
     std::string _positivePrompt, _negativePrompt;
-    Axodox::MachineLearning::Tensor _textEmbedding;
+    Axodox::MachineLearning::ScheduledTensor _textEmbedding;
 
     Axodox::MachineLearning::Tensor LoadImage(const StableDiffusionInferenceTask& task, std::optional<DirectX::XMUINT2>& resolutionOverride, Axodox::Threading::async_operation_source& async);
     Axodox::MachineLearning::Tensor EncodeVAE(const Axodox::MachineLearning::Tensor& colorImage, Axodox::Threading::async_operation_source& async);
-    Axodox::MachineLearning::Tensor CreateTextEmbeddings(const StableDiffusionInferenceTask& task, Axodox::Threading::async_operation_source& async);
+    Axodox::MachineLearning::ScheduledTensor CreateTextEmbeddings(const StableDiffusionInferenceTask& task, Axodox::Threading::async_operation_source& async);
     Axodox::MachineLearning::Tensor RunStableDiffusion(const StableDiffusionInferenceTask& task, const StableDiffusionInputs& inputs, Axodox::Threading::async_operation_source& async);
     Axodox::MachineLearning::Tensor DecodeVAE(const Axodox::MachineLearning::Tensor& latentImage, Axodox::Threading::async_operation_source& async);
   };

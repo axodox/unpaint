@@ -19,6 +19,8 @@ namespace Axodox::MachineLearning
   public:
     TextEmbedder(OnnxEnvironment& environment, const std::filesystem::path& sourcePath = {});
 
+    std::vector<std::shared_ptr<Tensor>> ScheduleText(std::string_view text, uint32_t stepCount);
+
     Tensor ProcessText(std::string_view text);
 
   private:

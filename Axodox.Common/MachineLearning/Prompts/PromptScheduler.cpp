@@ -154,13 +154,23 @@ namespace Axodox::MachineLearning::Prompts
     vector<string> results;
     for (uint32_t i = 0; i < steps; i++)
     {
+      //Scale time from 0 to 1
       auto t = i / float(steps - 1);
 
+      //Find matching frame
+      bool foundMatch = false;
       for (auto& frame : timeFrames)
       {
         if (t < frame.Start || t >= frame.End) continue;
 
         results.push_back(frame.Text);
+        foundMatch = true;
+      }
+
+      //If not found use the last frame
+      if (!foundMatch)
+      {
+        results.push_back(timeFrames.back().Text);
       }
     }
 

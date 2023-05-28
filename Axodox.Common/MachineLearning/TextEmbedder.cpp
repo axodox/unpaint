@@ -1,6 +1,7 @@
 #include "pch.h"
 #ifdef USE_ONNX
 #include "TextEmbedder.h"
+#include "Prompts/PromptScheduler.h"
 
 using namespace Axodox::Infrastructure;
 using namespace Axodox::MachineLearning::Prompts;
@@ -12,6 +13,27 @@ namespace Axodox::MachineLearning
     _textTokenizer(environment, sourcePath),
     _textEncoder(environment)
   { }
+
+  std::vector<std::shared_ptr<Tensor>> TextEmbedder::ScheduleText(std::string_view text, uint32_t stepCount)
+  {
+    auto prompts = SchedulePrompt(text, stepCount);
+    
+    unordered_map<string, shared_ptr<Tensor>> embeddingsByPrompt;
+    vector<shared_ptr<Tensor>> embeddings;
+    embeddings.reserve(stepCount);
+    for (auto& prompt : prompts)
+    {
+      auto& embedding = embeddingsByPrompt[prompt];
+      if (!embedding)
+      {
+        embedding = make_shared<Tensor>(ProcessText(prompt));
+      }
+
+      embeddings.push_back(embedding);
+    }
+
+    return embeddings;
+  }
 
   Tensor TextEmbedder::ProcessText(std::string_view text)
   {

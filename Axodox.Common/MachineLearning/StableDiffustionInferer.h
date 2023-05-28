@@ -7,6 +7,8 @@
 
 namespace Axodox::MachineLearning
 {
+  typedef std::vector<std::shared_ptr<Tensor>> ScheduledTensor;
+
   struct StableDiffusionOptions
   {
     size_t StepCount = 15;    
@@ -15,7 +17,7 @@ namespace Axodox::MachineLearning
     size_t Height = 512;
     float GuidanceScale = 7.f;    
     uint32_t Seed = 0;
-    Tensor TextEmbeddings;
+    std::variant<Tensor, ScheduledTensor> TextEmbeddings;
     Tensor LatentInput;
     Tensor MaskInput;
     float DenoisingStrength = 1.f;
