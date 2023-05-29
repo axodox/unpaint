@@ -120,6 +120,8 @@ namespace Axodox::MachineLearning
 
     Tensor Swizzle(size_t blockCount = 2) const;
 
+    Tensor Reshape(shape_t shape) const;
+
     std::vector<Tensor> Split(size_t instances = 2) const;
 
     template<typename T>
@@ -188,6 +190,7 @@ namespace Axodox::MachineLearning
   private:
     static size_t GetDimensionFromIndex(size_t& x, size_t& y, size_t& z, size_t& w);
     static bool AreShapesEqual(shape_t a, shape_t b, size_t startDimension = 0);
+    static size_t ElementCount(shape_t shape);
 
     static Tensor FromTextureDataRgba8(const Graphics::TextureData& texture);
     static Tensor FromTextureDataGray8(const Graphics::TextureData& texture);

@@ -1,6 +1,7 @@
 #pragma once
 #include "pch.h"
 #include "Collections/AlignedAllocator.h"
+#include "Graphics/Math/Rect.h"
 
 namespace Axodox::Graphics
 {
@@ -43,7 +44,7 @@ namespace Axodox::Graphics
     winrt::Windows::Graphics::Imaging::SoftwareBitmap ToSoftwareBitmap() const;
 
     TextureData Resize(uint32_t width, uint32_t height) const;
-    TextureData UniformResize(uint32_t width, uint32_t height) const;
+    TextureData UniformResize(uint32_t width, uint32_t height, Rect* sourceRect = nullptr) const;
 
     template<typename T>
     T* Row(uint32_t row)
@@ -69,5 +70,10 @@ namespace Axodox::Graphics
 
     TextureData TruncateHorizontally(uint32_t width) const;
     TextureData TruncateVertically(uint32_t height) const;
+
+    Size Size() const;
+    Rect FindNonZeroRect() const;
+    TextureData GetTexture(Rect rect) const;
+    TextureData MergeTexture(const TextureData& texture, Point position);
   };
 }

@@ -55,12 +55,15 @@ namespace winrt::Unpaint
       StableDiffusionInputs inputs;
       inputs.TextEmbeddings = CreateTextEmbeddings(task, async);
 
-      std::optional<XMUINT2> resolutionOverride;
+      TextureData targetTexture;
+      auto sourceRect = Rect::Empty;
+      auto targetRect = Rect::Empty;
       if (!task.InputImage.empty())
       {
-        auto imageTensor = LoadImage(task, resolutionOverride, async);
-        inputs.InputImage = EncodeVAE(imageTensor, async);
-        inputs.InputMask = LoadMask(task, async);
+        inputs.InputMask = LoadMask(task, sourceRect, targetRect, async);
+
+        auto imageTensor = LoadImage(task, targetTexture, sourceRect, targetRect, async);
+        inputs.InputImage = EncodeVAE(imageTensor, async);        
       }
 
       //Run diffusion
@@ -70,18 +73,14 @@ namespace winrt::Unpaint
       //Prepare outputs
       auto decodedImage = DecodeVAE(latentImage, async);
       auto outputs = decodedImage.ToTextureData();
-      if (resolutionOverride)
+      if (targetRect)
       {
         for (auto& output : outputs)
         {
-          if (output.Width > resolutionOverride->x)
+          if (targetRect)
           {
-            output = output.TruncateHorizontally(resolutionOverride->x);
-          }
-
-          if (output.Height > resolutionOverride->y)
-          {
-            output = output.TruncateVertically(resolutionOverride->y);
+            auto targetSize = targetRect.Size();
+            output = targetTexture.MergeTexture(output.GetTexture(sourceRect).Resize(uint32_t(targetSize.Width), uint32_t(targetSize.Height)), targetRect.LeftTop());
           }
         }
       }
@@ -109,31 +108,49 @@ namespace winrt::Unpaint
     }
   }
 
-  Axodox::MachineLearning::Tensor StableDiffusionModelExecutor::LoadImage(const StableDiffusionInferenceTask& task, std::optional<DirectX::XMUINT2>& resolutionOverride, Axodox::Threading::async_operation_source& async)
+  Axodox::MachineLearning::Tensor StableDiffusionModelExecutor::LoadImage(const StableDiffusionInferenceTask& task, Axodox::Graphics::TextureData& sourceTexture, Axodox::Graphics::Rect& sourceRect, Axodox::Graphics::Rect& targetRect, Axodox::Threading::async_operation_source& async)
   {
     async.update_state(NAN, "Loading input image...");
     auto imageBuffer = try_read_file(task.InputImage);
-    auto imageTexture = TextureData::FromBuffer(imageBuffer);
 
+    sourceTexture = TextureData::FromBuffer(imageBuffer);
+    auto imageTexture{ sourceTexture };
+
+    if (targetRect)
+    {
+      imageTexture = imageTexture.GetTexture(targetRect);
+    }
+    
     if (imageTexture.Width != task.Resolution.x || imageTexture.Height != task.Resolution.y)
     {
-      resolutionOverride = { imageTexture.Width, imageTexture.Height };
-      imageTexture = imageTexture.UniformResize(task.Resolution.x, task.Resolution.y);
+      imageTexture = imageTexture.UniformResize(task.Resolution.x, task.Resolution.y, &sourceRect);
     }
 
     return Tensor::FromTextureData(imageTexture);
   }
 
-  Axodox::MachineLearning::Tensor StableDiffusionModelExecutor::LoadMask(const StableDiffusionInferenceTask& task, Axodox::Threading::async_operation_source& async)
+  Axodox::MachineLearning::Tensor StableDiffusionModelExecutor::LoadMask(const StableDiffusionInferenceTask& task, Axodox::Graphics::Rect& sourceRect, Axodox::Graphics::Rect& targetRect, Axodox::Threading::async_operation_source& async)
   {
     if (!task.InputMask) return {};
 
     async.update_state(NAN, "Loading input mask...");
-    auto maskTexture{ task.InputMask };
 
+    //Calculate mask size and return nothing if empty
+    auto maskedRect = task.InputMask.FindNonZeroRect();
+    if (!maskedRect) return {};
+
+    Size targetSize{ int32_t(task.Resolution.x), int32_t(task.Resolution.y) };
+    targetRect = maskedRect
+      //.Offset(16)
+      .Fit(targetSize.AspectRatio())
+      .PushClamp(targetSize);
+
+    auto maskTexture = task.InputMask.GetTexture(targetRect);
+
+    //Fit mask to image
     if (maskTexture.Width != task.Resolution.x || maskTexture.Height != task.Resolution.y)
     {
-      maskTexture = maskTexture.UniformResize(task.Resolution.x, task.Resolution.y);
+      maskTexture = maskTexture.UniformResize(task.Resolution.x, task.Resolution.y, &sourceRect);
     }
 
     maskTexture = maskTexture.Resize(maskTexture.Width / 8, maskTexture.Height / 8);

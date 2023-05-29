@@ -28,6 +28,9 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Devices\GraphicsResource.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Devices\GraphicsTypes.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Helpers.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Math\Point.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Math\Rect.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Math\Size.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Meshes\IndexedMesh.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Meshes\Mesh.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Meshes\Primitives.h" />
@@ -114,6 +117,9 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Devices\GraphicsDeviceContext.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Devices\GraphicsResource.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Helpers.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Math\Point.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Math\Rect.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Math\Size.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Meshes\IndexedMesh.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Meshes\Primitives.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Graphics\Meshes\SimpleMesh.cpp" />

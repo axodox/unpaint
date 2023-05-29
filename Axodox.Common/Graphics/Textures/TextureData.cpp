@@ -413,7 +413,7 @@ namespace Axodox::Graphics
     return TextureData::FromWicBitmap(wicBitmapScaler);
   }
 
-  TextureData TextureData::UniformResize(uint32_t width, uint32_t height) const
+  TextureData TextureData::UniformResize(uint32_t width, uint32_t height, Rect* sourceRect) const
   {
     auto sourceAspectRatio = float(Width) / float(Height);
     auto targetAspectRatio = float(width) / float(height);
@@ -432,17 +432,33 @@ namespace Axodox::Graphics
 
     auto resizedTexture = Resize(uniformWidth, uniformHeight);
 
+    Rect rect;
     if (width != uniformWidth || height != uniformHeight)
     {
       if (targetAspectRatio > sourceAspectRatio)
       {
+        auto center = width / 2;
+        auto halfWidth = resizedTexture.Width / 2;
+        rect = { int32_t(center - halfWidth), 0, int32_t(center + halfWidth), int32_t(resizedTexture.Height) };
+
         resizedTexture = resizedTexture.ExtendHorizontally(width);
       }
       else
       {
+        auto center = height / 2;
+        auto halfHeight = resizedTexture.Height / 2;
+        rect = { 0, int32_t(center - halfHeight), int32_t(resizedTexture.Width), int32_t(center + halfHeight) };
+
         resizedTexture = resizedTexture.ExtendVertically(height);
       }
     }
+    else
+    {
+      rect = { 0, 0, int32_t(width), int32_t(height) };
+    }
+
+    if (sourceRect) *sourceRect = rect;
+
 
     return resizedTexture;
   }
@@ -512,6 +528,68 @@ namespace Axodox::Graphics
       auto pSource = Buffer.data() + row * Stride + offset;
       auto pTarget = result.Buffer.data() + row * result.Stride;
       memcpy(pTarget, pSource, Stride);
+    }
+
+    return result;
+  }
+
+  Size TextureData::Size() const
+  {
+    return { int32_t(Width), int32_t(Height) };
+  }
+
+  Rect TextureData::FindNonZeroRect() const
+  {
+    XMUINT4 zero{ 0, 0, 0, 0 };
+
+    auto result = Rect::Empty;
+    auto elementSize = BitsPerPixel(Format) / 8;
+    for (auto y = 0u; y < Height; y++)
+    {
+      auto pixel = Buffer.data() + Stride * y;
+
+      for (auto x = 0u; x < Width; x++)
+      {
+        if (memcmp(pixel++, &zero, elementSize) != 0)
+        {
+          result = result.Extend(Point{ int32_t(x), int32_t(y) });
+        }
+      }
+    }
+
+    return result;
+  }
+
+  TextureData TextureData::GetTexture(Rect rect) const
+  {
+    rect = rect.Clamp(Size());
+
+    auto size = rect.Size();
+    TextureData result{ uint32_t(size.Width), uint32_t(size.Height), Format };
+
+    auto elementSize = BitsPerPixel(Format) / 8;
+    for (auto y = rect.Top; y < rect.Bottom; y++)
+    {
+      auto source = Buffer.data() + Stride * y + rect.Left * elementSize;
+      auto target = result.Buffer.data() + result.Stride * (y - rect.Top);
+      memcpy(target, source, result.Stride);
+    }
+
+    return result;
+  }
+
+  TextureData TextureData::MergeTexture(const TextureData& texture, Point position)
+  {
+    auto targetRect = Rect::FromLeftTopSize(position, texture.Size());
+    if (!Rect::FromSize(Size()).Contains(targetRect)) throw out_of_range("The specified texture does not fit into the current one.");
+
+    auto result{ *this };    
+    auto elementSize = BitsPerPixel(Format) / 8;
+    for (auto y = targetRect.Top; y < targetRect.Bottom; y++)
+    {
+      auto source = texture.Buffer.data() + texture.Stride * (y - targetRect.Top);
+      auto target = result.Buffer.data() + result.Stride * y + targetRect.Left * elementSize;
+      memcpy(target, source, texture.Stride);
     }
 
     return result;
