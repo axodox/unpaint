@@ -144,7 +144,7 @@ namespace winrt::Unpaint
     targetRect = maskedRect
       //.Offset(16)
       .Fit(targetSize.AspectRatio())
-      .PushClamp(targetSize);
+      .PushClamp(task.InputMask.Size());
 
     auto maskTexture = task.InputMask.GetTexture(targetRect);
 
