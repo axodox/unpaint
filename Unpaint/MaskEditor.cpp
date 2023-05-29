@@ -359,7 +359,15 @@ namespace winrt::Unpaint::implementation
         AlphaMaskEffect maskEffect{};
         maskEffect.Source(sourceEffect);
         maskEffect.AlphaMask(blurEffect);
-        session.DrawImage(maskEffect);
+        
+        ColorSourceEffect opacityColorSourceEffect;
+        opacityColorSourceEffect.Color(Color{ 196, 196, 196, 196 });
+
+        AlphaMaskEffect opacityEffect{};
+        opacityEffect.Source(maskEffect);
+        opacityEffect.AlphaMask(opacityColorSourceEffect);
+
+        session.DrawImage(opacityEffect);
       }
 
       //Draw target area
