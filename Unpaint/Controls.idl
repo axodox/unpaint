@@ -25,7 +25,6 @@ namespace Unpaint
 
     Double BrushSize;
     Double BrushEdge;
-    Double BrushOpacity;
 
     Boolean IsBrushSelected{ get; };
     Boolean IsEraserSelected{ get; };

@@ -25,9 +25,6 @@ namespace winrt::Unpaint::implementation
     double BrushEdge();
     void BrushEdge(double value);
 
-    double BrushOpacity();
-    void BrushOpacity(double value);
-
     bool IsBrushSelected();
     bool IsEraserSelected();
 
@@ -49,7 +46,6 @@ namespace winrt::Unpaint::implementation
     void OnCanvasPointerWheelChanged(Windows::Foundation::IInspectable const& sender, Windows::UI::Xaml::Input::PointerRoutedEventArgs const& eventArgs);
 
     void OnCanvasLoading(Windows::Foundation::IInspectable const& sender, Windows::Foundation::IInspectable const& eventArgs);
-    void OnCanvasSizeChanged(Windows::Foundation::IInspectable const& sender, Windows::UI::Xaml::SizeChangedEventArgs const& eventArgs);
     void OnCanvasDraw(Microsoft::Graphics::Canvas::UI::Xaml::CanvasControl const& sender, Microsoft::Graphics::Canvas::UI::Xaml::CanvasDrawEventArgs const& eventArgs);
 
     event_token PropertyChanged(Windows::UI::Xaml::Data::PropertyChangedEventHandler const& value);
@@ -63,11 +59,11 @@ namespace winrt::Unpaint::implementation
 
     float _brushSize;
     float _brushEdge;
-    float _brushOpacity;
 
     MaskTool _selectedTool;
 
     Microsoft::Graphics::Canvas::CanvasDevice _canvasDevice;
+    Microsoft::Graphics::Canvas::CanvasBitmap _checkerboardBitmap;
     Microsoft::Graphics::Canvas::CanvasRenderTarget _maskTarget;
     Microsoft::Graphics::Canvas::Brushes::CanvasSolidColorBrush _maskBrush;
     Microsoft::Graphics::Canvas::Brushes::CanvasImageBrush _opacityBrush;
@@ -75,6 +71,7 @@ namespace winrt::Unpaint::implementation
     bool _isPenDown;
     std::optional<Windows::Foundation::Point> _currentPosition, _previousPosition;
 
+    fire_and_forget LoadResourcesAsync();
     void EnsureMaskTarget();
   };
 }

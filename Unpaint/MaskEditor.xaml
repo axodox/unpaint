@@ -32,49 +32,39 @@
         <Border VerticalAlignment="Center" CornerRadius="0,6,6,0" BorderThickness="1"
                 Background="{ThemeResource LayerFillColorDefaultBrush}"
                 BorderBrush="{ThemeResource ControlElevationBorderBrush}">
-          <ScrollViewer>
-            <StackPanel Orientation="Vertical" Spacing="6" Margin="6">
-              <!-- Editing Tools -->
-              <RadioButton GroupName="MaskToolGroup" Content="&#xE76D;" ToolTipService.ToolTip="Paint mask"
-                           IsChecked="{x:Bind IsBrushSelected, Mode=OneWay}"
-                           Click="{x:Bind SelectBrush}"/>
-              <RadioButton GroupName="MaskToolGroup" Content="&#xE75C;" ToolTipService.ToolTip="Erase mask"
-                           IsChecked="{x:Bind IsEraserSelected, Mode=OneWay}"
-                           Click="{x:Bind SelectEraser}"/>
+          <StackPanel Orientation="Vertical" Spacing="6" Margin="6">
+            <!-- Editing Tools -->
+            <RadioButton GroupName="MaskToolGroup" Content="&#xE76D;" ToolTipService.ToolTip="Paint mask"
+                          IsChecked="{x:Bind IsBrushSelected, Mode=OneWay}"
+                          Click="{x:Bind SelectBrush}"/>
+            <RadioButton GroupName="MaskToolGroup" Content="&#xE75C;" ToolTipService.ToolTip="Erase mask"
+                          IsChecked="{x:Bind IsEraserSelected, Mode=OneWay}"
+                          Click="{x:Bind SelectEraser}"/>
 
-              <!-- Separator -->
-              <Border Background="{ThemeResource ControlElevationBorderBrush}" Height="1" Margin="-2,0"/>
+            <!-- Separator -->
+            <Border Background="{ThemeResource ControlElevationBorderBrush}" Height="1" Margin="-2,6"/>
 
-              <!-- Brush size -->
-              <Slider Orientation="Vertical" MinHeight="128" Margin="-32,6" Minimum="1" Maximum="128" HorizontalAlignment="Center"
-                      Value="{x:Bind BrushSize, Mode=TwoWay}"/>
-              <FontIcon Glyph="&#xeda8;" FontFamily="Segoe Fluent Icons" HorizontalAlignment="Center" ToolTipService.ToolTip="Brush size"/>
+            <!-- Brush size -->
+            <Slider Orientation="Vertical" MinHeight="128" Margin="-32,6" Minimum="1" Maximum="128" HorizontalAlignment="Center"
+                    Value="{x:Bind BrushSize, Mode=TwoWay}"/>
+            <FontIcon Glyph="&#xeda8;" FontFamily="Segoe Fluent Icons" HorizontalAlignment="Center" ToolTipService.ToolTip="Brush size"/>
 
-              <!-- Separator -->
-              <Border Background="{ThemeResource ControlElevationBorderBrush}" Height="1" Margin="-2,0"/>
+            <!-- Separator -->
+            <Border Background="{ThemeResource ControlElevationBorderBrush}" Height="1" Margin="-2,6"/>
 
-              <!-- Edge thickness -->
-              <Slider Orientation="Vertical" MinHeight="64" Margin="-32,6" Minimum="0" Maximum="1" SmallChange="0.01" StepFrequency="0.01" HorizontalAlignment="Center"
-                      Value="{x:Bind BrushEdge, Mode=TwoWay}"/>
-              <FontIcon Glyph="&#xe81d;" FontFamily="Segoe Fluent Icons" HorizontalAlignment="Center" ToolTipService.ToolTip="Edge thickness"/>
+            <!-- Edge thickness -->
+            <Slider Orientation="Vertical" MinHeight="64" Margin="-32,6" Minimum="0" Maximum="16" SmallChange="1" StepFrequency="1" HorizontalAlignment="Center"
+                    Value="{x:Bind BrushEdge, Mode=TwoWay}"/>
+            <FontIcon Glyph="&#xe81d;" FontFamily="Segoe Fluent Icons" HorizontalAlignment="Center" ToolTipService.ToolTip="Edge thickness"/>
 
-              <!-- Separator -->
-              <Border Background="{ThemeResource ControlElevationBorderBrush}" Height="1" Margin="-2,0"/>
+            <!-- Separator -->
+            <Border Background="{ThemeResource ControlElevationBorderBrush}" Height="1" Margin="-2,6"/>
 
-              <!-- Bursh opacity -->
-              <Slider Orientation="Vertical" MinHeight="64" Margin="-32,6" Minimum="0" Maximum="1" SmallChange="0.01" StepFrequency="0.01" HorizontalAlignment="Center"
-                      Value="{x:Bind BrushOpacity, Mode=TwoWay}"/>
-              <FontIcon Glyph="&#xe793;" FontFamily="Segoe Fluent Icons" HorizontalAlignment="Center" ToolTipService.ToolTip="Opacity"/>
-
-              <!-- Separator -->
-              <Border Background="{ThemeResource ControlElevationBorderBrush}" Height="1" Margin="-2,0"/>
-
-              <!-- Footer actions -->
-              <Button Content="&#xe8e6;" ToolTipService.ToolTip="Clear mask" Click="{x:Bind ClearMask}"/>
-              <Button Content="&#xe7a7;" ToolTipService.ToolTip="Undo" Click="{x:Bind UndoAction}" IsEnabled="{x:Bind IsUndoAvailable, Mode=OneWay}"/>
-              <Button Content="&#xe7a6;" ToolTipService.ToolTip="Redo" Click="{x:Bind RedoAction}" IsEnabled="{x:Bind IsRedoAvailable, Mode=OneWay}"/>
-            </StackPanel>
-          </ScrollViewer>
+            <!-- Footer actions -->
+            <Button Content="&#xe8e6;" ToolTipService.ToolTip="Clear mask" Click="{x:Bind ClearMask}"/>
+            <Button Content="&#xe7a7;" ToolTipService.ToolTip="Undo" Click="{x:Bind UndoAction}" IsEnabled="{x:Bind IsUndoAvailable, Mode=OneWay}"/>
+            <Button Content="&#xe7a6;" ToolTipService.ToolTip="Redo" Click="{x:Bind RedoAction}" IsEnabled="{x:Bind IsRedoAvailable, Mode=OneWay}"/>
+          </StackPanel>
         </Border>
 
         <!-- Content Presenter -->
@@ -90,7 +80,6 @@
                                 PointerExited="OnCanvasPointerExited"
                                 PointerWheelChanged="OnCanvasPointerWheelChanged"
                                 Loading="OnCanvasLoading"
-                                SizeChanged="OnCanvasSizeChanged"
                                 Draw="OnCanvasDraw"/>
         </Viewbox>
       </Grid>

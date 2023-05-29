@@ -227,11 +227,11 @@
       </TextBlock>
 
       <!-- Headers -->
-      <Border Grid.Column="0" Style="{StaticResource PaneHeaderStyle}" Visibility="{x:Bind IsInputPaneVisible, Mode=OneWay}">
+      <Border Grid.Column="0" Style="{StaticResource PaneHeaderStyle}" Visibility="{x:Bind IsInputPaneVisible, Mode=OneWay}" IsHitTestVisible="False">
         <TextBlock Text="Input"/>
       </Border>
 
-      <Border Grid.Column="1" Style="{StaticResource PaneHeaderStyle}" Visibility="{x:Bind IsInputPaneVisible, Mode=OneWay}">
+      <Border Grid.Column="1" Style="{StaticResource PaneHeaderStyle}" Visibility="{x:Bind IsInputPaneVisible, Mode=OneWay}" IsHitTestVisible="False">
         <TextBlock Text="Output"/>
       </Border>
     </Grid>

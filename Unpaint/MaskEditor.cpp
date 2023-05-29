@@ -1,7 +1,9 @@
 ﻿#include "pch.h"
 #include "MaskEditor.h"
 #include "MaskEditor.g.cpp"
+#include "Storage/FileIO.h"
 
+using namespace Axodox::Storage;
 using namespace std;
 using namespace winrt;
 using namespace winrt::Microsoft::Graphics::Canvas;
@@ -29,15 +31,17 @@ namespace winrt::Unpaint::implementation
     _canvasDevice(CanvasDevice::GetSharedDevice()),
     _maskBrush(_canvasDevice, Colors::Blue()),
     _opacityBrush(nullptr),
+    _checkerboardBitmap(nullptr),
     _brushSize(32.f),
-    _brushEdge(0.1f),
-    _brushOpacity(1.f),
+    _brushEdge(8.f),
     _selectedTool(MaskTool::Brush),
     _maskTarget(nullptr),
     _isPenDown(false),
     _currentPosition({}),
     _previousPosition({})
-  { }
+  { 
+    LoadResourcesAsync();
+  }
 
   Windows::Graphics::Imaging::BitmapSize MaskEditor::MaskResolution()
   {
@@ -78,19 +82,8 @@ namespace winrt::Unpaint::implementation
 
     _brushEdge = float(value);
     _propertyChanged(*this, PropertyChangedEventArgs(L"BrushEdge"));
-  }
 
-  double MaskEditor::BrushOpacity()
-  {
-    return _brushOpacity;
-  }
-
-  void MaskEditor::BrushOpacity(double value)
-  {
-    if (value == _brushOpacity) return;
-
-    _brushOpacity = float(value);
-    _propertyChanged(*this, PropertyChangedEventArgs(L"BrushOpacity"));
+    _canvasControl.Invalidate();
   }
 
   bool MaskEditor::IsBrushSelected()
@@ -123,7 +116,9 @@ namespace winrt::Unpaint::implementation
 
   void MaskEditor::ClearMask()
   {
-
+    auto session = _maskTarget.CreateDrawingSession();
+    session.Clear(Colors::Transparent());
+    _canvasControl.Invalidate();
   }
 
   bool MaskEditor::IsUndoAvailable()
@@ -147,14 +142,35 @@ namespace winrt::Unpaint::implementation
   void MaskEditor::OnCanvasPointerPressed(Windows::Foundation::IInspectable const& sender, Windows::UI::Xaml::Input::PointerRoutedEventArgs const& eventArgs)
   {
     auto uiElement = sender.as<UIElement>();
-    if (!uiElement.CapturePointer(eventArgs.Pointer())) return;
+    auto pointer = eventArgs.GetCurrentPoint(uiElement);
+    auto pointerProperties = pointer.Properties();
+    
+    //Switch tools on right click
+    if (pointerProperties.IsRightButtonPressed())
+    {
+      switch (_selectedTool)
+      {
+      case MaskTool::Brush:
+        SelectEraser();
+        break;
+      case MaskTool::Eraser:
+        SelectBrush();
+        break;
+      }
+    }
+
+    //If left button is pressed and we can capture the pointer start drawing
+    if (!pointerProperties.IsLeftButtonPressed() || !uiElement.CapturePointer(eventArgs.Pointer())) return;
     _isPenDown = true;
 
-    _currentPosition = eventArgs.GetCurrentPoint(uiElement).Position();
+    //Store position and update canvas
+    _currentPosition = pointer.Position();
+    _canvasControl.Invalidate();
   }
 
   void MaskEditor::OnCanvasPointerMoved(Windows::Foundation::IInspectable const& sender, Windows::UI::Xaml::Input::PointerRoutedEventArgs const& eventArgs)
   {
+    //Update position and canvas
     auto uiElement = sender.as<UIElement>();
     _currentPosition = eventArgs.GetCurrentPoint(uiElement).Position();
 
@@ -163,14 +179,17 @@ namespace winrt::Unpaint::implementation
 
   void MaskEditor::OnCanvasPointerReleased(Windows::Foundation::IInspectable const& sender, Windows::UI::Xaml::Input::PointerRoutedEventArgs const& eventArgs)
   {
+    //Release pen
     auto uiElement = sender.as<UIElement>();
     uiElement.ReleasePointerCapture(eventArgs.Pointer());
     _isPenDown = false;
 
+    //Update position and canvas
     _currentPosition = eventArgs.GetCurrentPoint(uiElement).Position();
+    _canvasControl.Invalidate();
   }
 
-  void MaskEditor::OnCanvasPointerExited(Windows::Foundation::IInspectable const& sender, Windows::UI::Xaml::Input::PointerRoutedEventArgs const& eventArgs)
+  void MaskEditor::OnCanvasPointerExited(Windows::Foundation::IInspectable const& /*sender*/, Windows::UI::Xaml::Input::PointerRoutedEventArgs const& /*eventArgs*/)
   {
     _currentPosition = nullopt;
     _canvasControl.Invalidate();
@@ -185,17 +204,12 @@ namespace winrt::Unpaint::implementation
     _canvasControl.Invalidate();
   }
 
-  void MaskEditor::OnCanvasLoading(Windows::Foundation::IInspectable const& sender, Windows::Foundation::IInspectable const& eventArgs)
+  void MaskEditor::OnCanvasLoading(Windows::Foundation::IInspectable const& sender, Windows::Foundation::IInspectable const& /*eventArgs*/)
   {
     _canvasControl = sender.as<CanvasControl>();
   }
 
-  void MaskEditor::OnCanvasSizeChanged(Windows::Foundation::IInspectable const& sender, Windows::UI::Xaml::SizeChangedEventArgs const& eventArgs)
-  {
-
-  }
-
-  void MaskEditor::OnCanvasDraw(Microsoft::Graphics::Canvas::UI::Xaml::CanvasControl const& sender, Microsoft::Graphics::Canvas::UI::Xaml::CanvasDrawEventArgs const& eventArgs)
+  void MaskEditor::OnCanvasDraw(Microsoft::Graphics::Canvas::UI::Xaml::CanvasControl const& /*sender*/, Microsoft::Graphics::Canvas::UI::Xaml::CanvasDrawEventArgs const& eventArgs)
   {
     EnsureMaskTarget();
 
@@ -208,9 +222,8 @@ namespace winrt::Unpaint::implementation
       Color brushColor;
       if (_selectedTool == MaskTool::Brush)
       {
-        session.Blend(CanvasBlend::Add);
-        auto value = uint8_t((_brushOpacity) * 255);
-        brushColor = { value, value, value, value };
+        session.Blend(CanvasBlend::Copy);
+        brushColor = Colors::White();
       }
       else
       {
@@ -223,7 +236,7 @@ namespace winrt::Unpaint::implementation
       if (_previousPosition)
       {
         auto distance = sqrt(pow(_currentPosition->X - _previousPosition->X, 2.f) + pow(_currentPosition->Y - _previousPosition->Y, 2.f));
-        auto stepCount = int32_t(ceil(distance / 2.f));
+        auto stepCount = max(1, int32_t(ceil(distance / 2.f)));
         for (auto i = 0; i <= stepCount; i++)
         {
           auto t = float(i) / stepCount;
@@ -252,7 +265,35 @@ namespace winrt::Unpaint::implementation
       //Clear canvas
       const auto& session = eventArgs.DrawingSession();
       session.Blend(CanvasBlend::SourceOver);
-      session.Clear(Colors::Transparent());
+      
+      //Draw mask
+      {
+        ICanvasEffect sourceEffect;
+        if (_checkerboardBitmap)
+        {
+          auto tileSize = _checkerboardBitmap.SizeInPixels();
+
+          TileEffect tileEffect;
+          tileEffect.Source(_checkerboardBitmap);
+          tileEffect.SourceRectangle(Rect{ 0.f, 0.f, float(tileSize.Width), float(tileSize.Height) });
+          sourceEffect = tileEffect;
+        }
+        else
+        {
+          ColorSourceEffect colorSourceEffect;
+          colorSourceEffect.Color(Colors::White());
+          sourceEffect = colorSourceEffect;
+        }
+
+        GaussianBlurEffect blurEffect;
+        blurEffect.BlurAmount(_brushEdge);
+        blurEffect.Source(_maskTarget);
+
+        AlphaMaskEffect maskEffect{};
+        maskEffect.Source(sourceEffect);
+        maskEffect.AlphaMask(blurEffect);
+        session.DrawImage(maskEffect);
+      }
 
       //Draw target area
       if (_currentPosition)
@@ -261,21 +302,7 @@ namespace winrt::Unpaint::implementation
         brushColor.A = 127;
         session.FillCircle(*_currentPosition, _brushSize, brushColor);
       }
-
-      /*ColorSourceEffect foregroundEffect;
-      foregroundEffect.Color(Colors::White());
-
-      BlendEffect effect{};
-      effect.Background(foregroundEffect);
-      effect.Foreground(_maskTarget);
-      effect.Mode(BlendEffectMode::Multiply);
-      session.DrawImage(effect);*/
-
-      auto rect = _maskTarget.GetBounds(_canvasDevice);
-      session.FillRectangle(rect, _maskBrush, _opacityBrush);
-    }
-
-        
+    }   
   }
 
   event_token MaskEditor::PropertyChanged(Windows::UI::Xaml::Data::PropertyChangedEventHandler const& value)
@@ -288,12 +315,20 @@ namespace winrt::Unpaint::implementation
     _propertyChanged.remove(token);
   }
 
+  fire_and_forget MaskEditor::LoadResourcesAsync()
+  {
+    auto lifetime = get_strong();
+
+    _checkerboardBitmap = co_await CanvasBitmap::LoadAsync(_canvasDevice, (app_folder() / L"Assets/checkerboard.png").c_str());
+    if (_canvasControl) _canvasControl.Invalidate();
+  }
+
   void MaskEditor::EnsureMaskTarget()
   {
     auto resolution = MaskResolution();
     if (_maskTarget && _maskTarget.SizeInPixels() == resolution) return;
 
-    _maskTarget = CanvasRenderTarget(_canvasDevice, resolution.Width, resolution.Height, 96.f, DirectXPixelFormat::A8UIntNormalized, CanvasAlphaMode::Straight);
+    _maskTarget = CanvasRenderTarget(_canvasDevice, float(resolution.Width), float(resolution.Height), 96.f, DirectXPixelFormat::A8UIntNormalized, CanvasAlphaMode::Straight);
     _opacityBrush = CanvasImageBrush(_canvasDevice, _maskTarget);
   }
 }
