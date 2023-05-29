@@ -461,8 +461,14 @@ namespace winrt::Unpaint::implementation
 
       auto bitmapBuffer = bitmap.LockBuffer(BitmapBufferAccessMode::Write);
       auto targetBuffer = bitmapBuffer.CreateReference();
+      auto planeDescription = bitmapBuffer.GetPlaneDescription(0);
 
-      memcpy(targetBuffer.data(), sourceBuffer.data(), min(targetBuffer.Capacity(), sourceBuffer.size()));
+      for (auto i = 0; i < planeDescription.Height; i++)
+      {
+        auto source = sourceBuffer.data() + i * planeDescription.Width;
+        auto target = targetBuffer.data() + i * planeDescription.Stride;
+        memcpy(target, source, planeDescription.Width);
+      }
     }
 
     MaskImage(bitmap);

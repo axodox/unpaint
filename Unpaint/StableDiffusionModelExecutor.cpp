@@ -142,7 +142,7 @@ namespace winrt::Unpaint
 
     Size targetSize{ int32_t(task.Resolution.x), int32_t(task.Resolution.y) };
     targetRect = maskedRect
-      //.Offset(16)
+      .Offset(16)
       .Fit(targetSize.AspectRatio())
       .PushClamp(task.InputMask.Size());
 
