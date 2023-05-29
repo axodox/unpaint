@@ -23,7 +23,7 @@
 
   <ContentControl.Template>
     <ControlTemplate TargetType="local:MaskEditor">
-      <Grid ColumnSpacing="6">
+      <Grid ColumnSpacing="12">
         <Grid.ColumnDefinitions>
           <ColumnDefinition Width="Auto"/>
           <ColumnDefinition Width="*"/>
@@ -34,10 +34,10 @@
                 BorderBrush="{ThemeResource ControlElevationBorderBrush}">
           <StackPanel Orientation="Vertical" Spacing="6" Margin="6">
             <!-- Editing Tools -->
-            <RadioButton GroupName="MaskToolGroup" Content="&#xE76D;" ToolTipService.ToolTip="Paint mask"
+            <RadioButton GroupName="MaskToolGroup" Content="&#xe7e6;" ToolTipService.ToolTip="Paint mask"
                           IsChecked="{x:Bind IsBrushSelected, Mode=OneWay}"
                           Click="{x:Bind SelectBrush}"/>
-            <RadioButton GroupName="MaskToolGroup" Content="&#xE75C;" ToolTipService.ToolTip="Erase mask"
+            <RadioButton GroupName="MaskToolGroup" Content="&#xe75c;" ToolTipService.ToolTip="Erase mask"
                           IsChecked="{x:Bind IsEraserSelected, Mode=OneWay}"
                           Click="{x:Bind SelectEraser}"/>
 

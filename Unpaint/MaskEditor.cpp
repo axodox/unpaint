@@ -38,7 +38,8 @@ namespace winrt::Unpaint::implementation
     _maskTarget(nullptr),
     _isPenDown(false),
     _currentPosition({}),
-    _previousPosition({})
+    _previousPosition({}),
+    _maskHistoryPosition(0)
   { 
     LoadResourcesAsync();
   }
@@ -116,27 +117,48 @@ namespace winrt::Unpaint::implementation
 
   void MaskEditor::ClearMask()
   {
-    auto session = _maskTarget.CreateDrawingSession();
-    session.Clear(Colors::Transparent());
-    _canvasControl.Invalidate();
+    //Clear mask
+    {
+      auto session = _maskTarget.CreateDrawingSession();
+      session.Clear(Colors::Transparent());
+      _canvasControl.Invalidate();
+    }
+
+    //Update history
+    {
+      _maskHistoryPosition = 0;
+      _maskHistory.clear();
+      _maskHistory.push_back(_maskTarget.GetPixelBytes());
+      UpdateHistory();
+    }
   }
 
   bool MaskEditor::IsUndoAvailable()
   {
-    return false;
+    return _maskHistoryPosition > 0;
   }
 
   void MaskEditor::UndoAction()
   {
+    if (!IsUndoAvailable()) return;
+
+    _maskTarget.SetPixelBytes(_maskHistory[--_maskHistoryPosition]);
+    _canvasControl.Invalidate();
+    UpdateHistory();
   }
 
   bool MaskEditor::IsRedoAvailable()
   {
-    return false;
+    return _maskHistoryPosition + 1 < _maskHistory.size();
   }
 
   void MaskEditor::RedoAction()
   {
+    if (!IsRedoAvailable()) return;
+
+    _maskTarget.SetPixelBytes(_maskHistory[++_maskHistoryPosition]);
+    _canvasControl.Invalidate();
+    UpdateHistory();
   }
 
   void MaskEditor::OnCanvasPointerPressed(Windows::Foundation::IInspectable const& sender, Windows::UI::Xaml::Input::PointerRoutedEventArgs const& eventArgs)
@@ -159,6 +181,10 @@ namespace winrt::Unpaint::implementation
       }
     }
 
+    //Undo & redo
+    if (pointerProperties.IsXButton1Pressed()) UndoAction();
+    if (pointerProperties.IsXButton2Pressed()) RedoAction();
+
     //If left button is pressed and we can capture the pointer start drawing
     if (!pointerProperties.IsLeftButtonPressed() || !uiElement.CapturePointer(eventArgs.Pointer())) return;
     _isPenDown = true;
@@ -179,6 +205,8 @@ namespace winrt::Unpaint::implementation
 
   void MaskEditor::OnCanvasPointerReleased(Windows::Foundation::IInspectable const& sender, Windows::UI::Xaml::Input::PointerRoutedEventArgs const& eventArgs)
   {
+    auto wasDrawing = _isPenDown;
+
     //Release pen
     auto uiElement = sender.as<UIElement>();
     uiElement.ReleasePointerCapture(eventArgs.Pointer());
@@ -187,6 +215,14 @@ namespace winrt::Unpaint::implementation
     //Update position and canvas
     _currentPosition = eventArgs.GetCurrentPoint(uiElement).Position();
     _canvasControl.Invalidate();
+
+    //Add result to history
+    if (wasDrawing)
+    {
+      _maskHistory.resize(++_maskHistoryPosition);
+      _maskHistory.push_back(_maskTarget.GetPixelBytes());
+      UpdateHistory();
+    }
   }
 
   void MaskEditor::OnCanvasPointerExited(Windows::Foundation::IInspectable const& /*sender*/, Windows::UI::Xaml::Input::PointerRoutedEventArgs const& /*eventArgs*/)
@@ -328,7 +364,20 @@ namespace winrt::Unpaint::implementation
     auto resolution = MaskResolution();
     if (_maskTarget && _maskTarget.SizeInPixels() == resolution) return;
 
+    //Create mask
     _maskTarget = CanvasRenderTarget(_canvasDevice, float(resolution.Width), float(resolution.Height), 96.f, DirectXPixelFormat::A8UIntNormalized, CanvasAlphaMode::Straight);
     _opacityBrush = CanvasImageBrush(_canvasDevice, _maskTarget);
+
+    //Update histroy
+    _maskHistoryPosition = 0;
+    _maskHistory.clear();
+    _maskHistory.push_back(_maskTarget.GetPixelBytes());
+    UpdateHistory();
+  }
+
+  void MaskEditor::UpdateHistory()
+  {
+    _propertyChanged(*this, PropertyChangedEventArgs(L"IsUndoAvailable"));
+    _propertyChanged(*this, PropertyChangedEventArgs(L"IsRedoAvailable"));
   }
 }

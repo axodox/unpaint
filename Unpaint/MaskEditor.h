@@ -71,8 +71,12 @@ namespace winrt::Unpaint::implementation
     bool _isPenDown;
     std::optional<Windows::Foundation::Point> _currentPosition, _previousPosition;
 
+    int32_t _maskHistoryPosition;
+    std::vector<com_array<uint8_t>> _maskHistory;
+
     fire_and_forget LoadResourcesAsync();
     void EnsureMaskTarget();
+    void UpdateHistory();
   };
 }
 
