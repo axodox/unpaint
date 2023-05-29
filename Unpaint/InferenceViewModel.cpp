@@ -61,7 +61,7 @@ namespace winrt::Unpaint::implementation
     _outputImage(nullptr),
     _inputImage(nullptr),
     _inputMask(nullptr),
-    _inputResolution({ 768, 768 }),
+    _inputResolution({ 0, 0 }),
     _imagesChangedSubscription(_imageRepository->ImagesChanged(event_handler{ this, &InferenceViewModel::OnImagesChanged }))
   {
     for (auto& model : _modelRepository->Models())

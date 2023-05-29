@@ -49,6 +49,7 @@ namespace winrt::Unpaint::implementation
     _previousPosition({}),
     _maskHistoryPosition(0)
   {
+    IsEnabled(false);
     LoadResourcesAsync();
   }
 
