@@ -23,13 +23,13 @@
 
   <ContentControl.Template>
     <ControlTemplate TargetType="local:MaskEditor">
-      <Grid ColumnSpacing="12">
+      <Grid>
         <Grid.ColumnDefinitions>
           <ColumnDefinition Width="Auto"/>
           <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
-        <Border VerticalAlignment="Center" CornerRadius="0,6,6,0" BorderThickness="1"
+        <Border VerticalAlignment="Center" CornerRadius="0,6,6,0" BorderThickness="0,1,1,1" Margin="0,0,6,0"
                 Background="{ThemeResource LayerFillColorDefaultBrush}"
                 BorderBrush="{ThemeResource ControlElevationBorderBrush}">
           <StackPanel Orientation="Vertical" Spacing="6" Margin="6">

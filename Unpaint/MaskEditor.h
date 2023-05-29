@@ -19,6 +19,10 @@ namespace winrt::Unpaint::implementation
     void MaskResolution(Windows::Graphics::Imaging::BitmapSize value);
     static Windows::UI::Xaml::DependencyProperty MaskResolutionProperty();
 
+    Windows::Graphics::Imaging::SoftwareBitmap MaskImage();
+    void MaskImage(Windows::Graphics::Imaging::SoftwareBitmap const& value);
+    static Windows::UI::Xaml::DependencyProperty MaskImageProperty();
+
     double BrushSize();
     void BrushSize(double value);
 
@@ -53,6 +57,7 @@ namespace winrt::Unpaint::implementation
 
   private:
     static Windows::UI::Xaml::DependencyProperty _maskResolutionProperty;
+    static Windows::UI::Xaml::DependencyProperty _maskImageProperty;
 
     event<Windows::UI::Xaml::Data::PropertyChangedEventHandler> _propertyChanged;
     Microsoft::Graphics::Canvas::UI::Xaml::CanvasControl _canvasControl;
@@ -64,7 +69,7 @@ namespace winrt::Unpaint::implementation
 
     Microsoft::Graphics::Canvas::CanvasDevice _canvasDevice;
     Microsoft::Graphics::Canvas::CanvasBitmap _checkerboardBitmap;
-    Microsoft::Graphics::Canvas::CanvasRenderTarget _maskTarget;
+    Microsoft::Graphics::Canvas::CanvasRenderTarget _maskTarget, _blurryMaskTarget;
     Microsoft::Graphics::Canvas::Brushes::CanvasSolidColorBrush _maskBrush;
     Microsoft::Graphics::Canvas::Brushes::CanvasImageBrush _opacityBrush;
 
@@ -77,6 +82,9 @@ namespace winrt::Unpaint::implementation
     fire_and_forget LoadResourcesAsync();
     void EnsureMaskTarget();
     void UpdateHistory();
+    void UpdateMaskImage();
+
+    static void OnMaskResolutionChanged(Windows::UI::Xaml::DependencyObject const& target, Windows::UI::Xaml::DependencyPropertyChangedEventArgs const& args);
   };
 }
 

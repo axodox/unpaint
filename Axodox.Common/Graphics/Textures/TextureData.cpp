@@ -7,6 +7,7 @@
 
 using namespace Axodox::Infrastructure;
 using namespace Axodox::Storage;
+using namespace DirectX;
 using namespace std;
 using namespace winrt;
 using namespace winrt::Windows::Graphics::Imaging;
@@ -302,8 +303,6 @@ namespace Axodox::Graphics
     WICPixelFormatGUID format;
     check_hresult(wicBitmap->GetPixelFormat(&format));
 
-    if (format != GUID_WICPixelFormat32bppBGRA) throw bad_cast();
-
     uint32_t width, height;
     check_hresult(wicBitmap->GetSize(&width, &height));
     
@@ -314,7 +313,7 @@ namespace Axodox::Graphics
       .Height = int32_t(height)
     };
 
-    TextureData result{ width, height, DXGI_FORMAT_B8G8R8A8_UNORM_SRGB };
+    TextureData result{ width, height, ToDxgiFormat(format)};
     check_hresult(wicBitmap->CopyPixels(&wicRect, result.Stride, result.ByteCount(), result.Buffer.data()));
 
     return result;
@@ -322,12 +321,10 @@ namespace Axodox::Graphics
 
   winrt::com_ptr<IWICBitmap> TextureData::ToWicBitmap() const
   {
-    if (Format != DXGI_FORMAT_B8G8R8A8_UNORM_SRGB && Format != DXGI_FORMAT_B8G8R8A8_UNORM) throw bad_cast();
-
     auto wicFactory = WicFactory();
 
     com_ptr<IWICBitmap> wicBitmap;
-    check_hresult(wicFactory->CreateBitmap(Width, Height, GUID_WICPixelFormat32bppBGRA, WICBitmapCacheOnDemand, wicBitmap.put()));
+    check_hresult(wicFactory->CreateBitmap(Width, Height, ToWicPixelFormat(Format), WICBitmapCacheOnDemand, wicBitmap.put()));
 
     WICRect wicRect{
       .X = 0,
@@ -345,14 +342,61 @@ namespace Axodox::Graphics
     check_hresult(wicBitmapLock->GetDataPointer(&bufferSize, &bufferData));
     check_hresult(wicBitmapLock->GetStride(&bufferStride));
 
+    auto dataStride = Width * BitsPerPixel(Format) / 8;
     for (uint32_t row = 0; row < Height; row++)
     {
       auto pSource = Row<uint32_t>(row);
       auto pTarget = reinterpret_cast<uint32_t*>(bufferData + bufferStride * row);
-      memcpy(pTarget, pSource, Width * sizeof(uint32_t));
+      memcpy(pTarget, pSource, dataStride);
     }
 
     return wicBitmap;
+  }
+
+  TextureData TextureData::FromSoftwareBitmap(const winrt::Windows::Graphics::Imaging::SoftwareBitmap& softwareBitmap)
+  {
+    if (!softwareBitmap) return {};
+
+    auto bitmapData = softwareBitmap.LockBuffer(BitmapBufferAccessMode::Read);
+    auto byteAccess = bitmapData.CreateReference().as<IMemoryBufferByteAccess>();
+    auto plane = bitmapData.GetPlaneDescription(0);
+
+    TextureData result{ uint32_t(plane.Width), uint32_t(plane.Height), ToDxgiFormat(softwareBitmap.BitmapPixelFormat())};
+    auto output = result.Buffer.data();
+
+    uint32_t capacity;
+    uint8_t* input;
+    check_hresult(byteAccess->GetBuffer(&input, &capacity));
+
+    for (auto i = 0u; i < result.Height; i++)
+    {
+      memcpy(output + i * result.Stride, input + i * plane.Stride, result.Stride);
+    }
+
+    return result;
+  }
+
+  winrt::Windows::Graphics::Imaging::SoftwareBitmap TextureData::ToSoftwareBitmap() const
+  {
+    if (!*this) return nullptr;
+
+    SoftwareBitmap result{ ToBitmapPixelFormat(Format), int32_t(Width), int32_t(Height), HasAlpha(Format) ? BitmapAlphaMode::Premultiplied : BitmapAlphaMode::Ignore };
+
+    auto input = Buffer.data();
+    auto bitmapData = result.LockBuffer(BitmapBufferAccessMode::Write);
+    auto byteAccess = bitmapData.CreateReference().as<IMemoryBufferByteAccess>();
+    auto plane = bitmapData.GetPlaneDescription(0);
+
+    uint32_t capacity;
+    uint8_t* output;
+    check_hresult(byteAccess->GetBuffer(&output, &capacity));
+
+    for (auto i = 0u; i < Height; i++)
+    {
+      memcpy(output + i * plane.Stride, input + i * Stride, Stride);
+    }
+
+    return result;
   }
 
   TextureData TextureData::Resize(uint32_t width, uint32_t height) const
@@ -369,22 +413,38 @@ namespace Axodox::Graphics
     return TextureData::FromWicBitmap(wicBitmapScaler);
   }
 
-  winrt::Windows::Graphics::Imaging::SoftwareBitmap TextureData::ToSoftwareBitmap() const
+  TextureData TextureData::UniformResize(uint32_t width, uint32_t height) const
   {
-    if (Format != DXGI_FORMAT_B8G8R8A8_UNORM_SRGB && Format != DXGI_FORMAT_B8G8R8A8_UNORM) throw bad_cast();
+    auto sourceAspectRatio = float(Width) / float(Height);
+    auto targetAspectRatio = float(width) / float(height);
 
-    SoftwareBitmap bitmap{ BitmapPixelFormat::Bgra8, int32_t(Width), int32_t(Height), BitmapAlphaMode::Premultiplied };
+    uint32_t uniformWidth, uniformHeight;
+    if (targetAspectRatio > sourceAspectRatio)
+    {
+      uniformWidth = uint32_t(width * sourceAspectRatio / targetAspectRatio);
+      uniformHeight = height;
+    }
+    else
+    {
+      uniformWidth = width;
+      uniformHeight = uint32_t(height * targetAspectRatio / sourceAspectRatio);
+    }
 
-    auto input = Buffer.data();
-    auto bitmapData = bitmap.LockBuffer(BitmapBufferAccessMode::Write);
-    auto byteAccess = bitmapData.CreateReference().as<IMemoryBufferByteAccess>();
+    auto resizedTexture = Resize(uniformWidth, uniformHeight);
 
-    uint32_t capacity;
-    uint8_t* output;
-    check_hresult(byteAccess->GetBuffer(&output, &capacity));
-    memcpy(output, input, min(capacity, ByteCount()));
+    if (width != uniformWidth || height != uniformHeight)
+    {
+      if (targetAspectRatio > sourceAspectRatio)
+      {
+        resizedTexture = resizedTexture.ExtendHorizontally(width);
+      }
+      else
+      {
+        resizedTexture = resizedTexture.ExtendVertically(height);
+      }
+    }
 
-    return bitmap;
+    return resizedTexture;
   }
 
   TextureData TextureData::ExtendHorizontally(uint32_t width) const

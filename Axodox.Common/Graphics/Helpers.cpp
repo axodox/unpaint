@@ -1,7 +1,9 @@
 #include "pch.h"
 #include "Helpers.h"
 
+using namespace std;
 using namespace winrt;
+using namespace winrt::Windows::Graphics::Imaging;
 
 namespace Axodox::Graphics
 {
@@ -150,6 +152,61 @@ namespace Axodox::Graphics
       return 0;
     }
   }
+
+  bool HasAlpha(DXGI_FORMAT format)
+  {
+    switch (format)
+    {
+    case DXGI_FORMAT_R32G32B32A32_TYPELESS:
+    case DXGI_FORMAT_R32G32B32A32_FLOAT:
+    case DXGI_FORMAT_R32G32B32A32_UINT:
+    case DXGI_FORMAT_R32G32B32A32_SINT:
+    case DXGI_FORMAT_R16G16B16A16_TYPELESS:
+    case DXGI_FORMAT_R16G16B16A16_FLOAT:
+    case DXGI_FORMAT_R16G16B16A16_UNORM:
+    case DXGI_FORMAT_R16G16B16A16_UINT:
+    case DXGI_FORMAT_R16G16B16A16_SNORM:
+    case DXGI_FORMAT_R16G16B16A16_SINT:
+    case DXGI_FORMAT_R10G10B10A2_TYPELESS:
+    case DXGI_FORMAT_R10G10B10A2_UNORM:
+    case DXGI_FORMAT_R10G10B10A2_UINT:
+    case DXGI_FORMAT_R8G8B8A8_TYPELESS:
+    case DXGI_FORMAT_R8G8B8A8_UNORM:
+    case DXGI_FORMAT_R8G8B8A8_UNORM_SRGB:
+    case DXGI_FORMAT_R8G8B8A8_UINT:
+    case DXGI_FORMAT_R8G8B8A8_SNORM:
+    case DXGI_FORMAT_R8G8B8A8_SINT:
+    case DXGI_FORMAT_A8_UNORM:
+    case DXGI_FORMAT_BC1_TYPELESS:
+    case DXGI_FORMAT_BC1_UNORM:
+    case DXGI_FORMAT_BC1_UNORM_SRGB:
+    case DXGI_FORMAT_BC2_TYPELESS:
+    case DXGI_FORMAT_BC2_UNORM:
+    case DXGI_FORMAT_BC2_UNORM_SRGB:
+    case DXGI_FORMAT_BC3_TYPELESS:
+    case DXGI_FORMAT_BC3_UNORM:
+    case DXGI_FORMAT_BC3_UNORM_SRGB:
+    case DXGI_FORMAT_B5G5R5A1_UNORM:
+    case DXGI_FORMAT_B8G8R8A8_UNORM:
+    case DXGI_FORMAT_R10G10B10_XR_BIAS_A2_UNORM:
+    case DXGI_FORMAT_B8G8R8A8_TYPELESS:
+    case DXGI_FORMAT_B8G8R8A8_UNORM_SRGB:
+    case DXGI_FORMAT_BC7_TYPELESS:
+    case DXGI_FORMAT_BC7_UNORM:
+    case DXGI_FORMAT_BC7_UNORM_SRGB:
+    case DXGI_FORMAT_AYUV:
+    case DXGI_FORMAT_Y410:
+    case DXGI_FORMAT_Y416:
+    case DXGI_FORMAT_AI44:
+    case DXGI_FORMAT_IA44:
+    case DXGI_FORMAT_A8P8:
+    case DXGI_FORMAT_B4G4R4A4_UNORM:
+      return true;
+
+    default:
+      return false;
+    }
+  }
   
   IWICImagingFactory* WicFactory()
   {
@@ -163,5 +220,95 @@ namespace Axodox::Graphics
     }
 
     return wicFactory.get();
+  }
+
+  winrt::Windows::Graphics::Imaging::BitmapPixelFormat ToBitmapPixelFormat(DXGI_FORMAT format)
+  {
+    switch (format)
+    {
+    case DXGI_FORMAT_UNKNOWN:
+      return BitmapPixelFormat::Unknown;
+    case DXGI_FORMAT_R16G16B16A16_UNORM:
+      return BitmapPixelFormat::Rgba16;
+    case DXGI_FORMAT_R8G8B8A8_UNORM:
+    case DXGI_FORMAT_R8G8B8A8_UNORM_SRGB:
+      return BitmapPixelFormat::Rgba8;
+    case DXGI_FORMAT_R16_UNORM:
+      return BitmapPixelFormat::Gray16;
+    case DXGI_FORMAT_R8_UNORM:
+      return BitmapPixelFormat::Gray8;
+    case DXGI_FORMAT_B8G8R8A8_UNORM:
+    case DXGI_FORMAT_B8G8R8A8_UNORM_SRGB:
+      return BitmapPixelFormat::Bgra8;
+    case DXGI_FORMAT_NV12:
+      return BitmapPixelFormat::Nv12;
+    case DXGI_FORMAT_P010:
+      return BitmapPixelFormat::P010;
+    case DXGI_FORMAT_YUY2:
+      return BitmapPixelFormat::Yuy2;
+    default:
+      throw logic_error("Unsupported DXGI format encountered.");
+    }
+  }
+
+  DXGI_FORMAT ToDxgiFormat(winrt::Windows::Graphics::Imaging::BitmapPixelFormat format)
+  {
+    switch (format)
+    {
+    case BitmapPixelFormat::Unknown:
+      return DXGI_FORMAT_UNKNOWN;
+    case BitmapPixelFormat::Rgba16:
+      return DXGI_FORMAT_R16G16B16A16_UNORM;
+    case BitmapPixelFormat::Rgba8:
+      return DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
+    case BitmapPixelFormat::Gray16:
+      return DXGI_FORMAT_R16_UNORM;
+    case BitmapPixelFormat::Gray8:
+      return DXGI_FORMAT_R8_UNORM;
+    case BitmapPixelFormat::Bgra8:
+      return DXGI_FORMAT_B8G8R8A8_UNORM_SRGB;
+    case BitmapPixelFormat::Nv12:
+      return DXGI_FORMAT_NV12;
+    case BitmapPixelFormat::P010:
+      return DXGI_FORMAT_P010;
+    case BitmapPixelFormat::Yuy2:
+      return DXGI_FORMAT_YUY2;
+    default:
+      throw logic_error("Unsupported bitmap pixel format encountered.");
+    }
+  }
+  WICPixelFormatGUID ToWicPixelFormat(DXGI_FORMAT format)
+  {
+    switch (format)
+    {
+    case DXGI_FORMAT_UNKNOWN:
+      return GUID_WICPixelFormatDontCare;
+    case DXGI_FORMAT_R16G16B16A16_UNORM:
+      return GUID_WICPixelFormat64bppBGRA;
+    case DXGI_FORMAT_R8G8B8A8_UNORM:
+    case DXGI_FORMAT_R8G8B8A8_UNORM_SRGB:
+      return GUID_WICPixelFormat32bppRGBA;
+    case DXGI_FORMAT_R16_UNORM:
+      return GUID_WICPixelFormat16bppGray;
+    case DXGI_FORMAT_R8_UNORM:
+      return GUID_WICPixelFormat8bppGray;
+    case DXGI_FORMAT_B8G8R8A8_UNORM:
+    case DXGI_FORMAT_B8G8R8A8_UNORM_SRGB:
+      return GUID_WICPixelFormat32bppBGRA;
+    default:
+      throw logic_error("Unsupported DXGI format encountered.");
+    }
+  }
+
+  DXGI_FORMAT ToDxgiFormat(WICPixelFormatGUID format)
+  {
+    if (format == GUID_WICPixelFormatDontCare) return DXGI_FORMAT_UNKNOWN;
+    if (format == GUID_WICPixelFormat64bppBGRA) return DXGI_FORMAT_R16G16B16A16_UNORM;
+    if (format == GUID_WICPixelFormat32bppRGBA) return DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
+    if (format == GUID_WICPixelFormat16bppGray) return DXGI_FORMAT_R16_UNORM;
+    if (format == GUID_WICPixelFormat8bppGray) return DXGI_FORMAT_R8_UNORM;
+    if (format == GUID_WICPixelFormat32bppBGRA) return DXGI_FORMAT_B8G8R8A8_UNORM_SRGB;
+
+    throw logic_error("Unsupported WIC pixel format encountered.");
   }
 }

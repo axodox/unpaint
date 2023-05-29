@@ -264,6 +264,8 @@ namespace Axodox::MachineLearning
 
   Tensor Tensor::FromTextureData(const Graphics::TextureData& texture)
   {
+    if (!texture) return {};
+
     switch (texture.Format)
     {
     case DXGI_FORMAT_B8G8R8A8_UNORM:

@@ -39,9 +39,11 @@ namespace Axodox::Graphics
     static TextureData FromWicBitmap(const winrt::com_ptr<IWICBitmapSource>& wicBitmap);
     winrt::com_ptr<IWICBitmap> ToWicBitmap() const;
 
-    TextureData Resize(uint32_t width, uint32_t height) const;
-
+    static TextureData FromSoftwareBitmap(const winrt::Windows::Graphics::Imaging::SoftwareBitmap& softwareBitmap);
     winrt::Windows::Graphics::Imaging::SoftwareBitmap ToSoftwareBitmap() const;
+
+    TextureData Resize(uint32_t width, uint32_t height) const;
+    TextureData UniformResize(uint32_t width, uint32_t height) const;
 
     template<typename T>
     T* Row(uint32_t row)

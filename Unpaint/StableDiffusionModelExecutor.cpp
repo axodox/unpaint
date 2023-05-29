@@ -60,9 +60,7 @@ namespace winrt::Unpaint
       {
         auto imageTensor = LoadImage(task, resolutionOverride, async);
         inputs.InputImage = EncodeVAE(imageTensor, async);
-
-        /*inputs.InputMask = Tensor{ TensorType::Single, 1, 1, inputs.InputImage.Shape[2], inputs.InputImage.Shape[3] };
-        inputs.InputMask.Fill(1.f);*/
+        inputs.InputMask = LoadMask(task, async);
       }
 
       //Run diffusion
@@ -117,38 +115,30 @@ namespace winrt::Unpaint
     auto imageBuffer = try_read_file(task.InputImage);
     auto imageTexture = TextureData::FromBuffer(imageBuffer);
 
-    auto sourceAspectRatio = float(imageTexture.Width) / float(imageTexture.Height);
-    auto targetAspectRatio = float(task.Resolution.x) / float(task.Resolution.y);
-
-    uint32_t width, height;
-    if (targetAspectRatio > sourceAspectRatio)
+    if (imageTexture.Width != task.Resolution.x || imageTexture.Height != task.Resolution.y)
     {
-      width = uint32_t(task.Resolution.x * sourceAspectRatio / targetAspectRatio);
-      height = task.Resolution.y;
-    }
-    else
-    {
-      width = task.Resolution.x;
-      height = uint32_t(task.Resolution.y * targetAspectRatio / sourceAspectRatio);
-    }
-
-    imageTexture = imageTexture.Resize(width, height);
-
-    if (!are_equal(task.Resolution, XMUINT2{ width, height }))
-    {
-      if (targetAspectRatio > sourceAspectRatio)
-      {
-        imageTexture = imageTexture.ExtendHorizontally(task.Resolution.x);
-      }
-      else
-      {
-        imageTexture = imageTexture.ExtendVertically(task.Resolution.y);
-      }
-
-      resolutionOverride = { width, height };
+      resolutionOverride = { imageTexture.Width, imageTexture.Height };
+      imageTexture = imageTexture.UniformResize(task.Resolution.x, task.Resolution.y);
     }
 
     return Tensor::FromTextureData(imageTexture);
+  }
+
+  Axodox::MachineLearning::Tensor StableDiffusionModelExecutor::LoadMask(const StableDiffusionInferenceTask& task, Axodox::Threading::async_operation_source& async)
+  {
+    if (!task.InputMask) return {};
+
+    async.update_state(NAN, "Loading input mask...");
+    auto maskTexture{ task.InputMask };
+
+    if (maskTexture.Width != task.Resolution.x || maskTexture.Height != task.Resolution.y)
+    {
+      maskTexture = maskTexture.UniformResize(task.Resolution.x, task.Resolution.y);
+    }
+
+    maskTexture = maskTexture.Resize(maskTexture.Width / 8, maskTexture.Height / 8);
+
+    return Tensor::FromTextureData(maskTexture);
   }
 
   Axodox::MachineLearning::Tensor StableDiffusionModelExecutor::EncodeVAE(const Axodox::MachineLearning::Tensor& colorImage, Axodox::Threading::async_operation_source& async)

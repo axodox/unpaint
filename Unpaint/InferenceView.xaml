@@ -81,7 +81,7 @@
     </Style>
   </Page.Resources>
 
-  <Grid Grid.RowSpacing="3">
+  <Grid Grid.RowSpacing="6">
     <VisualStateManager.VisualStateGroups>
       <VisualStateGroup>
         <VisualState x:Name="CommandPanelVisualState">
@@ -209,7 +209,8 @@
 
       <!-- Input image -->
       <Grid x:Name="InputImageView"  Grid.Column="0" Visibility="{x:Bind IsInputPaneVisible, Mode=OneWay}" AllowDrop="True" DragOver="OnImageDragOver" Drop="OnImageDrop">
-        <local:MaskEditor>
+        <local:MaskEditor MaskResolution="{x:Bind ViewModel.InputResolution, Mode=OneWay}"
+                          MaskImage="{x:Bind ViewModel.InputMask, Mode=TwoWay}">
           <Image Source="{x:Bind ViewModel.InputImage, Converter={StaticResource StorageFileToImageSourceConverter}, Mode=OneWay}"/>
         </local:MaskEditor>
 

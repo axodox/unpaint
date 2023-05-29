@@ -23,6 +23,9 @@ namespace Unpaint
     Windows.Graphics.Imaging.BitmapSize MaskResolution;
     static Windows.UI.Xaml.DependencyProperty MaskResolutionProperty{ get; };
 
+    Windows.Graphics.Imaging.SoftwareBitmap MaskImage;
+    static Windows.UI.Xaml.DependencyProperty MaskImageProperty{ get; };
+
     Double BrushSize;
     Double BrushEdge;
 
