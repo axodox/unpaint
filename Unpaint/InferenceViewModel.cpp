@@ -362,7 +362,7 @@ namespace winrt::Unpaint::implementation
       error_code ec;
       if (value && !filesystem::exists(targetPath, ec))
       {
-        value = co_await value.CopyAsync(ApplicationData::Current().TemporaryFolder(), targetPath.filename().c_str(), NameCollisionOption::ReplaceExisting);
+        value = co_await value.CopyAsync(ApplicationData::Current().TemporaryFolder(), value.Name().c_str(), NameCollisionOption::ReplaceExisting);
       }
     }
 

@@ -124,7 +124,7 @@ namespace Axodox::MachineLearning
       swap(maskInput.Shape[0], maskInput.Shape[1]);
 
       result.UnaryOperation<float>(maskInput, [=](float a, float b) { return a * b; });
-      replicatedLatents.UnaryOperation<float>(maskInput, [=](float a, float b) { return a * (1.f - floor(b)); });
+      //replicatedLatents.UnaryOperation<float>(maskInput, [=](float a, float b) { return a * (1.f - floor(b)); });
     }
 
     result.UnaryOperation<float>(replicatedLatents, [=](float a, float b) { return a * initialSigma + b * 0.18215f; });
