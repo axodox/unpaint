@@ -137,6 +137,7 @@ namespace winrt::Unpaint::implementation
     _positivePrompt = value;
     _propertyChanged(*this, PropertyChangedEventArgs(L"PositivePrompt"));
 
+    auto lifetime = get_strong();
     _availablePositiveTokenCount = co_await ValidatePromptAsync(value);
     _propertyChanged(*this, PropertyChangedEventArgs(L"AvailablePositiveTokenCount"));
   }
@@ -163,6 +164,7 @@ namespace winrt::Unpaint::implementation
     _negativePrompt = value;
     _propertyChanged(*this, PropertyChangedEventArgs(L"NegativePrompt"));
 
+    auto lifetime = get_strong();
     _availableNegativeTokenCount = co_await ValidatePromptAsync(value);
     _propertyChanged(*this, PropertyChangedEventArgs(L"AvailableNegativeTokenCount"));
   }
