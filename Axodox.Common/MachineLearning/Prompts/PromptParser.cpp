@@ -90,7 +90,7 @@ namespace Axodox::MachineLearning::Prompts
 
   void CheckPromptCharacters(std::string_view text)
   {
-    static set<char> specialCharacters{',', '.', ':', '?', '!', '/', '(', ')', '<', '>', '[', ']', '\'' };
+    static set<char> specialCharacters{',', '.', ':', '?', '!', '/', '(', ')', '<', '>', '[', ']', '\'', '-', '_' };
 
     auto loc = locale();
     for (auto c : text)
