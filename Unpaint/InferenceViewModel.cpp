@@ -62,6 +62,7 @@ namespace winrt::Unpaint::implementation
     _inputImage(nullptr),
     _inputMask(nullptr),
     _inputResolution({ 0, 0 }),
+    _isAutoGenerationEnabled(false),
     _imagesChangedSubscription(_imageRepository->ImagesChanged(event_handler{ this, &InferenceViewModel::OnImagesChanged }))
   {
     for (auto& model : _modelRepository->Models())
@@ -429,9 +430,19 @@ namespace winrt::Unpaint::implementation
     return _selectedProjectIndex != -1 && _projects.GetAt(_selectedProjectIndex) != L"scratch";
   }
 
+  bool InferenceViewModel::IsAutoGenerationEnabled()
+  {
+    return _isAutoGenerationEnabled;
+  }
+
   fire_and_forget InferenceViewModel::GenerateImage()
   {
-    if (_isBusy) co_return;
+    if (_isBusy)
+    {
+      _isAutoGenerationEnabled = !_isAutoGenerationEnabled;
+      _propertyChanged(*this, PropertyChangedEventArgs(L"IsAutoGenerationEnabled"));
+      co_return;
+    }
     _isBusy = true;
 
     //Capture caller context
@@ -511,6 +522,12 @@ namespace winrt::Unpaint::implementation
     }
 
     _isBusy = false;
+
+    //Run further generations if needed
+    if (_isAutoGenerationEnabled)
+    {
+      GenerateImage();
+    }
   }
 
   void InferenceViewModel::ManageModels()

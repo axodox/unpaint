@@ -26,7 +26,16 @@
         <x:Double>0</x:Double>
       </local:BooleanSwitchConverter.FalseValue>
     </local:BooleanSwitchConverter>
-    
+
+    <local:BooleanSwitchConverter x:Key="BooleanToGenerateIconConverter">
+      <local:BooleanSwitchConverter.TrueValue>
+        <x:String>&#xeb9d;</x:String>
+      </local:BooleanSwitchConverter.TrueValue>
+      <local:BooleanSwitchConverter.FalseValue>
+        <x:String>&#xe768;</x:String>
+      </local:BooleanSwitchConverter.FalseValue>
+    </local:BooleanSwitchConverter>
+
     <local:EqualsConverter x:Key="IsCreateModeSelectedConverter">
       <local:EqualsConverter.Value>
         <x:Int32>0</x:Int32>
@@ -451,8 +460,10 @@
         <FontIcon Grid.Column="1" Grid.Row="1" FontFamily="Segoe Fluent Icons" FontSize="20" Glyph="&#xe949;" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,6,0,0"/>
 
         <!-- Execute -->
-        <Button Grid.Column="2" Grid.RowSpan="2" FontFamily="Segoe Fluent Icons" FontSize="24" Content="&#xe768;" ToolTipService.ToolTip="Generate" VerticalAlignment="Stretch"
-                Click="{x:Bind ViewModel.GenerateImage}">
+        <Button Grid.Column="2" Grid.RowSpan="2" ToolTipService.ToolTip="Generate" VerticalAlignment="Stretch" Click="{x:Bind ViewModel.GenerateImage}">
+          <Button.Content>
+            <FontIcon Glyph="{x:Bind ViewModel.IsAutoGenerationEnabled, Converter={StaticResource BooleanToGenerateIconConverter}, Mode=OneWay}" FontFamily="Segoe Fluent Icons" FontSize="24"/>
+          </Button.Content>
           <Button.KeyboardAccelerators>
             <KeyboardAccelerator Key="Enter"/>
           </Button.KeyboardAccelerators>

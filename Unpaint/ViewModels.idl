@@ -104,6 +104,8 @@ namespace Unpaint
     Int32 SelectedProjectIndex;
     Boolean CanDeleteProject{ get; };
 
+    Boolean IsAutoGenerationEnabled{ get; };
+
     void GenerateImage();
     void ManageModels();
     void OpenSettings();

@@ -83,6 +83,8 @@ namespace winrt::Unpaint::implementation
     void SelectedProjectIndex(int32_t value);
     bool CanDeleteProject();
 
+    bool IsAutoGenerationEnabled();
+
     fire_and_forget GenerateImage();
     void ManageModels();
     void OpenSettings();
@@ -142,6 +144,8 @@ namespace winrt::Unpaint::implementation
     Windows::Storage::StorageFile _outputImage, _inputImage;
     Windows::Graphics::Imaging::BitmapSize _inputResolution;
     Windows::Graphics::Imaging::SoftwareBitmap _inputMask;
+
+    bool _isAutoGenerationEnabled;
 
     Windows::Foundation::Collections::IObservableVector<hstring> _projects;
     int32_t _selectedProjectIndex;
