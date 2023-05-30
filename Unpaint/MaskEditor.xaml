@@ -1,0 +1,88 @@
+﻿<ContentControl
+  x:Class="Unpaint.MaskEditor"
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:local="using:Unpaint"
+  xmlns:canvas="using:Microsoft.Graphics.Canvas.UI.Xaml"
+  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+  mc:Ignorable="d">
+
+  <ContentControl.Resources>
+    <Style TargetType="RadioButton" BasedOn="{StaticResource RadioToggleButtonStyle}">
+      <Setter Property="FontFamily" Value="Segoe Fluent Icons"/>
+      <Setter Property="FontSize" Value="20"/>
+    </Style>
+
+    <Style TargetType="Button" BasedOn="{StaticResource FlatButtonStyle}">
+      <Setter Property="FontFamily" Value="Segoe Fluent Icons"/>
+      <Setter Property="FontSize" Value="20"/>
+      <Setter Property="Margin" Value="0"/>
+    </Style>
+  </ContentControl.Resources>
+
+  <ContentControl.Template>
+    <ControlTemplate TargetType="local:MaskEditor">
+      <Grid>
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="Auto"/>
+          <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <Border VerticalAlignment="Center" CornerRadius="0,6,6,0" BorderThickness="0,1,1,1" Margin="0,0,6,0"
+                Background="{ThemeResource LayerFillColorDefaultBrush}"
+                BorderBrush="{ThemeResource ControlElevationBorderBrush}">
+          <StackPanel Orientation="Vertical" Spacing="6" Margin="6">
+            <!-- Editing Tools -->
+            <RadioButton GroupName="MaskToolGroup" Content="&#xe7e6;" ToolTipService.ToolTip="Paint mask"
+                          IsChecked="{x:Bind IsBrushSelected, Mode=OneWay}"
+                          Click="{x:Bind SelectBrush}"/>
+            <RadioButton GroupName="MaskToolGroup" Content="&#xe75c;" ToolTipService.ToolTip="Erase mask"
+                          IsChecked="{x:Bind IsEraserSelected, Mode=OneWay}"
+                          Click="{x:Bind SelectEraser}"/>
+
+            <!-- Separator -->
+            <Border Background="{ThemeResource ControlElevationBorderBrush}" Height="1" Margin="-2,6"/>
+
+            <!-- Brush size -->
+            <Slider Orientation="Vertical" MinHeight="128" Margin="-32,6" Minimum="1" Maximum="128" HorizontalAlignment="Center"
+                    Value="{x:Bind BrushSize, Mode=TwoWay}"/>
+            <FontIcon Glyph="&#xeda8;" FontFamily="Segoe Fluent Icons" HorizontalAlignment="Center" ToolTipService.ToolTip="Brush size"/>
+
+            <!-- Separator -->
+            <Border Background="{ThemeResource ControlElevationBorderBrush}" Height="1" Margin="-2,6"/>
+
+            <!-- Edge thickness -->
+            <Slider Orientation="Vertical" MinHeight="64" Margin="-32,6" Minimum="0" Maximum="16" SmallChange="1" StepFrequency="1" HorizontalAlignment="Center"
+                    Value="{x:Bind BrushEdge, Mode=TwoWay}"/>
+            <FontIcon Glyph="&#xe81d;" FontFamily="Segoe Fluent Icons" HorizontalAlignment="Center" ToolTipService.ToolTip="Edge thickness"/>
+
+            <!-- Separator -->
+            <Border Background="{ThemeResource ControlElevationBorderBrush}" Height="1" Margin="-2,6"/>
+
+            <!-- Footer actions -->
+            <Button Content="&#xe8e6;" ToolTipService.ToolTip="Clear mask" Click="{x:Bind ClearMask}"/>
+            <Button Content="&#xe7a7;" ToolTipService.ToolTip="Undo" Click="{x:Bind UndoAction}" IsEnabled="{x:Bind IsUndoAvailable, Mode=OneWay}"/>
+            <Button Content="&#xe7a6;" ToolTipService.ToolTip="Redo" Click="{x:Bind RedoAction}" IsEnabled="{x:Bind IsRedoAvailable, Mode=OneWay}"/>
+          </StackPanel>
+        </Border>
+
+        <!-- Content Presenter -->
+        <ContentPresenter Grid.Column="1" x:Name="ContentPresenter"/>
+
+        <!-- Canvas -->
+        <Viewbox Grid.Column="1">
+          <canvas:CanvasControl Width="{x:Bind MaskResolution.Width, Mode=OneWay}"
+                                Height="{x:Bind MaskResolution.Height, Mode=OneWay}"
+                                PointerPressed="OnCanvasPointerPressed"
+                                PointerMoved="OnCanvasPointerMoved"
+                                PointerReleased="OnCanvasPointerReleased"
+                                PointerExited="OnCanvasPointerExited"
+                                PointerWheelChanged="OnCanvasPointerWheelChanged"
+                                Loading="OnCanvasLoading"
+                                Draw="OnCanvasDraw"/>
+        </Viewbox>
+      </Grid>
+    </ControlTemplate>
+  </ContentControl.Template>
+</ContentControl>

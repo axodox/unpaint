@@ -81,7 +81,7 @@
     </Style>
   </Page.Resources>
 
-  <Grid Grid.RowSpacing="3">
+  <Grid Grid.RowSpacing="6">
     <VisualStateManager.VisualStateGroups>
       <VisualStateGroup>
         <VisualState x:Name="CommandPanelVisualState">
@@ -209,7 +209,11 @@
 
       <!-- Input image -->
       <Grid x:Name="InputImageView"  Grid.Column="0" Visibility="{x:Bind IsInputPaneVisible, Mode=OneWay}" AllowDrop="True" DragOver="OnImageDragOver" Drop="OnImageDrop">
-        <Image Source="{x:Bind ViewModel.InputImage, Converter={StaticResource StorageFileToImageSourceConverter}, Mode=OneWay}"/>
+        <local:MaskEditor x:Name="InputMaskEditor"
+                          MaskResolution="{x:Bind ViewModel.InputResolution, Mode=OneWay}"
+                          MaskImage="{x:Bind ViewModel.InputMask, Mode=TwoWay}">
+          <Image Source="{x:Bind ViewModel.InputImage, Converter={StaticResource StorageFileToImageSourceConverter}, Mode=OneWay}"/>
+        </local:MaskEditor>
 
         <Button Margin="6,0,-36,0" Width="30" Height="30" HorizontalAlignment="Right" VerticalAlignment="Center" Content="&#xe76b;" FontFamily="Segoe Fluent Icons" Padding="0"
                 Click="{x:Bind ViewModel.UseCurrentImageAsInput}" IsEnabled="{x:Bind ViewModel.HasImageSelected, Mode=OneWay}" ToolTipService.ToolTip="Use current image as input"/>
@@ -225,11 +229,11 @@
       </TextBlock>
 
       <!-- Headers -->
-      <Border Grid.Column="0" Style="{StaticResource PaneHeaderStyle}" Visibility="{x:Bind IsInputPaneVisible, Mode=OneWay}">
+      <Border Grid.Column="0" Style="{StaticResource PaneHeaderStyle}" Visibility="{x:Bind IsInputPaneVisible, Mode=OneWay}" IsHitTestVisible="False">
         <TextBlock Text="Input"/>
       </Border>
 
-      <Border Grid.Column="1" Style="{StaticResource PaneHeaderStyle}" Visibility="{x:Bind IsInputPaneVisible, Mode=OneWay}">
+      <Border Grid.Column="1" Style="{StaticResource PaneHeaderStyle}" Visibility="{x:Bind IsInputPaneVisible, Mode=OneWay}" IsHitTestVisible="False">
         <TextBlock Text="Output"/>
       </Border>
     </Grid>

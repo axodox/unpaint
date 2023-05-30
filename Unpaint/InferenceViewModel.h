@@ -71,6 +71,10 @@ namespace winrt::Unpaint::implementation
 
     Windows::Storage::StorageFile InputImage();
     fire_and_forget InputImage(Windows::Storage::StorageFile value);
+    Windows::Graphics::Imaging::BitmapSize InputResolution();
+
+    Windows::Graphics::Imaging::SoftwareBitmap InputMask();
+    void InputMask(Windows::Graphics::Imaging::SoftwareBitmap const& value);
 
     Windows::Storage::StorageFile OutputImage();
 
@@ -136,6 +140,8 @@ namespace winrt::Unpaint::implementation
     Windows::Foundation::Collections::IObservableVector<hstring> _images;
     int32_t _selectedImageIndex;
     Windows::Storage::StorageFile _outputImage, _inputImage;
+    Windows::Graphics::Imaging::BitmapSize _inputResolution;
+    Windows::Graphics::Imaging::SoftwareBitmap _inputMask;
 
     Windows::Foundation::Collections::IObservableVector<hstring> _projects;
     int32_t _selectedProjectIndex;

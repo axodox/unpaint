@@ -95,6 +95,9 @@ namespace Unpaint
     String ImagePosition{ get; };
     
     Windows.Storage.StorageFile InputImage;
+    Windows.Graphics.Imaging.BitmapSize InputResolution{ get; };
+    Windows.Graphics.Imaging.SoftwareBitmap InputMask;
+
     Windows.Storage.StorageFile OutputImage{ get; };
 
     IObservableVector<String> Projects{ get; };

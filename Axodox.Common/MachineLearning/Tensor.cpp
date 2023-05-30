@@ -216,6 +216,17 @@ namespace Axodox::MachineLearning
     return true;
   }
 
+  size_t Tensor::ElementCount(shape_t shape)
+  {
+    size_t result = shape[0] > 0 ? 1 : 0;
+    for (auto item : shape)
+    {
+      if (item) result *= item;
+      else break;
+    }
+    return result;
+  }
+
   Tensor Tensor::FromTextureDataRgba8(const Graphics::TextureData& texture)
   {
     Tensor result(TensorType::Single, 1, 3, texture.Width, texture.Height);
@@ -264,6 +275,8 @@ namespace Axodox::MachineLearning
 
   Tensor Tensor::FromTextureData(const Graphics::TextureData& texture)
   {
+    if (!texture) return {};
+
     switch (texture.Format)
     {
     case DXGI_FORMAT_B8G8R8A8_UNORM:
@@ -364,6 +377,15 @@ namespace Axodox::MachineLearning
       }
     }
 
+    return result;
+  }
+
+  Tensor Tensor::Reshape(shape_t shape) const
+  {
+    if (ElementCount(shape) != ElementCount(Shape)) throw bad_cast();
+
+    auto result{ *this };
+    result.Shape = shape;
     return result;
   }
 

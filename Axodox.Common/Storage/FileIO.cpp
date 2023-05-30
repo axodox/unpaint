@@ -23,6 +23,8 @@ namespace Axodox::Storage
 
   std::vector<uint8_t> try_read_file(const std::filesystem::path& path)
   {
+    if (path.empty()) return{};
+
     try
     {
       return read_file(path);

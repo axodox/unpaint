@@ -117,7 +117,18 @@ namespace Axodox::MachineLearning
     auto replicatedLatents = latents.DuplicateToSize(context.Options.BatchSize);
 
     auto result = Tensor::CreateRandom(replicatedLatents.Shape, context.Randoms);
+    
+    if (context.Options.MaskInput)
+    {
+      auto maskInput = context.Options.MaskInput.Duplicate(latents.Shape[1]);
+      swap(maskInput.Shape[0], maskInput.Shape[1]);
+
+      result.UnaryOperation<float>(maskInput, [=](float a, float b) { return a * b; });
+      //replicatedLatents.UnaryOperation<float>(maskInput, [=](float a, float b) { return a * (1.f - floor(b)); });
+    }
+
     result.UnaryOperation<float>(replicatedLatents, [=](float a, float b) { return a * initialSigma + b * 0.18215f; });
+
     return result;
   }
 

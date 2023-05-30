@@ -22,6 +22,7 @@ using namespace std;
 using namespace winrt::Windows::ApplicationModel::DataTransfer;
 using namespace winrt::Windows::Foundation;
 using namespace winrt::Windows::Graphics;
+using namespace winrt::Windows::Graphics::Imaging;
 using namespace winrt::Windows::Storage;
 using namespace winrt::Windows::Storage::Pickers;
 using namespace winrt::Windows::Storage::Streams;
@@ -59,6 +60,8 @@ namespace winrt::Unpaint::implementation
     _projects(single_threaded_observable_vector<hstring>()),
     _outputImage(nullptr),
     _inputImage(nullptr),
+    _inputMask(nullptr),
+    _inputResolution({ 0, 0 }),
     _imagesChangedSubscription(_imageRepository->ImagesChanged(event_handler{ this, &InferenceViewModel::OnImagesChanged }))
   {
     for (auto& model : _modelRepository->Models())
@@ -351,6 +354,7 @@ namespace winrt::Unpaint::implementation
 
     if (value == _inputImage) co_return;
 
+    //Copy to temp for later use
     if (value)
     {
       filesystem::path targetPath{ value.Path().c_str() };
@@ -358,12 +362,36 @@ namespace winrt::Unpaint::implementation
       error_code ec;
       if (value && !filesystem::exists(targetPath, ec))
       {
-        value = co_await value.CopyAsync(ApplicationData::Current().TemporaryFolder(), targetPath.filename().c_str(), NameCollisionOption::ReplaceExisting);
+        value = co_await value.CopyAsync(ApplicationData::Current().TemporaryFolder(), value.Name().c_str(), NameCollisionOption::ReplaceExisting);
       }
     }
 
+    //Update input image
     _inputImage = value;
     _propertyChanged(*this, PropertyChangedEventArgs(L"InputImage"));
+
+    //Update resolution
+    auto image = TextureData::FromBuffer(try_read_file(value ? value.Path().c_str() : L""));
+    _inputResolution = image ? BitmapSize{ image.Width, image.Height } : BitmapSize{ 0, 0 };
+    _propertyChanged(*this, PropertyChangedEventArgs(L"InputResolution"));
+  }
+
+  Windows::Graphics::Imaging::BitmapSize InferenceViewModel::InputResolution()
+  {
+    return _inputResolution;
+  }
+
+  Windows::Graphics::Imaging::SoftwareBitmap InferenceViewModel::InputMask()
+  {
+    return _inputMask;
+  }
+
+  void InferenceViewModel::InputMask(Windows::Graphics::Imaging::SoftwareBitmap const& value)
+  {
+    if (value == _inputMask) return;
+
+    _inputMask = value;
+    _propertyChanged(*this, PropertyChangedEventArgs(L"InputMask"));
   }
 
   Windows::Storage::StorageFile InferenceViewModel::OutputImage()
@@ -437,6 +465,7 @@ namespace winrt::Unpaint::implementation
       if (_selectedImageIndex != -1)
       {
         task.InputImage = _inputImage ? _inputImage.Path().c_str() : _imageRepository->GetPath(to_string(_images.GetAt(_selectedImageIndex))).c_str();
+        task.InputMask = TextureData::FromSoftwareBitmap(_inputMask);
       }
       else
       {
@@ -459,7 +488,7 @@ namespace winrt::Unpaint::implementation
       });
 
     auto results = _modelExecutor->TryRunInference(task, asyncOperation);
-    
+
     //Update UI
     co_await callerContext;
 
@@ -468,7 +497,7 @@ namespace winrt::Unpaint::implementation
       Progress(0.f);
       Status(L"");
 
-      for (int32_t i = 0; auto& result : results)
+      for (int32_t i = 0; auto & result : results)
       {
         optional<int32_t> index;
         if (results.size() > 1)
@@ -535,7 +564,7 @@ namespace winrt::Unpaint::implementation
     auto dialogResult = co_await confirmationDialog.ShowAsync();
 
     if (dialogResult != ContentDialogResult::Primary) co_return;
-    
+
     auto imageId = to_string(_images.GetAt(_selectedImageIndex));
     _imageRepository->RemoveImage(imageId);
   }
@@ -606,7 +635,8 @@ namespace winrt::Unpaint::implementation
       texture = TextureData::FromBuffer(buffer);
     }
     catch (...)
-    { }
+    {
+    }
 
     co_await context;
 
@@ -643,7 +673,7 @@ namespace winrt::Unpaint::implementation
     _propertyChanged(*this, PropertyChangedEventArgs(L"ImagePosition"));
 
     update_observable_collection(sender->Projects(), _projects, StringMapper{});
-    
+
     auto it = ranges::find(sender->Projects(), sender->ProjectName());
     if (it != sender->Projects().end())
     {
@@ -651,15 +681,15 @@ namespace winrt::Unpaint::implementation
       _propertyChanged(*this, PropertyChangedEventArgs(L"SelectedProjectIndex"));
     }
   }
-  
+
   fire_and_forget InferenceViewModel::LoadImageMetadataAsync(bool force)
   {
     if (_selectedImageIndex == -1 || (!force && _isSettingsLocked)) co_return;
-   
+
     //Capture context
     apartment_context callerContext;
     auto lifetime = get_strong();
-    
+
     //Locate image path
     auto imageId = to_string(_images.GetAt(_selectedImageIndex));
     auto imagePath = _imageRepository->GetPath(imageId);
@@ -693,12 +723,12 @@ namespace winrt::Unpaint::implementation
 
   fire_and_forget InferenceViewModel::RefreshOutputImageAsync()
   {
-    StorageFile outputImage{nullptr};
+    StorageFile outputImage{ nullptr };
 
     if (_selectedImageIndex != -1)
     {
       auto imagePath = _imageRepository->GetPath(to_string(_images.GetAt(_selectedImageIndex)));
-      if (!imagePath.empty() && filesystem::exists(imagePath)) 
+      if (!imagePath.empty() && filesystem::exists(imagePath))
       {
         outputImage = co_await StorageFile::GetFileFromPathAsync(imagePath.c_str());
       }

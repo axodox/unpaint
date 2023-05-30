@@ -25,6 +25,9 @@
     <Page Include="SettingControl.xaml">
       <Filter>Controls</Filter>
     </Page>
+    <Page Include="MaskEditor.xaml">
+      <Filter>Controls</Filter>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Midl Include="App.idl" />
@@ -133,6 +136,9 @@
       <Filter>Assets</Filter>
     </Image>
     <Image Include="Assets\LockScreenLogo.scale-200.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\checkerboard.png">
       <Filter>Assets</Filter>
     </Image>
   </ItemGroup>
