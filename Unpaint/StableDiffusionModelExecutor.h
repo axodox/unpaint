@@ -71,6 +71,8 @@ namespace winrt::Unpaint
     std::string _positivePrompt, _negativePrompt;
     Axodox::MachineLearning::ScheduledTensor _textEmbedding;
 
+    Axodox::MachineLearning::Tensor _inputImage, _inputLatent;
+
     void EnsureEnvironment(std::string_view modelId);
 
     Axodox::MachineLearning::Tensor LoadImage(const StableDiffusionInferenceTask& task, Axodox::Graphics::TextureData& sourceTexture, Axodox::Graphics::Rect& sourceRect, Axodox::Graphics::Rect& targetRect, Axodox::Threading::async_operation_source& async);

@@ -108,6 +108,14 @@ namespace winrt::Unpaint
 
       _onnxEnvironment = make_unique<OnnxEnvironment>(_modelRepository->Root() / modelId);      
       _modelId = modelId;
+
+      _stepCount = 0;
+      _positivePrompt.clear();
+      _negativePrompt.clear();
+      _textEmbedding.clear();
+
+      _inputImage = {};
+      _inputLatent = {};
     }
   }
 
@@ -163,11 +171,16 @@ namespace winrt::Unpaint
 
   Axodox::MachineLearning::Tensor StableDiffusionModelExecutor::EncodeVAE(const Axodox::MachineLearning::Tensor& colorImage, Axodox::Threading::async_operation_source& async)
   {
+    if (colorImage == _inputImage && _inputLatent) return _inputLatent;
+
     async.update_state(NAN, "Loading VAE encoder...");
     VaeEncoder vaeEncoder{ *_onnxEnvironment };
 
     async.update_state("Encoding color image...");
-    return vaeEncoder.EncodeVae(colorImage);
+    _inputLatent = vaeEncoder.EncodeVae(colorImage);
+    _inputImage = colorImage;
+
+    return _inputLatent;
   }
 
   Axodox::MachineLearning::ScheduledTensor StableDiffusionModelExecutor::CreateTextEmbeddings(const StableDiffusionInferenceTask& task, Axodox::Threading::async_operation_source& async)
