@@ -10,6 +10,7 @@ using namespace Axodox::Web;
 using namespace std;
 using namespace winrt;
 using namespace winrt::Windows::Foundation;
+using namespace winrt::Windows::Storage;
 using namespace winrt::Windows::System;
 using namespace winrt::Windows::UI::Xaml::Controls;
 using namespace winrt::Windows::UI::Xaml::Data;
@@ -154,6 +155,14 @@ namespace winrt::Unpaint::implementation
   bool ModelsViewModel::IsInstalledModelSelected()
   {
     return _selectedInstalledModel != -1;
+  }
+
+  fire_and_forget ModelsViewModel::OpenModelDirectory()
+  {
+    auto lifetime = get_strong();
+    auto path = _modelRepository->Root();
+    auto modelFolder = co_await StorageFolder::GetFolderFromPathAsync(path.c_str());
+    co_await Launcher::LaunchFolderAsync(modelFolder);
   }
 
   bool ModelsViewModel::CanContinue()

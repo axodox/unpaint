@@ -19,7 +19,7 @@ namespace winrt::Unpaint
   { }
 
   ModelRepository::ModelRepository() :
-    _root((ApplicationData::Current().LocalCacheFolder().Path() + L"/models").c_str())
+    _root((ApplicationData::Current().LocalCacheFolder().Path() + L"\\models").c_str())
   { 
     //Ensure models directory
     if (!filesystem::exists(_root))

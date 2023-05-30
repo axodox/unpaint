@@ -74,7 +74,7 @@
         <TextBlock Text="Installed models" VerticalAlignment="Center"/>
         <StackPanel Orientation="Horizontal" Grid.Column="1" Spacing="6">
           <Button FontFamily="Segoe Fluent Icons" Content="&#xe946;" ToolTipService.ToolTip="Open model website" Click="{x:Bind ViewModel.OpenInstalledModelWebsite}" IsEnabled="{x:Bind ViewModel.IsInstalledModelSelected, Mode=OneWay}"/>
-          <!--<Button FontFamily="Segoe Fluent Icons" Content="&#xe710;" ToolTipService.ToolTip="Add from hard drive"/>-->
+          <Button FontFamily="Segoe Fluent Icons" Content="&#xe838;" ToolTipService.ToolTip="Open model directory" Click="{x:Bind ViewModel.OpenModelDirectory}"/>
         </StackPanel>
       </Grid>
       <Border Grid.Column="2" Grid.Row="1" Style="{StaticResource ListBorderStyle}">
