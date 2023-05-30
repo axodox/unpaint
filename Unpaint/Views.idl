@@ -29,6 +29,7 @@ namespace Unpaint
 
     Boolean IsStatusVisible{ get; };
     void ToggleSettingsLock();
+    void ToggleJumpingToLatestImage();
 
     Boolean IsInputPaneVisible{ get; };
     void ToggleInputPane();

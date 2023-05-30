@@ -17,6 +17,11 @@ namespace winrt::Unpaint
     ProjectName("scratch");
   }
 
+  ImageRepository::~ImageRepository()
+  {
+    unique_lock lock(_mutex);
+  }
+
   std::string_view ImageRepository::ProjectName()
   {
     return _projectName;
@@ -42,7 +47,7 @@ namespace winrt::Unpaint
     return _images;
   }
 
-  std::string ImageRepository::AddImage(const Axodox::Graphics::TextureData& image, std::optional<int32_t> batchIndex, const ImageMetadata& metadata)
+  Axodox::Threading::async_action ImageRepository::AddImageAsync(const Axodox::Graphics::TextureData& image, std::optional<int32_t> batchIndex, const ImageMetadata& metadata)
   {
     auto now = zoned_time{ current_zone(), time_point_cast<seconds>(system_clock::now()) };
     auto fileName = format("{:%Y-%m-%d %H-%M-%S}", now);
@@ -62,26 +67,31 @@ namespace winrt::Unpaint
     fileName += ".png";
 
     auto imagePath = GetPath(fileName);
+
+    shared_lock lock(_mutex);
+    apartment_context context;
+    co_await resume_background();
     auto imageBuffer = image.ToBuffer(imageMetadata);
     auto success = try_write_file(imagePath, imageBuffer);
+    co_await context;
 
     if (success)
     {
       _images.push_back(fileName);
       _events.raise(ImagesChanged, this);
-      return fileName;
-    }
-    else
-    {
-      return "";
     }
   }
 
-  void ImageRepository::AddImage(const Axodox::Graphics::TextureData& image, std::string_view fileName)
+  Axodox::Threading::async_action ImageRepository::AddImageAsync(const Axodox::Graphics::TextureData& image, std::string_view fileName)
   {
     auto imagePath = GetPath(fileName);
+
+    shared_lock lock(_mutex);
+    apartment_context context;
+    co_await resume_background();
     auto imageBuffer = image.ToBuffer();
     auto success = try_write_file(imagePath, imageBuffer);
+    co_await context;
 
     if (success)
     {

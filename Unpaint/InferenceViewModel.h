@@ -4,6 +4,7 @@
 #include "StableDiffusionModelExecutor.h"
 #include "ImageRepository.h"
 #include "UnpaintOptions.h"
+#include "UnpaintState.h"
 #include "Infrastructure/Events.h"
 
 namespace winrt::Unpaint::implementation
@@ -17,6 +18,9 @@ namespace winrt::Unpaint::implementation
 
     bool IsSettingsLocked();
     void IsSettingsLocked(bool value);
+
+    bool IsJumpingToLatestImage();
+    void IsJumpingToLatestImage(bool value);
 
     hstring PositivePromptPlaceholder();
     hstring PositivePrompt();
@@ -83,6 +87,8 @@ namespace winrt::Unpaint::implementation
     void SelectedProjectIndex(int32_t value);
     bool CanDeleteProject();
 
+    bool IsAutoGenerationEnabled();
+
     fire_and_forget GenerateImage();
     void ManageModels();
     void OpenSettings();
@@ -102,6 +108,7 @@ namespace winrt::Unpaint::implementation
 
   private:
     INavigationService _navigationService;
+    std::shared_ptr<UnpaintState> _unpaintState;
     std::shared_ptr<UnpaintOptions> _unpaintOptions;
     std::shared_ptr<ModelRepository> _modelRepository;
     std::shared_ptr<StableDiffusionModelExecutor> _modelExecutor;
@@ -112,12 +119,8 @@ namespace winrt::Unpaint::implementation
 
     event<Windows::UI::Xaml::Data::PropertyChangedEventHandler> _propertyChanged;
 
-    InferenceMode _inferenceMode;
-
     bool _isBusy;
-    bool _isSettingsLocked;
 
-    hstring _positivePrompt, _negativePrompt;
     int32_t _availablePositiveTokenCount, _availableNegativeTokenCount;
     
     Windows::Foundation::Collections::IObservableVector<hstring> _models;
@@ -126,13 +129,6 @@ namespace winrt::Unpaint::implementation
     Windows::Foundation::Collections::IObservableVector<Windows::Graphics::SizeInt32> _resolutions;
     int32_t _selectedResolutionIndex;
    
-    bool _isBatchGenerationEnabled;
-    uint32_t _batchSize;
-
-    float _guidanceStrength, _denoisingStrength;
-    uint32_t _samplingSteps, _randomSeed;
-    bool _isSeedFrozen;
-
     hstring _status;
     float _progress;
 
@@ -142,6 +138,8 @@ namespace winrt::Unpaint::implementation
     Windows::Storage::StorageFile _outputImage, _inputImage;
     Windows::Graphics::Imaging::BitmapSize _inputResolution;
     Windows::Graphics::Imaging::SoftwareBitmap _inputMask;
+
+    bool _isAutoGenerationEnabled;
 
     Windows::Foundation::Collections::IObservableVector<hstring> _projects;
     int32_t _selectedProjectIndex;

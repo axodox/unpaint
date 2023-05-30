@@ -281,7 +281,9 @@ namespace winrt::Unpaint::implementation
 
   void MaskEditor::OnCanvasDraw(Microsoft::Graphics::Canvas::UI::Xaml::CanvasControl const& /*sender*/, Microsoft::Graphics::Canvas::UI::Xaml::CanvasDrawEventArgs const& eventArgs)
   {
+    //Ensure render target
     EnsureMaskTarget();
+    if (!_maskTarget) return;
 
     //Update mask
     if (_isPenDown)

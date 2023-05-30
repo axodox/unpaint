@@ -181,6 +181,7 @@
     <ClInclude Include="SizeToStringConverter.h" />
     <ClInclude Include="StringToImageSourceConverter.h" />
     <ClInclude Include="UnpaintOptions.h" />
+    <ClInclude Include="UnpaintState.h" />
     <ClInclude Include="WelcomeView.h">
       <DependentUpon>WelcomeView.xaml</DependentUpon>
       <SubType>Code</SubType>

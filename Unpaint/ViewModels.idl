@@ -62,6 +62,7 @@ namespace Unpaint
     Int32 SelectedModeIndex;
 
     Boolean IsSettingsLocked;
+    Boolean IsJumpingToLatestImage;
 
     String PositivePrompt;
     String PositivePromptPlaceholder{ get; };
@@ -103,6 +104,8 @@ namespace Unpaint
     IObservableVector<String> Projects{ get; };
     Int32 SelectedProjectIndex;
     Boolean CanDeleteProject{ get; };
+
+    Boolean IsAutoGenerationEnabled{ get; };
 
     void GenerateImage();
     void ManageModels();
