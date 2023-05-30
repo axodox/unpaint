@@ -505,7 +505,7 @@ namespace winrt::Unpaint::implementation
           index = i++;
         }
 
-        _imageRepository->AddImage(result, index, task.ToMetadata());
+        co_await _imageRepository->AddImageAsync(result, index, task.ToMetadata());
       }
       SelectedImageIndex(int32_t(_images.Size()) - 1);
     }
@@ -642,7 +642,7 @@ namespace winrt::Unpaint::implementation
 
     if (texture)
     {
-      _imageRepository->AddImage(texture, nullopt, ImageMetadata{});
+      co_await _imageRepository->AddImageAsync(texture, nullopt, ImageMetadata{});
       SelectedImageIndex(int32_t(_images.Size()) - 1);
     }
   }
