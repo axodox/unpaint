@@ -7,6 +7,11 @@ namespace winrt::Unpaint
   {
     InferenceMode InferenceMode = InferenceMode::Create;
 
+    std::string ModelId;
+    winrt::Windows::Graphics::SizeInt32 Resolution;
+    std::string Project;
+    std::string Image;
+
     bool IsJumpingToLatestImage = true;
     bool IsSettingsLocked = true;
 

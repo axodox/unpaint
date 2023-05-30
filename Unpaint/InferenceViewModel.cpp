@@ -46,6 +46,8 @@ namespace winrt::Unpaint::implementation
     _models(single_threaded_observable_vector<hstring>()),
     _resolutions(single_threaded_observable_vector<SizeInt32>()),
     _selectedResolutionIndex(1),
+    _selectedModelIndex(0),
+    _selectedImageIndex(-1),
     _random(uint32_t(time(nullptr))),
     _status(L""),
     _progress(0),
@@ -58,17 +60,56 @@ namespace winrt::Unpaint::implementation
     _isAutoGenerationEnabled(false),
     _imagesChangedSubscription(_imageRepository->ImagesChanged(event_handler{ this, &InferenceViewModel::OnImagesChanged }))
   {
-    for (auto& model : _modelRepository->Models())
+    //Initialize models
+    for (auto i = 0; auto & model : _modelRepository->Models())
     {
+      if (model == _unpaintState->ModelId) _selectedModelIndex = i;
       _models.Append(to_hstring(model));
+
+      i++;
     }
 
+    //Initialize resolutions
     _resolutions.Append(SizeInt32{ 1024, 1024 });
     _resolutions.Append(SizeInt32{ 768, 768 });
     _resolutions.Append(SizeInt32{ 512, 512 });
+    for (auto i = 0; auto resolution : _resolutions)
+    {
+      if (resolution == _unpaintState->Resolution)
+      {
+        SelectedResolutionIndex(i);
+        break;
+      }
 
+      i++;
+    }
+
+    //Initialize projects
     _imageRepository->Refresh();
-    SelectedImageIndex(int32_t(_images.Size()) - 1);
+    for (auto i = 0; const auto & project : _projects)
+    {
+      if (to_string(project) == _unpaintState->Project)
+      {
+        SelectedModelIndex(i);
+        break;
+      }
+
+      i++;
+    }
+
+    //Initialize images
+    for (auto i = 0; const auto & image : _images)
+    {
+      if (to_string(image) == _unpaintState->Image)
+      {
+        SelectedImageIndex(i);
+        break;
+      }
+
+      i++;
+    }
+
+    if (_selectedImageIndex == -1) SelectedImageIndex(int32_t(_images.Size()) - 1);
   }
 
   int32_t InferenceViewModel::SelectedModeIndex()
@@ -181,6 +222,7 @@ namespace winrt::Unpaint::implementation
     if (value == _selectedModelIndex) return;
 
     _selectedModelIndex = value;
+    if (value != -1) _unpaintState->ModelId = to_string(_models.GetAt(value));
     _propertyChanged(*this, PropertyChangedEventArgs(L"SelectedModelIndex"));
   }
 
@@ -199,6 +241,7 @@ namespace winrt::Unpaint::implementation
     if (value == _selectedResolutionIndex) return;
 
     _selectedResolutionIndex = value;
+    if (value != -1) _unpaintState->Resolution = _resolutions.GetAt(value);
     _propertyChanged(*this, PropertyChangedEventArgs(L"SelectedResolutionIndex"));
   }
 
@@ -343,6 +386,8 @@ namespace winrt::Unpaint::implementation
     _propertyChanged(*this, PropertyChangedEventArgs(L"ImagePosition"));
     _propertyChanged(*this, PropertyChangedEventArgs(L"HasImageSelected"));
 
+    if (value != -1) _unpaintState->Image = to_string(_images.GetAt(value));
+
     LoadImageMetadataAsync();
     RefreshOutputImageAsync();
   }
@@ -429,6 +474,7 @@ namespace winrt::Unpaint::implementation
     if (_selectedProjectIndex == -1) return;
 
     auto projectName = to_string(_projects.GetAt(value));
+    _unpaintState->Project = projectName;
     _imageRepository->ProjectName(projectName);
     SelectedImageIndex(int32_t(_images.Size()) - 1);
   }
