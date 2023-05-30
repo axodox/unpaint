@@ -8,6 +8,7 @@
 using namespace Axodox::Infrastructure;
 using namespace Axodox::Storage;
 using namespace DirectX;
+using namespace DirectX::PackedVector;
 using namespace std;
 using namespace winrt;
 using namespace winrt::Windows::Graphics::Imaging;
@@ -590,6 +591,34 @@ namespace Axodox::Graphics
       auto source = texture.Buffer.data() + texture.Stride * (y - targetRect.Top);
       auto target = result.Buffer.data() + result.Stride * y + targetRect.Left * elementSize;
       memcpy(target, source, texture.Stride);
+    }
+
+    return result;
+  }
+
+  TextureData TextureData::AlphaBlend(const TextureData& target, const TextureData& source, const TextureData& alpha)
+  {
+    if (!IsUByteN4Compatible(target.Format) || !IsUByteN4Compatible(source.Format) || !IsUByteN1Compatible(alpha.Format)) throw invalid_argument("Texture format must be XMUBYTEN4 compatible, while alpha must be XMUBYTEN1 compatible.");
+    if (target.Width != source.Width || target.Height != source.Height || target.Width != alpha.Width || target.Height != alpha.Height) throw invalid_argument("Texture resolutions must match.");
+
+    TextureData result{ target.Width, target.Height, target.Format };
+
+    for (auto i = 0u; i < target.Height; i++)
+    {
+      auto pResult = result.Row<XMUBYTEN4>(i);
+      auto pTarget = target.Row<XMUBYTEN4>(i);
+      auto pSource = source.Row<XMUBYTEN4>(i);
+      auto pAlpha = alpha.Row<uint8_t>(i);
+
+      for (auto j = 0u; j < target.Width; j++)
+      {
+        auto t = XMLoadUByteN4(pTarget++);
+        auto s = XMLoadUByteN4(pSource++);
+        auto a = *pAlpha++ / 255.f;
+        
+        auto r = XMVectorLerp(t, s, a);
+        XMStoreUByteN4(pResult++, r);
+      }
     }
 
     return result;

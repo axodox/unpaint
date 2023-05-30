@@ -83,6 +83,8 @@ namespace winrt::Unpaint
 
           auto targetSize = targetRect.Size();
           output = targetTexture.MergeTexture(output.GetTexture(sourceRect).Resize(uint32_t(targetSize.Width), uint32_t(targetSize.Height)), targetRect.LeftTop());
+
+          output = TextureData::AlphaBlend(targetTexture, output, task.InputMask);
         }
       }
 

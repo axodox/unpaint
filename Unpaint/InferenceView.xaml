@@ -209,7 +209,8 @@
 
       <!-- Input image -->
       <Grid x:Name="InputImageView"  Grid.Column="0" Visibility="{x:Bind IsInputPaneVisible, Mode=OneWay}" AllowDrop="True" DragOver="OnImageDragOver" Drop="OnImageDrop">
-        <local:MaskEditor MaskResolution="{x:Bind ViewModel.InputResolution, Mode=OneWay}"
+        <local:MaskEditor x:Name="InputMaskEditor"
+                          MaskResolution="{x:Bind ViewModel.InputResolution, Mode=OneWay}"
                           MaskImage="{x:Bind ViewModel.InputMask, Mode=TwoWay}">
           <Image Source="{x:Bind ViewModel.InputImage, Converter={StaticResource StorageFileToImageSourceConverter}, Mode=OneWay}"/>
         </local:MaskEditor>

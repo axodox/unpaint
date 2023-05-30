@@ -75,5 +75,7 @@ namespace Axodox::Graphics
     Rect FindNonZeroRect() const;
     TextureData GetTexture(Rect rect) const;
     TextureData MergeTexture(const TextureData& texture, Point position);
+
+    static TextureData AlphaBlend(const TextureData& target, const TextureData& source, const TextureData& alpha);
   };
 }

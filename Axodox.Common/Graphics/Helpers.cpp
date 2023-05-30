@@ -207,6 +207,33 @@ namespace Axodox::Graphics
       return false;
     }
   }
+
+  bool IsUByteN1Compatible(DXGI_FORMAT format)
+  {
+    switch (format)
+    {
+    case DXGI_FORMAT_R8_UNORM:
+    case DXGI_FORMAT_A8_UNORM:
+      return true;
+    default:
+      return false;
+    }
+  }
+
+  bool IsUByteN4Compatible(DXGI_FORMAT format)
+  {
+    switch (format)
+    {
+    case DXGI_FORMAT_B8G8R8A8_UNORM_SRGB:
+    case DXGI_FORMAT_B8G8R8A8_UNORM:
+    case DXGI_FORMAT_B8G8R8X8_UNORM:
+    case DXGI_FORMAT_R8G8B8A8_UNORM_SRGB:
+    case DXGI_FORMAT_R8G8B8A8_UNORM:
+      return true;
+    default:
+      return false;
+    }
+  }
   
   IWICImagingFactory* WicFactory()
   {

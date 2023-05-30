@@ -143,5 +143,10 @@ namespace winrt::Unpaint::implementation
     {
       ToggleInputPane();
     }
+
+    if (eventArgs.PropertyName() == L"InputImage")
+    {
+      InputMaskEditor().ClearMask();
+    }
   }
 }

@@ -141,6 +141,8 @@ namespace winrt::Unpaint::implementation
 
   void MaskEditor::ClearMask()
   {
+    if (!_maskTarget) return;
+
     //Clear mask
     {
       auto session = _maskTarget.CreateDrawingSession();
