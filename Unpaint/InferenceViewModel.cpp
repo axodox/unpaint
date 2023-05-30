@@ -63,6 +63,7 @@ namespace winrt::Unpaint::implementation
     _inputMask(nullptr),
     _inputResolution({ 0, 0 }),
     _isAutoGenerationEnabled(false),
+    _isJumpingToLatestImage(true),
     _imagesChangedSubscription(_imageRepository->ImagesChanged(event_handler{ this, &InferenceViewModel::OnImagesChanged }))
   {
     for (auto& model : _modelRepository->Models())
@@ -104,6 +105,19 @@ namespace winrt::Unpaint::implementation
     _propertyChanged(*this, PropertyChangedEventArgs(L"IsSettingsLocked"));
 
     LoadImageMetadataAsync();
+  }
+
+  bool InferenceViewModel::IsJumpingToLatestImage()
+  {
+    return _isJumpingToLatestImage;
+  }
+
+  void InferenceViewModel::IsJumpingToLatestImage(bool value)
+  {
+    if (value == _isJumpingToLatestImage) return;
+
+    _isJumpingToLatestImage = value;
+    _propertyChanged(*this, PropertyChangedEventArgs(L"IsJumpingToLatestImage"));
   }
 
   hstring InferenceViewModel::PositivePromptPlaceholder()
@@ -518,7 +532,8 @@ namespace winrt::Unpaint::implementation
 
         co_await _imageRepository->AddImageAsync(result, index, task.ToMetadata());
       }
-      SelectedImageIndex(int32_t(_images.Size()) - 1);
+
+      if (_isJumpingToLatestImage) SelectedImageIndex(int32_t(_images.Size()) - 1);
     }
 
     _isBusy = false;

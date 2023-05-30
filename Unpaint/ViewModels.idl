@@ -62,6 +62,7 @@ namespace Unpaint
     Int32 SelectedModeIndex;
 
     Boolean IsSettingsLocked;
+    Boolean IsJumpingToLatestImage;
 
     String PositivePrompt;
     String PositivePromptPlaceholder{ get; };

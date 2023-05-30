@@ -12,6 +12,7 @@ namespace winrt::Unpaint::implementation
     bool IsStatusVisible();
 
     void ToggleSettingsLock();
+    void ToggleJumpingToLatestImage();
 
     bool IsInputPaneVisible();
     void ToggleInputPane();

@@ -53,6 +53,11 @@ namespace winrt::Unpaint::implementation
     _viewModel.IsSettingsLocked(!_viewModel.IsSettingsLocked());
   }
 
+  void InferenceView::ToggleJumpingToLatestImage()
+  {
+    _viewModel.IsJumpingToLatestImage(!_viewModel.IsJumpingToLatestImage());
+  }
+
   bool InferenceView::IsInputPaneVisible()
   {
     return _isInputPaneVisible;

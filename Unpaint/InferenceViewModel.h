@@ -18,6 +18,9 @@ namespace winrt::Unpaint::implementation
     bool IsSettingsLocked();
     void IsSettingsLocked(bool value);
 
+    bool IsJumpingToLatestImage();
+    void IsJumpingToLatestImage(bool value);
+
     hstring PositivePromptPlaceholder();
     hstring PositivePrompt();
     fire_and_forget PositivePrompt(hstring const& value);
@@ -118,6 +121,7 @@ namespace winrt::Unpaint::implementation
 
     bool _isBusy;
     bool _isSettingsLocked;
+    bool _isJumpingToLatestImage;
 
     hstring _positivePrompt, _negativePrompt;
     int32_t _availablePositiveTokenCount, _availableNegativeTokenCount;

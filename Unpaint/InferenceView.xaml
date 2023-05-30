@@ -317,6 +317,9 @@
           <ToggleSwitch FontFamily="Segoe Fluent Icons" FontSize="20" OnContent="&#xe718;" OffContent="&#xe77a;" VerticalAlignment="Center" Margin="0,-10" Background="Transparent"
                         IsOn="{x:Bind ViewModel.IsSettingsLocked, Mode=TwoWay}" Style="{StaticResource FlatToggleSwitchStyle}" PointerPressed="{x:Bind ToggleSettingsLock}"
                         ToolTipService.ToolTip="Lock custom settings or show the settings used for generating the selected image."/>
+          <ToggleSwitch FontFamily="Segoe Fluent Icons" FontSize="20" OnContent="&#xe893;" OffContent="&#xe769;" VerticalAlignment="Center" Margin="0,-10" Background="Transparent"
+                        IsOn="{x:Bind ViewModel.IsJumpingToLatestImage, Mode=TwoWay}" Style="{StaticResource FlatToggleSwitchStyle}" PointerPressed="{x:Bind ToggleJumpingToLatestImage}"
+                        ToolTipService.ToolTip="Go to the latest image after generation or keep showing the current image."/>
         </StackPanel>
 
       </Grid>      
