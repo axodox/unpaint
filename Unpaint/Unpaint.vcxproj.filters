@@ -260,5 +260,8 @@
     <ClInclude Include="IsNullConverter.h">
       <Filter>Converters</Filter>
     </ClInclude>
+    <ClInclude Include="UnpaintState.h">
+      <Filter>Models</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
