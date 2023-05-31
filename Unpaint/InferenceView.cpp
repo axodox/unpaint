@@ -26,7 +26,7 @@ namespace winrt::Unpaint::implementation
     auto coreTitleBar = CoreApplication::GetCurrentView().TitleBar();
     _titleBarLayoutMetricsChangedRevoker = coreTitleBar.LayoutMetricsChanged(auto_revoke, [=](auto&, auto&) {
       StatusBar().Height(coreTitleBar.Height());
-    });
+      });
     StatusBar().Height(coreTitleBar.Height());
 
     //Configure command panel
@@ -42,10 +42,10 @@ namespace winrt::Unpaint::implementation
   {
     return _viewModel;
   }
-  
+
   bool InferenceView::IsStatusVisible()
   {
-    return !_navigationService.IsPointerOverTitleBar() && !ViewModel().Status().empty();
+    return !_navigationService.IsPointerOverTitleBar() && !_viewModel.Status().empty();
   }
 
   void InferenceView::ToggleSettingsLock()
@@ -68,7 +68,7 @@ namespace winrt::Unpaint::implementation
     _isInputPaneVisible = !_isInputPaneVisible;
     _propertyChanged(*this, PropertyChangedEventArgs(L"IsInputPaneVisible"));
 
-    const auto& viewModel = ViewModel();
+    const auto& viewModel = _viewModel;
     if (_isInputPaneVisible && !viewModel.InputImage())
     {
       viewModel.InputImage(viewModel.OutputImage());
@@ -81,7 +81,7 @@ namespace winrt::Unpaint::implementation
 
   void InferenceView::OnOutputImageDragStarting(Windows::UI::Xaml::UIElement const& /*sender*/, Windows::UI::Xaml::DragStartingEventArgs const& eventArgs)
   {
-    auto outputImage = ViewModel().OutputImage();
+    auto outputImage = _viewModel.OutputImage();
     if (!outputImage) return;
 
     eventArgs.AllowedOperations(DataPackageOperation::Copy);
@@ -116,13 +116,44 @@ namespace winrt::Unpaint::implementation
 
       if (isOutput)
       {
-        ViewModel().AddImage(file);
+        _viewModel.AddImage(file);
       }
       else
       {
-        ViewModel().InputImage(file);
+        _viewModel.InputImage(file);
       }
     }
+  }
+
+  void InferenceView::OnFirstImageInvoked(Windows::UI::Xaml::Input::KeyboardAccelerator const& /*sender*/, Windows::UI::Xaml::Input::KeyboardAcceleratorInvokedEventArgs const& /*args*/)
+  {
+    if (_viewModel.Images().Size() > 0)
+    {
+      _viewModel.SelectedImageIndex(0);
+    }
+  }
+
+  void InferenceView::OnPreviousImageInvoked(Windows::UI::Xaml::Input::KeyboardAccelerator const& /*sender*/, Windows::UI::Xaml::Input::KeyboardAcceleratorInvokedEventArgs const& /*args*/)
+  {
+    auto currentIndex = _viewModel.SelectedImageIndex();
+    if (currentIndex > 0)
+    {
+      _viewModel.SelectedImageIndex(currentIndex - 1);
+    }
+  }
+
+  void InferenceView::OnNextImageInvoked(Windows::UI::Xaml::Input::KeyboardAccelerator const& /*sender*/, Windows::UI::Xaml::Input::KeyboardAcceleratorInvokedEventArgs const& /*args*/)
+  {
+    auto currentIndex = _viewModel.SelectedImageIndex();
+    if (currentIndex + 1 < int32_t(_viewModel.Images().Size()))
+    {
+      _viewModel.SelectedImageIndex(currentIndex + 1);
+    }
+  }
+
+  void InferenceView::OnLastImageInvoked(Windows::UI::Xaml::Input::KeyboardAccelerator const& /*sender*/, Windows::UI::Xaml::Input::KeyboardAcceleratorInvokedEventArgs const& /*args*/)
+  {
+    _viewModel.SelectedImageIndex(int32_t(_viewModel.Images().Size()) - 1);
   }
 
   event_token InferenceView::PropertyChanged(Windows::UI::Xaml::Data::PropertyChangedEventHandler const& value)
@@ -134,7 +165,7 @@ namespace winrt::Unpaint::implementation
   {
     _propertyChanged.remove(token);
   }
-  
+
   void InferenceView::UpdateStatusVisibility()
   {
     _propertyChanged(*this, PropertyChangedEventArgs(L"IsStatusVisible"));
@@ -144,7 +175,7 @@ namespace winrt::Unpaint::implementation
   {
     UpdateStatusVisibility();
 
-    if (eventArgs.PropertyName() == L"SelectedModeIndex" && ViewModel().SelectedModeIndex() == 0 && IsInputPaneVisible())
+    if (eventArgs.PropertyName() == L"SelectedModeIndex" && _viewModel.SelectedModeIndex() == 0 && IsInputPaneVisible())
     {
       ToggleInputPane();
     }

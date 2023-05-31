@@ -90,6 +90,13 @@
     </Style>
   </Page.Resources>
 
+  <Page.KeyboardAccelerators>
+    <KeyboardAccelerator Key="Home" Invoked="OnFirstImageInvoked"/>
+    <KeyboardAccelerator Key="PageUp" Invoked="OnPreviousImageInvoked"/>
+    <KeyboardAccelerator Key="PageDown" Invoked="OnNextImageInvoked"/>
+    <KeyboardAccelerator Key="End" Invoked="OnLastImageInvoked"/>
+  </Page.KeyboardAccelerators>
+
   <Grid Grid.RowSpacing="6">
     <VisualStateManager.VisualStateGroups>
       <VisualStateGroup>
