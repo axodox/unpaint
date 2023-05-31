@@ -63,8 +63,8 @@
     </Style>
 
     <Style x:Key="PaneHeaderStyle" TargetType="Border">
-      <Setter Property="Background" Value="{StaticResource LayerFillColorDefaultBrush}"/>
-      <Setter Property="BorderBrush" Value="{StaticResource ControlElevationBorderBrush}"/>
+      <Setter Property="Background" Value="{ThemeResource LayerFillColorDefaultBrush}"/>
+      <Setter Property="BorderBrush" Value="{ThemeResource ControlElevationBorderBrush}"/>
       <Setter Property="CornerRadius" Value="6"/>
       <Setter Property="BorderThickness" Value="1"/>
       <Setter Property="Padding" Value="6"/>
