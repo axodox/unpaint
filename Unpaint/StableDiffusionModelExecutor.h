@@ -31,6 +31,7 @@ namespace winrt::Unpaint
     uint32_t RandomSeed;
     uint32_t BatchSize;
     bool SafeMode;
+    bool IsSafetyCheckerEnabled;
 
     std::string ModelId;
     std::filesystem::path InputImage;
@@ -81,5 +82,6 @@ namespace winrt::Unpaint
     Axodox::MachineLearning::ScheduledTensor CreateTextEmbeddings(const StableDiffusionInferenceTask& task, Axodox::Threading::async_operation_source& async);
     Axodox::MachineLearning::Tensor RunStableDiffusion(const StableDiffusionInferenceTask& task, const StableDiffusionInputs& inputs, Axodox::Threading::async_operation_source& async);
     Axodox::MachineLearning::Tensor DecodeVAE(const Axodox::MachineLearning::Tensor& latentImage, Axodox::Threading::async_operation_source& async);
+    void RunSafetyCheck(std::vector<Axodox::Graphics::TextureData>& results, Axodox::Threading::async_operation_source& async);
   };
 }

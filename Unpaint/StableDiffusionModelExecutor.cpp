@@ -5,6 +5,7 @@
 #include "Storage/FileIO.h"
 #include "MachineLearning/VaeEncoder.h"
 #include "MachineLearning/VaeDecoder.h"
+#include "MachineLearning/SafetyChecker.h"
 #include "Threading/Parallel.h"
 #include "Collections/Hasher.h"
 
@@ -76,7 +77,7 @@ namespace winrt::Unpaint
       if (sourceRect || targetRect)
       {
         if (!targetRect) targetRect = Rect::FromSize(targetTexture.Size());
-
+                
         for (auto& output : outputs)
         {
           if (!sourceRect) sourceRect = Rect::FromSize(output.Size());
@@ -87,6 +88,9 @@ namespace winrt::Unpaint
           output = TextureData::AlphaBlend(targetTexture, output, task.InputMask);
         }
       }
+
+      //Safety check
+      if (task.IsSafetyCheckerEnabled) RunSafetyCheck(outputs, async);
 
       //Return results
       async.update_state(1.f, "Done.");
@@ -254,6 +258,22 @@ namespace winrt::Unpaint
 
     async.update_state("Decoding latent image...");
     return vaeDecoder.DecodeVae(latentImage);
+  }
+
+  void StableDiffusionModelExecutor::RunSafetyCheck(std::vector<Axodox::Graphics::TextureData>& images, Axodox::Threading::async_operation_source& async)
+  {
+    async.update_state(NAN, "Loading safety checker...");
+    SafetyChecker safetyChecker{ *_onnxEnvironment };
+
+    async.update_state(NAN, "Checking safety...");
+    for (auto& image : images)
+    {
+      if (!safetyChecker.IsSafe(image))
+      {
+        async.update_state(NAN, "Unsafe image encountered.");
+        image = {};
+      }
+    }
   }
 
   ImageMetadata StableDiffusionInferenceTask::ToMetadata() const

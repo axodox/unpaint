@@ -88,6 +88,7 @@ namespace winrt::Unpaint::implementation
     bool CanDeleteProject();
 
     bool IsAutoGenerationEnabled();
+    bool HasSafetyCheckFailed();
 
     fire_and_forget GenerateImage();
     void ManageModels();
@@ -140,6 +141,7 @@ namespace winrt::Unpaint::implementation
     Windows::Graphics::Imaging::SoftwareBitmap _inputMask;
 
     bool _isAutoGenerationEnabled;
+    bool _hasSafetyCheckFailed;
 
     Windows::Foundation::Collections::IObservableVector<hstring> _projects;
     int32_t _selectedProjectIndex;

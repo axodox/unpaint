@@ -21,15 +21,17 @@ namespace Axodox::Web
   { }
   
   const std::set<std::string> HuggingFaceModelDetails::StableDiffusionOnnxFileset = {
-    "tokenizer/vocab.json",
+    "feature_extractor/preprocessor_config.json",
+    "safety_checker/model.onnx",
+    "scheduler/scheduler_config.json",
+    "text_encoder/model.onnx"
     "tokenizer/merges.txt",
     "tokenizer/special_tokens_map.json",
     "tokenizer/tokenizer_config.json",
+    "tokenizer/vocab.json",
     "unet/model.onnx",
     "vae_decoder/model.onnx",
-    "vae_encoder/model.onnx",
-    "scheduler/scheduler_config.json",
-    "text_encoder/model.onnx"
+    "vae_encoder/model.onnx"
   };
 
   bool HuggingFaceModelDetails::IsValidModel(const std::set<std::string>& fileset)

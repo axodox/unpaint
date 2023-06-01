@@ -89,15 +89,8 @@
       <Setter Property="FontFamily" Value="Segoe UI Mono"/>
     </Style>
   </Page.Resources>
-
-  <Page.KeyboardAccelerators>
-    <KeyboardAccelerator Key="Home" Invoked="OnFirstImageInvoked"/>
-    <KeyboardAccelerator Key="PageUp" Invoked="OnPreviousImageInvoked"/>
-    <KeyboardAccelerator Key="PageDown" Invoked="OnNextImageInvoked"/>
-    <KeyboardAccelerator Key="End" Invoked="OnLastImageInvoked"/>
-  </Page.KeyboardAccelerators>
-
-  <Grid Grid.RowSpacing="6">
+  
+  <Grid Grid.RowSpacing="6">    
     <VisualStateManager.VisualStateGroups>
       <VisualStateGroup>
         <VisualState x:Name="CommandPanelVisualState">
@@ -130,6 +123,15 @@
       <RowDefinition Height="*"/>
       <RowDefinition Height="Auto"/>
     </Grid.RowDefinitions>
+
+    <Border IsHitTestVisible="False">
+      <Border.KeyboardAccelerators>
+        <KeyboardAccelerator Key="Home" Invoked="OnFirstImageInvoked"/>
+        <KeyboardAccelerator Key="PageUp" Invoked="OnPreviousImageInvoked"/>
+        <KeyboardAccelerator Key="PageDown" Invoked="OnNextImageInvoked"/>
+        <KeyboardAccelerator Key="End" Invoked="OnLastImageInvoked"/>
+      </Border.KeyboardAccelerators>
+    </Border>
 
     <!-- Status -->
     <Grid x:Name="StatusBar">
@@ -252,6 +254,11 @@
       <Border Grid.Column="1" Style="{StaticResource PaneHeaderStyle}" Visibility="{x:Bind IsInputPaneVisible, Mode=OneWay}" IsHitTestVisible="False">
         <TextBlock Text="Output"/>
       </Border>
+      
+      <!-- Status messages -->
+      <muxc:InfoBar Grid.ColumnSpan="2" VerticalAlignment="Top" HorizontalAlignment="Center" Margin="12"
+                    IsOpen="{x:Bind ViewModel.HasSafetyCheckFailed, Mode=OneWay}" Severity="Warning" Title="Inappropriate output"
+                    Message="The safety checker has detected an explicit image, please refine your prompt." />
     </Grid>
 
     <!-- Inference options -->

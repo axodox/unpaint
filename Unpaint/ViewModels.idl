@@ -107,6 +107,7 @@ namespace Unpaint
     Boolean CanDeleteProject{ get; };
 
     Boolean IsAutoGenerationEnabled{ get; };
+    Boolean HasSafetyCheckFailed{ get; };
 
     void GenerateImage();
     void ManageModels();

@@ -489,6 +489,11 @@ namespace winrt::Unpaint::implementation
     return _isAutoGenerationEnabled;
   }
 
+  bool InferenceViewModel::HasSafetyCheckFailed()
+  {
+    return _hasSafetyCheckFailed;
+  }
+
   fire_and_forget InferenceViewModel::GenerateImage()
   {
     if (_isBusy)
@@ -522,6 +527,7 @@ namespace winrt::Unpaint::implementation
       .RandomSeed = _unpaintState->RandomSeed,
       .BatchSize = _unpaintState->IsBatchGenerationEnabled ? _unpaintState->BatchSize : 1,
       .SafeMode = _unpaintOptions->IsSafeModeEnabled(),
+      .IsSafetyCheckerEnabled = true,
       .ModelId = to_string(_models.GetAt(_selectedModelIndex))
     };
 
@@ -557,6 +563,7 @@ namespace winrt::Unpaint::implementation
     //Update UI
     co_await callerContext;
 
+    _hasSafetyCheckFailed = false;
     if (!results.empty())
     {
       Progress(0.f);
@@ -570,11 +577,18 @@ namespace winrt::Unpaint::implementation
           index = i++;
         }
 
+        if (!result)
+        {
+          _hasSafetyCheckFailed = true;
+          continue;
+        }
+
         co_await _imageRepository->AddImageAsync(result, index, task.ToMetadata());
       }
 
       if (_unpaintState->IsJumpingToLatestImage) SelectedImageIndex(int32_t(_images.Size()) - 1);
     }
+    _propertyChanged(*this, PropertyChangedEventArgs(L"HasSafetyCheckFailed"));
 
     _isBusy = false;
 
