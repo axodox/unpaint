@@ -33,6 +33,8 @@ using namespace winrt::Windows::UI::Xaml::Media::Imaging;
 
 namespace winrt::Unpaint::implementation
 {
+  const uint32_t InferenceViewModel::_maxSafetyStrikes = 3;
+
   InferenceViewModel::InferenceViewModel() :
     _unpaintState(dependencies.resolve<UnpaintState>()),
     _unpaintOptions(dependencies.resolve<UnpaintOptions>()),
@@ -58,6 +60,7 @@ namespace winrt::Unpaint::implementation
     _inputMask(nullptr),
     _inputResolution({ 0, 0 }),
     _isAutoGenerationEnabled(false),
+    _safetyStrikes(0),
     _imagesChangedSubscription(_imageRepository->ImagesChanged(event_handler{ this, &InferenceViewModel::OnImagesChanged }))
   {
     //Initialize models
@@ -588,7 +591,22 @@ namespace winrt::Unpaint::implementation
 
       if (_unpaintState->IsJumpingToLatestImage) SelectedImageIndex(int32_t(_images.Size()) - 1);
     }
+
+    //Safety check
     _propertyChanged(*this, PropertyChangedEventArgs(L"HasSafetyCheckFailed"));
+    if (_hasSafetyCheckFailed)
+    {
+      _safetyStrikes++;
+      if (_safetyStrikes >= _maxSafetyStrikes)
+      {
+        _isAutoGenerationEnabled = false;
+        _propertyChanged(*this, PropertyChangedEventArgs(L"IsAutoGenerationEnabled"));
+      }
+    }
+    else
+    {
+      _safetyStrikes = 0;
+    }
 
     _isBusy = false;
 

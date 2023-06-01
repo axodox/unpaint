@@ -477,7 +477,13 @@
         <FontIcon Grid.Column="1" Grid.Row="1" FontFamily="Segoe Fluent Icons" FontSize="20" Glyph="&#xe949;" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,6,0,0"/>
 
         <!-- Execute -->
-        <Button Grid.Column="2" Grid.RowSpan="2" ToolTipService.ToolTip="Generate" VerticalAlignment="Stretch" Click="{x:Bind ViewModel.GenerateImage}">
+        <Button Grid.Column="2" Grid.RowSpan="2" VerticalAlignment="Stretch" Click="{x:Bind ViewModel.GenerateImage}">
+          <ToolTipService.ToolTip>
+            <StackPanel>
+              <TextBlock Text="Generate image" FontWeight="Bold"/>
+              <TextBlock Text="Press once when idling to generate a single image. Press during generation to turn on/off auto generation mode." TextWrapping="WrapWholeWords"/>
+            </StackPanel>
+          </ToolTipService.ToolTip>
           <Button.Content>
             <FontIcon Glyph="{x:Bind ViewModel.IsAutoGenerationEnabled, Converter={StaticResource BooleanToGenerateIconConverter}, Mode=OneWay}" FontFamily="Segoe Fluent Icons" FontSize="24"/>
           </Button.Content>

@@ -8,7 +8,7 @@
   <Identity
     Name="d24ab499-a630-4050-b6aa-021692ff9742"
     Publisher="CN=Axodox"
-    Version="1.0.0.0" />
+    Version="1.1.0.0" />
   <mp:PhoneIdentity PhoneProductId="d24ab499-a630-4050-b6aa-021692ff9742" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
   <Properties>
     <DisplayName>Unpaint</DisplayName>

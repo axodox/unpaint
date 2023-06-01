@@ -24,7 +24,7 @@ namespace Axodox::Web
     "feature_extractor/preprocessor_config.json",
     "safety_checker/model.onnx",
     "scheduler/scheduler_config.json",
-    "text_encoder/model.onnx"
+    "text_encoder/model.onnx",
     "tokenizer/merges.txt",
     "tokenizer/special_tokens_map.json",
     "tokenizer/tokenizer_config.json",

@@ -108,6 +108,8 @@ namespace winrt::Unpaint::implementation
     void PropertyChanged(event_token const& token);
 
   private:
+    static const uint32_t _maxSafetyStrikes;
+
     INavigationService _navigationService;
     std::shared_ptr<UnpaintState> _unpaintState;
     std::shared_ptr<UnpaintOptions> _unpaintOptions;
@@ -142,6 +144,7 @@ namespace winrt::Unpaint::implementation
 
     bool _isAutoGenerationEnabled;
     bool _hasSafetyCheckFailed;
+    uint32_t _safetyStrikes;
 
     Windows::Foundation::Collections::IObservableVector<hstring> _projects;
     int32_t _selectedProjectIndex;
