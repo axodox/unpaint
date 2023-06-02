@@ -74,7 +74,7 @@ namespace winrt::Unpaint
       //Prepare outputs
       auto decodedImage = DecodeVAE(latentImage, async);
       auto outputs = decodedImage.ToTextureData();
-      if (sourceRect || targetRect)
+      if (task.InputMask && (sourceRect || targetRect))
       {
         if (!targetRect) targetRect = Rect::FromSize(targetTexture.Size());
                 
