@@ -53,7 +53,7 @@ namespace winrt::Unpaint
 
   void UnpaintOptions::IsSafetyCheckerEnabled(bool value)
   {
-    _settingManager->LoadSettingOr(_isSafetyCheckerEnabledKey, value);
+    _settingManager->StoreSetting(_isSafetyCheckerEnabledKey, value);
   }
 
   bool UnpaintOptions::IsDenoiserPinned() const

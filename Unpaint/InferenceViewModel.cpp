@@ -828,6 +828,7 @@ namespace winrt::Unpaint::implementation
 
   fire_and_forget InferenceViewModel::RefreshOutputImageAsync()
   {
+    auto lifetime = get_strong();
     StorageFile outputImage{ nullptr };
 
     if (_selectedImageIndex != -1)
