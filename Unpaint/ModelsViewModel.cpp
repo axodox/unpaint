@@ -57,6 +57,11 @@ namespace winrt::Unpaint::implementation
     {
       if (installedModels.contains(model)) continue;
 
+#ifdef NDEBUG
+      //Sorry mates I do not trust you this much...
+      if (!model.starts_with("axodoxian/")) continue;
+#endif
+
       _availableModels.Append(CreateModelViewModel(model));
     }
 

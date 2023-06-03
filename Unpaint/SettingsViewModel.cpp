@@ -16,10 +16,11 @@ namespace winrt::Unpaint::implementation
   bool SettingsViewModel::AreUnsafeOptionsEnabled()
   {
 #ifdef NDEBUG
+    //Sorry mates I do not trust you this much...
     return false;
 #else
     return true;
-#endif // NDEBUG
+#endif
   }
 
   bool SettingsViewModel::IsSafeModeEnabled()
