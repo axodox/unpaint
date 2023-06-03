@@ -34,6 +34,7 @@
       <RowDefinition Height="Auto"/>
       <RowDefinition Height="Auto"/>
       <RowDefinition Height="Auto"/>
+      <RowDefinition Height="Auto"/>
     </Grid.RowDefinitions>
 
     <TextBlock Grid.ColumnSpan="3" Text="Before you begin..." TextAlignment="Center" VerticalAlignment="Center" Style="{StaticResource TitleTextBlockStyle}" Margin="36"/>
@@ -50,7 +51,10 @@
     <TextBlock Grid.Row="2" Grid.Column="2" Text="Respect copyright" Style="{StaticResource CardTitleTextBoxStyle}"/>
     <TextBlock Grid.Row="3" Grid.Column="2" Text="The legal framework surrounding generative AI is not yet established. Many current AI models were trained with image collections incorporating copyrighted works, and it is not yet clear if these models are a case of fair use or copyright infringement. Generated images might violate existing copyrights even if you do not know the work they copy from." Style="{StaticResource CardDetailTextBlockStyle}"/>
 
-    <Button Grid.Row="4" Grid.ColumnSpan="3" HorizontalAlignment="Center" Margin="36" Click="OnContinueClick">
+    <CheckBox x:Name="AcceptanceCheckBox"  Grid.Row="4" Grid.ColumnSpan="3" HorizontalAlignment="Center" Margin="0,36,0,0" Content="I understand the limitations and risks of using AI image generator systems under active research and will use them only in good faith." MaxWidth="400"/>
+
+    <Button Grid.Row="5" Grid.ColumnSpan="3" HorizontalAlignment="Center" Margin="36" Click="OnContinueClick"
+            IsEnabled="{Binding Path=IsChecked, ElementName=AcceptanceCheckBox, Mode=OneWay}">
       <StackPanel Orientation="Horizontal">
         <TextBlock Text="Start your journey"/>
       </StackPanel>

@@ -13,13 +13,13 @@
   </Page.Resources>
 
   <ScrollViewer>
-    <StackPanel VerticalAlignment="Center" Margin="12" Spacing="12">      
+    <StackPanel VerticalAlignment="Center" Margin="12" Spacing="12">
       <Grid HorizontalAlignment="Center">
         <Grid.ColumnDefinitions>
           <ColumnDefinition Width="Auto"/>
           <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
-      
+
         <Grid.RowDefinitions>
           <RowDefinition Height="2*"/>
           <RowDefinition Height="*"/>
@@ -36,7 +36,7 @@
           <TextBlock Margin="0,6">Check out the code on <Hyperlink NavigateUri="https://github.com/axodox/unpaint">GitHub</Hyperlink>.</TextBlock>
         </StackPanel>
       </Grid>
-    
+
       <local:SettingControl Icon="&#xea18;" Title="Safe mode" Subtitle="Adds keywords to negative prompt to avoid inappropriate imagery.">
         <ToggleSwitch FlowDirection="RightToLeft" IsOn="{x:Bind ViewModel.IsSafeModeEnabled, Mode=TwoWay}" Visibility="{x:Bind ViewModel.AreUnsafeOptionsEnabled}"/>
       </local:SettingControl>
