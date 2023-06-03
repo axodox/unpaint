@@ -141,6 +141,9 @@
     <Image Include="Assets\checkerboard.png">
       <Filter>Assets</Filter>
     </Image>
+    <Image Include="Assets\unpaint.png">
+      <Filter>Assets</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Assets">

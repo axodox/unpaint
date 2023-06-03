@@ -5,6 +5,9 @@
 
 using namespace Axodox::Infrastructure;
 using namespace Axodox::Storage;
+using namespace std;
+using namespace winrt::Windows::ApplicationModel;
+using namespace winrt::Windows::Foundation;
 
 namespace winrt::Unpaint::implementation
 {
@@ -51,6 +54,17 @@ namespace winrt::Unpaint::implementation
   void SettingsViewModel::IsDenoiserPinned(bool value)
   {
     _unpaintOptions->IsDenoiserPinned(value);
+  }
+
+  hstring SettingsViewModel::Version()
+  {
+    auto version = Package::Current().Id().Version();
+    return format(L"{}.{}.{}.{}", version.Major, version.Minor, version.Build, version.Revision);
+  }
+
+  Windows::Foundation::Uri SettingsViewModel::SelectedModelUri()
+  {
+    return Uri(to_hstring("https://huggingface.co/" + _unpaintOptions->ModelId()));
   }
   
   void SettingsViewModel::Continue()

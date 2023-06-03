@@ -19,6 +19,9 @@ namespace winrt::Unpaint::implementation
     bool IsDenoiserPinned();
     void IsDenoiserPinned(bool value);
 
+    hstring Version();
+    Windows::Foundation::Uri SelectedModelUri();
+
     void Continue();
 
   private:

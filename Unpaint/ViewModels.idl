@@ -135,6 +135,10 @@ namespace Unpaint
     Boolean IsSafetyCheckerEnabled;
     Boolean IsDenoiserPinned;
 
+    String Version{ get; };
+
+    Windows.Foundation.Uri SelectedModelUri{ get; };
+
     void Continue();
   }
 }
