@@ -8,8 +8,13 @@ namespace winrt::Unpaint::implementation
   {
     SettingsViewModel();
 
+    bool AreUnsafeOptionsEnabled();
+
     bool IsSafeModeEnabled();
     void IsSafeModeEnabled(bool value);
+
+    bool IsSafetyCheckerEnabled();
+    void IsSafetyCheckerEnabled(bool value);
 
     bool IsDenoiserPinned();
     void IsDenoiserPinned(bool value);

@@ -10,6 +10,7 @@ namespace winrt::Unpaint
 {
   const char* UnpaintOptions::_hasShownWelcomeViewKey = "UserInterface.HasShownWelcomeView";
   const char* UnpaintOptions::_isSafeModeEnabledKey = "Inference.IsSafeModeEnabled";
+  const char* UnpaintOptions::_isSafetyCheckerEnabledKey = "Inference.IsSafetyCheckerEnabled";
   const char* UnpaintOptions::_isDenoiserPinnedKey = "Inference.IsDenoiserPinned";
   const char* UnpaintOptions::_modelIdKey = "Inference.ModelId";
 
@@ -29,12 +30,30 @@ namespace winrt::Unpaint
 
   bool UnpaintOptions::IsSafeModeEnabled() const
   {
+#ifdef NDEBUG
+    return true;
+#else
     return _settingManager->LoadSettingOr(_isSafeModeEnabledKey, true);
+#endif
   }
 
   void UnpaintOptions::IsSafeModeEnabled(bool value)
   {
     _settingManager->StoreSetting(_isSafeModeEnabledKey, value);
+  }
+
+  bool UnpaintOptions::IsSafetyCheckerEnabled() const
+  {
+#ifdef NDEBUG
+    return true;
+#else
+    return _settingManager->LoadSettingOr(_isSafetyCheckerEnabledKey, true);
+#endif
+  }
+
+  void UnpaintOptions::IsSafetyCheckerEnabled(bool value)
+  {
+    _settingManager->LoadSettingOr(_isSafetyCheckerEnabledKey, value);
   }
 
   bool UnpaintOptions::IsDenoiserPinned() const

@@ -13,6 +13,15 @@ namespace winrt::Unpaint::implementation
     _unpaintOptions(dependencies.resolve<UnpaintOptions>())
   { }
 
+  bool SettingsViewModel::AreUnsafeOptionsEnabled()
+  {
+#ifdef NDEBUG
+    return false;
+#else
+    return true;
+#endif // NDEBUG
+  }
+
   bool SettingsViewModel::IsSafeModeEnabled()
   {
     return _unpaintOptions->IsSafeModeEnabled();
@@ -21,6 +30,16 @@ namespace winrt::Unpaint::implementation
   void SettingsViewModel::IsSafeModeEnabled(bool value)
   {
     _unpaintOptions->IsSafeModeEnabled(value);
+  }
+
+  bool SettingsViewModel::IsSafetyCheckerEnabled()
+  {
+    return _unpaintOptions->IsSafetyCheckerEnabled();
+  }
+
+  void SettingsViewModel::IsSafetyCheckerEnabled(bool value)
+  {
+    _unpaintOptions->IsSafetyCheckerEnabled(value);
   }
 
   bool SettingsViewModel::IsDenoiserPinned()

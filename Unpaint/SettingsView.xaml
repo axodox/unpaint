@@ -13,8 +13,12 @@
   </Page.Resources>
 
   <StackPanel VerticalAlignment="Center" Margin="12" Spacing="12">
-    <local:SettingControl Icon="&#xea18;" Title="Safe mode" Subtitle="Adds keywords to negative prompt to avoid inappropriate imagery. Note: this has no effect on the safety checker, which validates the image after it is generated.">
-      <ToggleSwitch FlowDirection="RightToLeft" IsOn="{x:Bind ViewModel.IsSafeModeEnabled, Mode=TwoWay}"/>
+    <local:SettingControl Icon="&#xea18;" Title="Safe mode" Subtitle="Adds keywords to negative prompt to avoid inappropriate imagery.">
+      <ToggleSwitch FlowDirection="RightToLeft" IsOn="{x:Bind ViewModel.IsSafeModeEnabled, Mode=TwoWay}" Visibility="{x:Bind ViewModel.AreUnsafeOptionsEnabled}"/>
+    </local:SettingControl>
+
+    <local:SettingControl Icon="&#xe9d5;" Title="Safety checker" Subtitle="Checks the image after generation and suppresses inappropriate (NSFW) output.">
+      <ToggleSwitch FlowDirection="RightToLeft" IsOn="{x:Bind ViewModel.IsSafetyCheckerEnabled, Mode=TwoWay}" Visibility="{x:Bind ViewModel.AreUnsafeOptionsEnabled}"/>
     </local:SettingControl>
 
     <local:SettingControl Icon="&#xe718;" Title="Keep denoiser in memory" Subtitle="Improves performance, but uses more VRAM.">

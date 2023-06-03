@@ -531,7 +531,7 @@ namespace winrt::Unpaint::implementation
       .RandomSeed = _unpaintState->RandomSeed,
       .BatchSize = _unpaintState->IsBatchGenerationEnabled ? _unpaintState->BatchSize : 1,
       .IsSafeModeEnabled = _unpaintOptions->IsSafeModeEnabled(),
-      .IsSafetyCheckerEnabled = true,
+      .IsSafetyCheckerEnabled = _unpaintOptions->IsSafetyCheckerEnabled(),
       .ModelId = to_string(_models.GetAt(_selectedModelIndex))
     };
 

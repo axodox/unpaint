@@ -14,6 +14,9 @@ namespace winrt::Unpaint
     bool IsSafeModeEnabled() const;
     void IsSafeModeEnabled(bool value);
 
+    bool IsSafetyCheckerEnabled() const;
+    void IsSafetyCheckerEnabled(bool value);
+
     bool IsDenoiserPinned() const;
     void IsDenoiserPinned(bool value);
 
@@ -23,6 +26,7 @@ namespace winrt::Unpaint
   private:
     static const char* _hasShownWelcomeViewKey;
     static const char* _isSafeModeEnabledKey;
+    static const char* _isSafetyCheckerEnabledKey;
     static const char* _isDenoiserPinnedKey;
     static const char* _modelIdKey;
 
