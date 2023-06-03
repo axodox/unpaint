@@ -154,7 +154,9 @@ namespace winrt::Unpaint::implementation
     fire_and_forget LoadImageMetadataAsync(bool force = false);
     fire_and_forget RefreshOutputImageAsync();
 
-    Windows::Foundation::IAsyncOperation<int32_t> ValidatePromptAsync(hstring prompt);
+    Windows::Foundation::IAsyncOperation<int32_t> ValidatePromptAsync(hstring prompt, bool isSafeModeEnabled);
+    fire_and_forget UpdatePositivePromptAsync();
+    fire_and_forget UpdateNegativePromptAsync();
   };
 }
 

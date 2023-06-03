@@ -25,14 +25,17 @@ namespace winrt::Unpaint
   StableDiffusionModelExecutor::StableDiffusionModelExecutor() :
     _unpaintOptions(dependencies.resolve<UnpaintOptions>()),
     _modelRepository(dependencies.resolve<ModelRepository>()),
-    _stepCount(0)
+    _stepCount(0),
+    _isSafeModeEnabled(true)
   { }
 
-  int32_t StableDiffusionModelExecutor::ValidatePrompt(std::string_view modelId, std::string_view prompt)
+  int32_t StableDiffusionModelExecutor::ValidatePrompt(std::string_view modelId, std::string prompt, bool isSafeModeEnabled)
   {
     lock_guard lock(_mutex);
     EnsureEnvironment(modelId);
     if (!_textEmbedder) _textEmbedder = make_unique<TextEmbedder>(*_onnxEnvironment, app_folder());
+
+    if (isSafeModeEnabled) prompt = _safetyFilter + prompt;
 
     return _textEmbedder->ValidatePrompt(prompt);
   }
@@ -190,7 +193,7 @@ namespace winrt::Unpaint
   Axodox::MachineLearning::ScheduledTensor StableDiffusionModelExecutor::CreateTextEmbeddings(const StableDiffusionInferenceTask& task, Axodox::Threading::async_operation_source& async)
   {
     //Check if the prompt has changed
-    if (!_textEmbedding.empty() && _positivePrompt == task.PositivePrompt && _negativePrompt == task.NegativePrompt && task.SamplingSteps == _stepCount) return _textEmbedding;
+    if (!_textEmbedding.empty() && _positivePrompt == task.PositivePrompt && _negativePrompt == task.NegativePrompt && task.SamplingSteps == _stepCount && _isSafeModeEnabled == task.IsSafeModeEnabled) return _textEmbedding;
 
     //Load embedder
     async.update_state(NAN, "Loading text embedder...");
@@ -198,7 +201,7 @@ namespace winrt::Unpaint
 
     //Parse and schedule prompt
     async.update_state("Creating text embedding...");
-    auto encodedNegativePrompt = _textEmbedder->SchedulePrompt((task.SafeMode ? _safetyFilter : "") + task.NegativePrompt, task.SamplingSteps);
+    auto encodedNegativePrompt = _textEmbedder->SchedulePrompt((task.IsSafeModeEnabled ? _safetyFilter : "") + task.NegativePrompt, task.SamplingSteps);
     auto encodedPositivePrompt = _textEmbedder->SchedulePrompt(task.PositivePrompt, task.SamplingSteps);
 
     //Concatenate negative and position prompts
@@ -219,6 +222,7 @@ namespace winrt::Unpaint
     _positivePrompt = task.PositivePrompt;
     _negativePrompt = task.NegativePrompt;
     _stepCount = task.SamplingSteps;
+    _isSafeModeEnabled = task.IsSafeModeEnabled;
 
     //Return result
     async.update_state("Text embedding created.");
@@ -290,7 +294,7 @@ namespace winrt::Unpaint
     *result.DenoisingStrength = DenoisingStrength;
     *result.SamplingSteps = SamplingSteps;
     *result.RandomSeed = RandomSeed;
-    *result.SafeMode = SafeMode;
+    *result.SafeMode = IsSafeModeEnabled;
 
     *result.ModelId = ModelId;
 

@@ -94,7 +94,7 @@ namespace winrt::Unpaint::implementation
     {
       if (to_string(project) == _unpaintState->Project)
       {
-        SelectedModelIndex(i);
+        SelectedProjectIndex(i);
         break;
       }
 
@@ -114,6 +114,10 @@ namespace winrt::Unpaint::implementation
     }
 
     if (_selectedImageIndex == -1) SelectedImageIndex(int32_t(_images.Size()) - 1);
+
+    //Update prompts
+    UpdatePositivePromptAsync();
+    UpdateNegativePromptAsync();
   }
 
   int32_t InferenceViewModel::SelectedModeIndex()
@@ -174,9 +178,7 @@ namespace winrt::Unpaint::implementation
     _unpaintState->PositivePrompt = value;
     _propertyChanged(*this, PropertyChangedEventArgs(L"PositivePrompt"));
 
-    auto lifetime = get_strong();
-    _availablePositiveTokenCount = co_await ValidatePromptAsync(value);
-    _propertyChanged(*this, PropertyChangedEventArgs(L"AvailablePositiveTokenCount"));
+    UpdatePositivePromptAsync();
   }
 
   int32_t InferenceViewModel::AvailablePositiveTokenCount()
@@ -201,9 +203,7 @@ namespace winrt::Unpaint::implementation
     _unpaintState->NegativePrompt = value;
     _propertyChanged(*this, PropertyChangedEventArgs(L"NegativePrompt"));
 
-    auto lifetime = get_strong();
-    _availableNegativeTokenCount = co_await ValidatePromptAsync(value);
-    _propertyChanged(*this, PropertyChangedEventArgs(L"AvailableNegativeTokenCount"));
+    UpdateNegativePromptAsync();
   }
 
   int32_t InferenceViewModel::AvailableNegativeTokenCount()
@@ -530,7 +530,7 @@ namespace winrt::Unpaint::implementation
       .SamplingSteps = _unpaintState->SamplingSteps,
       .RandomSeed = _unpaintState->RandomSeed,
       .BatchSize = _unpaintState->IsBatchGenerationEnabled ? _unpaintState->BatchSize : 1,
-      .SafeMode = _unpaintOptions->IsSafeModeEnabled(),
+      .IsSafeModeEnabled = _unpaintOptions->IsSafeModeEnabled(),
       .IsSafetyCheckerEnabled = true,
       .ModelId = to_string(_models.GetAt(_selectedModelIndex))
     };
@@ -843,7 +843,7 @@ namespace winrt::Unpaint::implementation
     _propertyChanged(*this, PropertyChangedEventArgs(L"OutputImage"));
   }
 
-  Windows::Foundation::IAsyncOperation<int32_t> InferenceViewModel::ValidatePromptAsync(hstring prompt)
+  Windows::Foundation::IAsyncOperation<int32_t> InferenceViewModel::ValidatePromptAsync(hstring prompt, bool isSafeModeEnabled)
   {
     apartment_context callingContext{};
 
@@ -852,10 +852,24 @@ namespace winrt::Unpaint::implementation
     auto lifetime = get_strong();
     co_await resume_background();
 
-    auto result = _modelExecutor->ValidatePrompt(modelId, to_string(prompt));
+    auto result = _modelExecutor->ValidatePrompt(modelId, to_string(prompt), isSafeModeEnabled);
 
     co_await callingContext;
 
     co_return result;
+  }
+
+  fire_and_forget InferenceViewModel::UpdatePositivePromptAsync()
+  {
+    auto lifetime = get_strong();
+    _availablePositiveTokenCount = co_await ValidatePromptAsync(PositivePrompt(), false);
+    _propertyChanged(*this, PropertyChangedEventArgs(L"AvailablePositiveTokenCount"));
+  }
+
+  fire_and_forget InferenceViewModel::UpdateNegativePromptAsync()
+  {
+    auto lifetime = get_strong();
+    _availableNegativeTokenCount = co_await ValidatePromptAsync(NegativePrompt(), _unpaintOptions->IsSafeModeEnabled());
+    _propertyChanged(*this, PropertyChangedEventArgs(L"AvailableNegativeTokenCount"));
   }
 }

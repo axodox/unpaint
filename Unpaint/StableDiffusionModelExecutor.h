@@ -30,7 +30,7 @@ namespace winrt::Unpaint
     uint32_t SamplingSteps;
     uint32_t RandomSeed;
     uint32_t BatchSize;
-    bool SafeMode;
+    bool IsSafeModeEnabled;
     bool IsSafetyCheckerEnabled;
 
     std::string ModelId;
@@ -52,7 +52,7 @@ namespace winrt::Unpaint
   public:
     StableDiffusionModelExecutor();
 
-    int32_t ValidatePrompt(std::string_view modelId, std::string_view prompt);
+    int32_t ValidatePrompt(std::string_view modelId, std::string prompt, bool isSafeModeEnabled);
 
     std::vector<Axodox::Graphics::TextureData> TryRunInference(const StableDiffusionInferenceTask& task, Axodox::Threading::async_operation& operation);
 
@@ -69,6 +69,7 @@ namespace winrt::Unpaint
     std::string _modelId;
 
     uint32_t _stepCount;
+    bool _isSafeModeEnabled;
     std::string _positivePrompt, _negativePrompt;
     Axodox::MachineLearning::ScheduledTensor _textEmbedding;
 
