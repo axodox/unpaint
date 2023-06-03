@@ -153,6 +153,11 @@
       <SubType>Code</SubType>
     </ClInclude>
     <ClInclude Include="SettingsViewModel.h" />
+    <ClInclude Include="ShowcaseView.h">
+      <DependentUpon>ShowcaseView.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </ClInclude>
+    <ClInclude Include="ShowcaseViewModel.h" />
     <ClInclude Include="StorageFileToImageSourceConverter.h" />
     <ClInclude Include="StringMapper.h" />
     <ClInclude Include="ImageRepository.h" />
@@ -214,6 +219,9 @@
     <Page Include="SettingsView.xaml">
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="ShowcaseView.xaml">
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="WelcomeView.xaml">
       <SubType>Designer</SubType>
     </Page>
@@ -233,6 +241,14 @@
     <Image Include="Assets\StoreLogo.png" />
     <Image Include="Assets\unpaint.png" />
     <Image Include="Assets\Wide310x150Logo.scale-200.png" />
+    <Image Include="Showcase\2023-06-02 22-54-48.png" />
+    <Image Include="Showcase\2023-06-03 00-07-38.png" />
+    <Image Include="Showcase\2023-06-03 19-32-26.png" />
+    <Image Include="Showcase\2023-06-03 20-41-12.png" />
+    <Image Include="Showcase\2023-06-03 20-48-40.png" />
+    <Image Include="Showcase\2023-06-03 20-50-21.png" />
+    <Image Include="Showcase\2023-06-03 20-57-48.png" />
+    <Image Include="Showcase\2023-06-03 21-01-50.png" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BooleanInverter.cpp" />
@@ -266,6 +282,11 @@
       <SubType>Code</SubType>
     </ClCompile>
     <ClCompile Include="SettingsViewModel.cpp" />
+    <ClCompile Include="ShowcaseView.cpp">
+      <DependentUpon>ShowcaseView.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </ClCompile>
+    <ClCompile Include="ShowcaseViewModel.cpp" />
     <ClCompile Include="StableDiffusionModelExecutor.cpp" />
     <ClCompile Include="ModelRepository.cpp" />
     <ClCompile Include="ModelsView.cpp">

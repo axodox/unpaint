@@ -9,6 +9,14 @@ namespace Unpaint
   }
 
   [default_interface]
+  runtimeclass ShowcaseView : Windows.UI.Xaml.Controls.Page
+  {
+    ShowcaseView();
+
+    ShowcaseViewModel ViewModel{ get; };
+  }
+
+  [default_interface]
   runtimeclass WelcomeView : Windows.UI.Xaml.Controls.Page
   {
     WelcomeView();

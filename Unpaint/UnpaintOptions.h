@@ -8,6 +8,9 @@ namespace winrt::Unpaint
   public:
     UnpaintOptions();
 
+    bool HasShownShowcaseView() const;
+    void HasShownShowcaseView(bool value);
+
     bool HasShownWelcomeView() const;
     void HasShownWelcomeView(bool value);
 
@@ -24,6 +27,7 @@ namespace winrt::Unpaint
     void ModelId(const std::string& value) const;
 
   private:
+    static const char* _hasShownShowcaseViewKey;
     static const char* _hasShownWelcomeViewKey;
     static const char* _isSafeModeEnabledKey;
     static const char* _isSafetyCheckerEnabledKey;

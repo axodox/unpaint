@@ -8,6 +8,7 @@ using namespace std;
 
 namespace winrt::Unpaint
 {
+  const char* UnpaintOptions::_hasShownShowcaseViewKey = "UserInterface.HasShownShowcaseView";
   const char* UnpaintOptions::_hasShownWelcomeViewKey = "UserInterface.HasShownWelcomeView";
   const char* UnpaintOptions::_isSafeModeEnabledKey = "Inference.IsSafeModeEnabled";
   const char* UnpaintOptions::_isSafetyCheckerEnabledKey = "Inference.IsSafetyCheckerEnabled";
@@ -17,6 +18,16 @@ namespace winrt::Unpaint
   UnpaintOptions::UnpaintOptions() :
     _settingManager(dependencies.resolve<SettingManager>())
   { }
+
+  bool UnpaintOptions::HasShownShowcaseView() const
+  {
+    return _settingManager->LoadSettingOr(_hasShownShowcaseViewKey, false);
+  }
+
+  void UnpaintOptions::HasShownShowcaseView(bool value)
+  {
+    _settingManager->StoreSetting(_hasShownShowcaseViewKey, value);
+  }
 
   bool UnpaintOptions::HasShownWelcomeView() const
   {

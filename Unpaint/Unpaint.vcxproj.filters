@@ -28,6 +28,9 @@
     <Page Include="MaskEditor.xaml">
       <Filter>Controls</Filter>
     </Page>
+    <Page Include="ShowcaseView.xaml">
+      <Filter>Views</Filter>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Midl Include="App.idl" />
@@ -115,6 +118,9 @@
     <ClCompile Include="IsNullConverter.cpp">
       <Filter>Converters</Filter>
     </ClCompile>
+    <ClCompile Include="ShowcaseViewModel.cpp">
+      <Filter>View Models</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\Wide310x150Logo.scale-200.png">
@@ -144,6 +150,30 @@
     <Image Include="Assets\unpaint.png">
       <Filter>Assets</Filter>
     </Image>
+    <Image Include="Showcase\2023-06-03 21-01-50.png">
+      <Filter>Showcase</Filter>
+    </Image>
+    <Image Include="Showcase\2023-06-02 22-54-48.png">
+      <Filter>Showcase</Filter>
+    </Image>
+    <Image Include="Showcase\2023-06-03 00-07-38.png">
+      <Filter>Showcase</Filter>
+    </Image>
+    <Image Include="Showcase\2023-06-03 19-32-26.png">
+      <Filter>Showcase</Filter>
+    </Image>
+    <Image Include="Showcase\2023-06-03 20-41-12.png">
+      <Filter>Showcase</Filter>
+    </Image>
+    <Image Include="Showcase\2023-06-03 20-48-40.png">
+      <Filter>Showcase</Filter>
+    </Image>
+    <Image Include="Showcase\2023-06-03 20-50-21.png">
+      <Filter>Showcase</Filter>
+    </Image>
+    <Image Include="Showcase\2023-06-03 20-57-48.png">
+      <Filter>Showcase</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Assets">
@@ -172,6 +202,9 @@
     </Filter>
     <Filter Include="Controls">
       <UniqueIdentifier>{5e02f57c-cabe-4e22-9862-1b41c4e0e3a3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Showcase">
+      <UniqueIdentifier>{4b892c8c-93a7-4605-a943-4f6d412def76}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -265,6 +298,9 @@
     </ClInclude>
     <ClInclude Include="UnpaintState.h">
       <Filter>Models</Filter>
+    </ClInclude>
+    <ClInclude Include="ShowcaseViewModel.h">
+      <Filter>View Models</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -34,7 +34,11 @@ namespace winrt::Unpaint::implementation
 
   void MainView::NavigateToView(Windows::UI::Xaml::Interop::TypeName viewType)
   {
-    if (!_unpaintOptions->HasShownWelcomeView())
+    if (!_unpaintOptions->HasShownShowcaseView())
+    {
+      viewType = xaml_typename<ShowcaseView>();
+    }
+    else if (!_unpaintOptions->HasShownWelcomeView())
     {
       viewType = xaml_typename<WelcomeView>();
     }

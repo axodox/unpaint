@@ -1,0 +1,26 @@
+﻿<Page
+    x:Class="Unpaint.ShowcaseView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Unpaint"
+    xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">  
+  <Grid>
+    <FlipView ItemsSource="{x:Bind ViewModel.Images}" SelectedIndex="{x:Bind ViewModel.SelectedImageIndex, Mode=TwoWay}">
+      <FlipView.ItemTemplate>
+        <DataTemplate x:DataType="x:String">
+          <Image Stretch="UniformToFill" Source="{x:Bind}" />
+        </DataTemplate>
+      </FlipView.ItemTemplate>
+    </FlipView>
+    <muxc:PipsPager HorizontalAlignment="Center" VerticalAlignment="Top" Margin="24"
+                    NumberOfPages="{x:Bind ViewModel.ImageCount}"
+                    SelectedPageIndex="{x:Bind ViewModel.SelectedImageIndex, Mode=TwoWay}" />
+    <TextBlock Text="Welcome to Unpaint!" Margin="0,64,0,0" HorizontalAlignment="Center" VerticalAlignment="Top" FontSize="36" FontWeight="Bold"/>
+    <TextBlock Text="{x:Bind ViewModel.Prompt, Mode=OneWay}" Margin="0,0,0,96" HorizontalAlignment="Center" 
+               VerticalAlignment="Bottom" FontSize="16" TextWrapping="WrapWholeWords" MaxWidth="480" TextAlignment="Center"/>
+    <Button Content="Start" Margin="0,0,0,24" HorizontalAlignment="Center" VerticalAlignment="Bottom" Click="{x:Bind ViewModel.Continue}" Background="{ThemeResource LayerFillColorDefaultBrush}"/>
+  </Grid>
+</Page>

@@ -8,6 +8,19 @@ namespace Unpaint
     event Windows.Foundation.EventHandler<Boolean> IsPointerOverTitleBarChanged;
   };
 
+  [default_interface]
+  runtimeclass ShowcaseViewModel : Windows.UI.Xaml.Data.INotifyPropertyChanged
+  {
+    ShowcaseViewModel();
+
+    IObservableVector<String> Images{ get; };
+    Int32 ImageCount{ get; };
+    Int32 SelectedImageIndex;
+    String Prompt{ get; };
+
+    void Continue();
+  };
+
   struct ModelViewModel
   {
     String Id;
