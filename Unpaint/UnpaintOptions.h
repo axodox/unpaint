@@ -17,10 +17,14 @@ namespace winrt::Unpaint
     bool IsDenoiserPinned() const;
     void IsDenoiserPinned(bool value);
 
+    std::string ModelId() const;
+    void ModelId(const std::string& value) const;
+
   private:
     static const char* _hasShownWelcomeViewKey;
     static const char* _isSafeModeEnabledKey;
     static const char* _isDenoiserPinnedKey;
+    static const char* _modelIdKey;
 
     std::shared_ptr<Axodox::Storage::SettingManager> _settingManager;
   };

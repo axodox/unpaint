@@ -4,12 +4,14 @@
 
 using namespace Axodox::Infrastructure;
 using namespace Axodox::Storage;
+using namespace std;
 
 namespace winrt::Unpaint
 {
   const char* UnpaintOptions::_hasShownWelcomeViewKey = "UserInterface.HasShownWelcomeView";
   const char* UnpaintOptions::_isSafeModeEnabledKey = "Inference.IsSafeModeEnabled";
   const char* UnpaintOptions::_isDenoiserPinnedKey = "Inference.IsDenoiserPinned";
+  const char* UnpaintOptions::_modelIdKey = "Inference.ModelId";
 
   UnpaintOptions::UnpaintOptions() :
     _settingManager(dependencies.resolve<SettingManager>())
@@ -43,5 +45,15 @@ namespace winrt::Unpaint
   void UnpaintOptions::IsDenoiserPinned(bool value)
   {
     _settingManager->StoreSetting(_isDenoiserPinnedKey, value);
+  }
+
+  std::string UnpaintOptions::ModelId() const
+  {
+    return _settingManager->LoadSettingOr(_modelIdKey, string(""));
+  }
+
+  void UnpaintOptions::ModelId(const std::string& value) const
+  {
+    _settingManager->StoreSetting(_modelIdKey, value);
   }
 }

@@ -64,9 +64,10 @@ namespace winrt::Unpaint::implementation
     _imagesChangedSubscription(_imageRepository->ImagesChanged(event_handler{ this, &InferenceViewModel::OnImagesChanged }))
   {
     //Initialize models
+    auto modelId = _unpaintOptions->ModelId();
     for (auto i = 0; auto & model : _modelRepository->Models())
     {
-      if (model == _unpaintState->ModelId) _selectedModelIndex = i;
+      if (model == modelId) _selectedModelIndex = i;
       _models.Append(to_hstring(model));
 
       i++;
@@ -225,7 +226,7 @@ namespace winrt::Unpaint::implementation
     if (value == _selectedModelIndex) return;
 
     _selectedModelIndex = value;
-    if (value != -1) _unpaintState->ModelId = to_string(_models.GetAt(value));
+    if (value != -1) _unpaintOptions->ModelId(to_string(_models.GetAt(value)));
     _propertyChanged(*this, PropertyChangedEventArgs(L"SelectedModelIndex"));
   }
 

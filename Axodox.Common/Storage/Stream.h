@@ -44,6 +44,21 @@ namespace Axodox::Storage
       write({ reinterpret_cast<const uint8_t*>(value.data()), value.length() });
     }
 
+    void read(std::string& value)
+    {
+      uint32_t length;
+      read(length);
+
+      value.resize(length);
+      read({ reinterpret_cast<uint8_t*>(value.data()), value.length() });
+    }
+
+    void write(const std::string& value)
+    {
+      write(uint32_t(value.length()));
+      write({ reinterpret_cast<const uint8_t*>(value.data()), value.length() });
+    }
+
     std::string read_line();
 
     std::vector<uint8_t> read_to_end();
