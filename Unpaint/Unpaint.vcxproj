@@ -5,6 +5,8 @@
   <Import Project="..\packages\Microsoft.AI.DirectML.1.12.0\build\Microsoft.AI.DirectML.props" Condition="Exists('..\packages\Microsoft.AI.DirectML.1.12.0\build\Microsoft.AI.DirectML.props')" />
   <Import Project="..\packages\Microsoft.UI.Xaml.2.8.4\build\native\Microsoft.UI.Xaml.props" Condition="Exists('..\packages\Microsoft.UI.Xaml.2.8.4\build\native\Microsoft.UI.Xaml.props')" />
   <PropertyGroup Label="Globals">
+    <Configuration Condition="'$(Configuration)'==''">Release</Configuration>
+    <Platform Condition="'$(Platform)'==''">x64</Platform>
     <CppWinRTOptimized>true</CppWinRTOptimized>
     <CppWinRTRootNamespaceAutoMerge>true</CppWinRTRootNamespaceAutoMerge>
     <CppWinRTGenerateWindowsMetadata>true</CppWinRTGenerateWindowsMetadata>
