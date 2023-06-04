@@ -3,7 +3,7 @@ image: Visual Studio 2022
 build_script:
 - ps: .\build_app.ps1
 artifacts:
-- path: Unpaint\bin\Release\x64\*.msix
+- path: Unpaint\bin\Release\x64\Unpaint_*.*
   name: MsixPackages
 deploy:
 - provider: GitHub
