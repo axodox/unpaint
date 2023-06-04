@@ -1,7 +1,14 @@
-version: 1.0.{build}
+version: 1.0.{build}.0
 image: Visual Studio 2022
 build_script:
 - ps: .\build_app.ps1
 artifacts:
 - path: Unpaint\bin\Release\x64\*.msix
   name: MsixPackages
+deploy:
+- provider: GitHub
+  tag: $(APPVEYOR_REPO_BRANCH)-$(APPVEYOR_BUILD_VERSION)
+  release: $(APPVEYOR_REPO_BRANCH)-$(APPVEYOR_BUILD_VERSION)
+  auth_token:
+    secure: 2X9QzJ/vLZkTLrxaJ3ZulNVuF4CLKHzLwtX9WdKkmJIIFaRAPBPFfeQ2njKh3WDP0VcNiq0/8+LL8aPtG5+821OCuy1IIJGkjX8RaUtzXmOJGqkqZz4T7r7stkT7uDKmjCzMB8FpFbrogIStmS6GntDgqLm74N6fuGTEDNmca+Q=
+  artifact: MsixPackages
