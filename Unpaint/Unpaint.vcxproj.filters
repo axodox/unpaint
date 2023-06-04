@@ -221,6 +221,7 @@
       <Filter>Data</Filter>
     </None>
     <None Include="key.pfx" />
+    <None Include="$(MSBuildThisFileDirectory)..\..\runtimes\win-x64\native\onnxruntime.dll" />
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">

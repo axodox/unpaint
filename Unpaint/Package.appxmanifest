@@ -1,15 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10" 
-         xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest" 
-         xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10" 
-         xmlns:uap7="http://schemas.microsoft.com/appx/manifest/uap/windows10/7"
-         xmlns:uap8="http://schemas.microsoft.com/appx/manifest/uap/windows10/8"
-         IgnorableNamespaces="uap uap7 uap8 mp">
-  <Identity
-    Name="d24ab499-a630-4050-b6aa-021692ff9742"
-    Publisher="CN=Axodox"
-    Version="1.1.0.0" />
-  <mp:PhoneIdentity PhoneProductId="d24ab499-a630-4050-b6aa-021692ff9742" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
+<Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10" xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest" xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10" xmlns:uap7="http://schemas.microsoft.com/appx/manifest/uap/windows10/7" xmlns:uap8="http://schemas.microsoft.com/appx/manifest/uap/windows10/8" IgnorableNamespaces="uap uap7 uap8 mp">
+  <Identity Name="d24ab499-a630-4050-b6aa-021692ff9742" Publisher="CN=Axodox" Version="1.0.0.0" />
+  <mp:PhoneIdentity PhoneProductId="d24ab499-a630-4050-b6aa-021692ff9742" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
   <Properties>
     <DisplayName>Unpaint</DisplayName>
     <PublisherDisplayName>Axodox</PublisherDisplayName>
@@ -26,8 +18,7 @@
       <uap7:Properties>
         <uap8:ActiveCodePage>UTF-8</uap8:ActiveCodePage>
       </uap7:Properties>
-      <uap:VisualElements DisplayName="Unpaint" Description="Project for a single page C++/WinRT Universal Windows Platform (UWP) app with no predefined layout"
-        Square150x150Logo="Assets\Square150x150Logo.png" Square44x44Logo="Assets\Square44x44Logo.png" BackgroundColor="transparent">
+      <uap:VisualElements DisplayName="Unpaint" Description="Project for a single page C++/WinRT Universal Windows Platform (UWP) app with no predefined layout" Square150x150Logo="Assets\Square150x150Logo.png" Square44x44Logo="Assets\Square44x44Logo.png" BackgroundColor="transparent">
         <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png">
         </uap:DefaultTile>
         <uap:SplashScreen Image="Assets\SplashScreen.png" />
