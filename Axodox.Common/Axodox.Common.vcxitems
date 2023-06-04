@@ -60,6 +60,7 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)Graphics\Textures\TextureData.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Infrastructure\BitwiseOperations.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Infrastructure\DependencyContainer.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Infrastructure\EventAggregator.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Infrastructure\Events.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Infrastructure\Half.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)MachineLearning\Prompts\PromptAttention.h" />

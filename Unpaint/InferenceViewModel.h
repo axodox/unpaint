@@ -103,6 +103,8 @@ namespace winrt::Unpaint::implementation
     fire_and_forget AddImage(Windows::Storage::StorageFile file);
     void UseCurrentImageAsInput();
     void LoadSettingsFromCurrentImage();
+    void CopyPromptLink();
+    void OpenUri(Windows::Foundation::Uri const& uri);
 
     event_token PropertyChanged(Windows::UI::Xaml::Data::PropertyChangedEventHandler const& value);
     void PropertyChanged(event_token const& token);

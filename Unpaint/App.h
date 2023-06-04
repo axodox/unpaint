@@ -17,7 +17,10 @@ namespace winrt::Unpaint::implementation
   struct App : AppT<App>
   {
     App();
+    void Activate(Windows::ApplicationModel::Activation::IActivatedEventArgs eventArgs);
+
     void OnLaunched(Windows::ApplicationModel::Activation::LaunchActivatedEventArgs const&);
+    void OnActivated(Windows::ApplicationModel::Activation::IActivatedEventArgs const& eventArgs);
     void OnSuspending(IInspectable const&, Windows::ApplicationModel::SuspendingEventArgs const&);
     void OnNavigationFailed(IInspectable const&, Windows::UI::Xaml::Navigation::NavigationFailedEventArgs const&);
   };

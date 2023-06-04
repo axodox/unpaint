@@ -9,6 +9,7 @@ using namespace Axodox::Infrastructure;
 using namespace Axodox::Storage;
 using namespace Axodox::Threading;
 using namespace winrt;
+using namespace winrt::Windows::ApplicationModel::Activation;
 using namespace winrt::Windows::ApplicationModel::Core;
 using namespace winrt::Windows::UI;
 using namespace winrt::Windows::UI::Core;
@@ -46,8 +47,11 @@ namespace winrt::Unpaint::implementation
     {
       viewType = xaml_typename<ModelsView>();
     }
-
-    ContentFrame().Navigate(viewType);
+    
+    if (ContentFrame().SourcePageType().Name != viewType.Name)
+    {
+      ContentFrame().Navigate(viewType);
+    }
   }
 
   bool MainView::IsPointerOverTitleBar()

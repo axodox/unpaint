@@ -135,6 +135,8 @@ namespace Unpaint
     void AddImage(Windows.Storage.StorageFile file);
     void UseCurrentImageAsInput();
     void LoadSettingsFromCurrentImage();
+    void CopyPromptLink();
+    void OpenUri(Windows.Foundation.Uri uri);
   }
 
   [default_interface]

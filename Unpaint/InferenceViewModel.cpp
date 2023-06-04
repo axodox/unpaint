@@ -19,6 +19,7 @@ using namespace Axodox::Storage;
 using namespace Axodox::Threading;
 using namespace DirectX;
 using namespace std;
+using namespace winrt;
 using namespace winrt::Windows::ApplicationModel::DataTransfer;
 using namespace winrt::Windows::Foundation;
 using namespace winrt::Windows::Graphics;
@@ -760,6 +761,61 @@ namespace winrt::Unpaint::implementation
   void InferenceViewModel::LoadSettingsFromCurrentImage()
   {
     LoadImageMetadataAsync(true);
+  }
+
+  void InferenceViewModel::CopyPromptLink()
+  {
+    Uri result{ format(L"unpaint://inference/create?model={}&positive_prompt={}&negative_prompt={}&guidance_strength={}&sampling_steps={}&random_seed={}",
+      Uri::EscapeComponent(to_hstring(_unpaintOptions->ModelId())),
+      Uri::EscapeComponent(_unpaintState->PositivePrompt),
+      Uri::EscapeComponent(_unpaintState->NegativePrompt),
+      _unpaintState->GuidanceStrength,
+      _unpaintState->SamplingSteps,
+      _unpaintState->RandomSeed)
+    };
+
+    DataPackage dataPackage{};
+    dataPackage.SetText(result.ToString());
+    Clipboard::SetContent(dataPackage);
+  }
+
+  void InferenceViewModel::OpenUri(Windows::Foundation::Uri const& uri)
+  {
+    auto query = uri.QueryParsed();
+    for (const auto& item : query)
+    {
+      if (item.Name() == L"positive_prompt")
+      {
+        _unpaintState->PositivePrompt = item.Value();
+        _propertyChanged(*this, PropertyChangedEventArgs(L"PositivePrompt"));
+      }
+
+      if (item.Name() == L"negative_prompt")
+      {
+        _unpaintState->NegativePrompt = item.Value();
+        _propertyChanged(*this, PropertyChangedEventArgs(L"NegativePrompt"));
+      }
+
+      if (item.Name() == L"guidance_strength")
+      {
+        _unpaintState->GuidanceStrength = stof(to_string(item.Value()));
+        _propertyChanged(*this, PropertyChangedEventArgs(L"GuidanceStrength"));
+      }
+
+      if (item.Name() == L"sampling_steps")
+      {
+        _unpaintState->SamplingSteps = stoi(to_string(item.Value()));
+        _propertyChanged(*this, PropertyChangedEventArgs(L"SamplingSteps"));
+      }
+
+      if (item.Name() == L"random_seed")
+      {
+        _unpaintState->RandomSeed = stoul(to_string(item.Value()));
+        _propertyChanged(*this, PropertyChangedEventArgs(L"RandomSeed"));
+      }
+    }
+
+    GenerateImage();
   }
 
   event_token InferenceViewModel::PropertyChanged(PropertyChangedEventHandler const& value)

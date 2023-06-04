@@ -53,7 +53,7 @@
         <HyperlinkButton Content="&#xe8a7;" FontFamily="Segoe Fluent Icons" NavigateUri="https://github.com/axodox/unpaint/issues"/>
       </local:SettingControl>
 
-      <local:SettingControl Icon="&#xedfb;" Title="Report a copyright violation" Subtitle="Please note that Unpaint is just an execution engine, it does not hold any data from which the images are derived.">
+      <local:SettingControl Icon="&#xedfb;" Title="Report a copyright violation" Subtitle="Opens the source page of the current model. Please note that Unpaint is just an execution engine, it does not hold any data from which the images are derived.">
         <HyperlinkButton Content="&#xe8a7;" FontFamily="Segoe Fluent Icons" NavigateUri="{x:Bind ViewModel.SelectedModelUri}"/>
       </local:SettingControl>
 
