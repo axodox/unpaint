@@ -1,9 +1,4 @@
 ﻿#pragma once
-//#define USE_UWP_UI
-//#define USE_GLOBAL_DEPENDENCIES
-//#define USE_ONNX
-#include "..\Axodox.Common\pch.h"
-
 #include <windows.h>
 #include <unknwn.h>
 #include <restrictederrorinfo.h>
@@ -14,6 +9,7 @@
 #include <winrt/Windows.ApplicationModel.Activation.h>
 #include <winrt/Windows.ApplicationModel.Core.h>
 #include <winrt/Windows.ApplicationModel.DataTransfer.h>
+#include <winrt/Windows.Graphics.Imaging.h>
 #include <winrt/Windows.System.h>
 #include <winrt/Windows.Storage.Pickers.h>
 #include <winrt/Windows.UI.Core.h>
@@ -38,3 +34,5 @@
 #include "winrt/Microsoft.Graphics.Canvas.Brushes.h"
 #include "winrt/Microsoft.Graphics.Canvas.Effects.h"
 #include "winrt/Microsoft.Graphics.Canvas.UI.Xaml.h"
+
+#include "Include/Axodox.MachineLearning.h"
