@@ -222,6 +222,7 @@
     </None>
     <None Include="key.pfx" />
     <None Include="$(MSBuildThisFileDirectory)..\..\runtimes\win-x64\native\onnxruntime.dll" />
+    <None Include="Package.StoreAssociation.xml" />
     <None Include="concrt140.dll" />
   </ItemGroup>
   <ItemGroup>
