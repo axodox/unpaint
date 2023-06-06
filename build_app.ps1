@@ -37,4 +37,4 @@ foreach ($platform in $platforms) {
 # Pack app
 Write-Host 'Creating output directory...' -ForegroundColor Magenta
 $packagePath = ".\Unpaint\bin\Release\x64\Unpaint_$($version)_x64.msix"
-signtool.exe sign /fd SHA256 /td SHA256 /a /f "./Unpaint/key.pfx" /p unpaint /tr http://timestamp.digicert.com $packagePath
+signtool.exe sign /fd SHA256 /td SHA256 /a /f "./Unpaint/key.pfx" /p $env:UNPAINT_CERT_PW /tr http://timestamp.digicert.com $packagePath

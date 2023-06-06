@@ -1,5 +1,8 @@
 version: 1.0.{build}.0
 skip_tags: true
+environment:
+  UNPAINT_CERT_PW:
+    secure: c9UVCQE4fooTAG8lEZOxojl/EliBHDaaX1Br7ixA24i488loP3pztXfZ3zAVkuwF
 image: Visual Studio 2022
 build_script:
 - ps: .\build_app.ps1
