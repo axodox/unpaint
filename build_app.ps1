@@ -22,7 +22,7 @@ $version = if ($null -ne $env:APPVEYOR_BUILD_VERSION) { $env:APPVEYOR_BUILD_VERS
 $appManifest.Package.Identity.Version = $version
 $appManifest.Save("$PSScriptRoot/Unpaint/Package.appxmanifest")
 
-certutil -importpfx -p unpaint -f -user .\Unpaint\key.pfx NoRoot
+certutil -importpfx -p $env:UNPAINT_CERT_PW -f -user .\Unpaint\key.pfx NoRoot
 $coreCount = (Get-CimInstance -class Win32_ComputerSystem).NumberOfLogicalProcessors
 $configurations = "Release"
 $platforms = "x64"
