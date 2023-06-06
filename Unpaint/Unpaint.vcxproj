@@ -302,6 +302,9 @@
     <Midl Include="Views.idl" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="concrt140.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
     <None Include="custom_op_cliptok.onnx">
       <DeploymentContent>true</DeploymentContent>
     </None>
