@@ -250,7 +250,7 @@ namespace winrt::Unpaint
     async.update_state("Running denoiser...");
     auto result = _denoiser->RunInference(options, &async);
 
-    if (!_unpaintOptions->IsDenoiserPinned()) _denoiser.reset();
+    /*if (!_unpaintOptions->IsDenoiserPinned())*/ _denoiser.reset();
 
     return result;
   }
