@@ -28,7 +28,7 @@
       <RowDefinition Height="Auto"/>
     </Grid.RowDefinitions>
 
-    <FontIcon Grid.Column="0" Grid.RowSpan="2" FontFamily="Segoe Fluent Icons" FontSize="36" Glyph="&#xebd3;" Visibility="{x:Bind ViewModel.IsInProgress, Mode=OneWay}" Margin="0,0,12,0"/>
+    <FontIcon Grid.Column="0" Grid.RowSpan="2" FontFamily="{StaticResource SymbolThemeFontFamily}" FontSize="36" Glyph="&#xebd3;" Visibility="{x:Bind ViewModel.IsInProgress, Mode=OneWay}" Margin="0,0,12,0"/>
     <TextBlock Grid.Column="1" Grid.Row="0" Text="{x:Bind ViewModel.StatusMessage, Mode=OneWay}" VerticalAlignment="Bottom"/>
     <muxc:ProgressBar Grid.Column="1" Grid.Row="1" Value="{x:Bind ViewModel.Progress, Mode=OneWay}" Maximum="1" VerticalAlignment="Top" Visibility="{x:Bind ViewModel.IsInProgress, Mode=OneWay}"/>
   </Grid>

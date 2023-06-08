@@ -17,7 +17,7 @@
       </Grid.ColumnDefinitions>
 
       <TextBlock Text="Model Library" Style="{StaticResource TitleTextBlockStyle}" VerticalAlignment="Center"/>
-      <FontIcon Grid.Column="1" FontFamily="Segoe Fluent Icons" FontSize="48" Glyph="&#xe8f1;" VerticalAlignment="Center"/>
+      <FontIcon Grid.Column="1" FontFamily="{StaticResource SymbolThemeFontFamily}" FontSize="48" Glyph="&#xe8f1;" VerticalAlignment="Center"/>
     </Grid>
 
     <!-- Introduction -->
@@ -49,8 +49,8 @@
         </Grid.ColumnDefinitions>
         <TextBlock Text="Available models" VerticalAlignment="Center"/>
         <StackPanel Orientation="Horizontal" Grid.Column="1" Spacing="6">
-          <Button FontFamily="Segoe Fluent Icons" Content="&#xe946;" ToolTipService.ToolTip="Open model website" Click="{x:Bind ViewModel.OpenAvailableModelWebsite}" IsEnabled="{x:Bind ViewModel.IsAvailableModelSelected, Mode=OneWay}"/>
-          <Button FontFamily="Segoe Fluent Icons" Content="&#xe72c;" ToolTipService.ToolTip="Refresh" Click="{x:Bind ViewModel.UpdateAvailableModelsAsync}"/>
+          <Button FontFamily="{StaticResource SymbolThemeFontFamily}" Content="&#xe946;" ToolTipService.ToolTip="Open model website" Click="{x:Bind ViewModel.OpenAvailableModelWebsite}" IsEnabled="{x:Bind ViewModel.IsAvailableModelSelected, Mode=OneWay}"/>
+          <Button FontFamily="{StaticResource SymbolThemeFontFamily}" Content="&#xe72c;" ToolTipService.ToolTip="Refresh" Click="{x:Bind ViewModel.UpdateAvailableModelsAsync}"/>
         </StackPanel>
       </Grid>
       
@@ -71,8 +71,8 @@
 
       <!-- Middle section -->
       <StackPanel Grid.Column="1" Grid.Row="1" VerticalAlignment="Center" Spacing="12">
-        <Button FontFamily="Segoe Fluent Icons" FontSize="24" Content="&#xe76c;" ToolTipService.ToolTip="Add model" Click="{x:Bind ViewModel.DownloadModelAsync}" IsEnabled="{x:Bind ViewModel.IsAvailableModelSelected, Mode=OneWay}"/>
-        <Button FontFamily="Segoe Fluent Icons" FontSize="24" Content="&#xe76b;" ToolTipService.ToolTip="Remove model" Click="{x:Bind ViewModel.RemoveModelAsync}" IsEnabled="{x:Bind ViewModel.IsInstalledModelSelected, Mode=OneWay}"/>
+        <Button FontFamily="{StaticResource SymbolThemeFontFamily}" FontSize="24" Content="&#xe76c;" ToolTipService.ToolTip="Add model" Click="{x:Bind ViewModel.DownloadModelAsync}" IsEnabled="{x:Bind ViewModel.IsAvailableModelSelected, Mode=OneWay}"/>
+        <Button FontFamily="{StaticResource SymbolThemeFontFamily}" FontSize="24" Content="&#xe76b;" ToolTipService.ToolTip="Remove model" Click="{x:Bind ViewModel.RemoveModelAsync}" IsEnabled="{x:Bind ViewModel.IsInstalledModelSelected, Mode=OneWay}"/>
       </StackPanel>
 
       <!-- Installed models -->
@@ -83,8 +83,8 @@
         </Grid.ColumnDefinitions>
         <TextBlock Text="Installed models" VerticalAlignment="Center"/>
         <StackPanel Orientation="Horizontal" Grid.Column="1" Spacing="6">
-          <Button FontFamily="Segoe Fluent Icons" Content="&#xe946;" ToolTipService.ToolTip="Open model website" Click="{x:Bind ViewModel.OpenInstalledModelWebsite}" IsEnabled="{x:Bind ViewModel.IsInstalledModelSelected, Mode=OneWay}"/>
-          <Button FontFamily="Segoe Fluent Icons" Content="&#xe838;" ToolTipService.ToolTip="Open model directory" Click="{x:Bind ViewModel.OpenModelDirectory}"/>
+          <Button FontFamily="{StaticResource SymbolThemeFontFamily}" Content="&#xe946;" ToolTipService.ToolTip="Open model website" Click="{x:Bind ViewModel.OpenInstalledModelWebsite}" IsEnabled="{x:Bind ViewModel.IsInstalledModelSelected, Mode=OneWay}"/>
+          <Button FontFamily="{StaticResource SymbolThemeFontFamily}" Content="&#xe838;" ToolTipService.ToolTip="Open model directory" Click="{x:Bind ViewModel.OpenModelDirectory}"/>
         </StackPanel>
       </Grid>
       
