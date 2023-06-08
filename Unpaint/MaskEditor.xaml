@@ -47,7 +47,7 @@
             <!-- Brush size -->
             <Slider Orientation="Vertical" MinHeight="128" Margin="-32,6" Minimum="1" Maximum="128" HorizontalAlignment="Center"
                     Value="{x:Bind BrushSize, Mode=TwoWay}"/>
-            <FontIcon Glyph="&#xeda8;" FontFamily="Segoe Fluent Icons" HorizontalAlignment="Center" ToolTipService.ToolTip="Brush size"/>
+            <FontIcon Glyph="&#xeda8;" FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Center" ToolTipService.ToolTip="Brush size"/>
 
             <!-- Separator -->
             <Border Background="{ThemeResource ControlElevationBorderBrush}" Height="1" Margin="-2,6"/>
@@ -55,7 +55,7 @@
             <!-- Edge thickness -->
             <Slider Orientation="Vertical" MinHeight="64" Margin="-32,6" Minimum="0" Maximum="16" SmallChange="1" StepFrequency="1" HorizontalAlignment="Center"
                     Value="{x:Bind BrushEdge, Mode=TwoWay}"/>
-            <FontIcon Glyph="&#xe81d;" FontFamily="Segoe Fluent Icons" HorizontalAlignment="Center" ToolTipService.ToolTip="Edge thickness"/>
+            <FontIcon Glyph="&#xe81d;" FontFamily="{StaticResource SymbolThemeFontFamily}" HorizontalAlignment="Center" ToolTipService.ToolTip="Edge thickness"/>
 
             <!-- Separator -->
             <Border Background="{ThemeResource ControlElevationBorderBrush}" Height="1" Margin="-2,6"/>

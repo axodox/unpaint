@@ -24,7 +24,7 @@
           <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
 
-        <FontIcon Grid.RowSpan="2" FontFamily="Segoe Fluent Icons" Glyph="{x:Bind Icon, Mode=OneWay}"/>
+        <FontIcon Grid.RowSpan="2" FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="{x:Bind Icon, Mode=OneWay}"/>
 
         <TextBlock Grid.Row="0" Grid.Column="1" Text="{x:Bind Title, Mode=OneWay}"/>
         <TextBlock Grid.Row="1" Grid.Column="1" Text="{x:Bind Subtitle, Mode=OneWay}" FontSize="14" Opacity="0.5" TextWrapping="Wrap"/>

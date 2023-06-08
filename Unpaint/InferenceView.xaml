@@ -233,7 +233,7 @@
           <Image Source="{x:Bind ViewModel.InputImage, Converter={StaticResource StorageFileToImageSourceConverter}, Mode=OneWay}"/>
         </local:MaskEditor>
 
-        <Button Margin="6,0,-36,0" Width="30" Height="30" HorizontalAlignment="Right" VerticalAlignment="Center" Content="&#xe76b;" FontFamily="Segoe Fluent Icons" Padding="0"
+        <Button Margin="6,0,-36,0" Width="30" Height="30" HorizontalAlignment="Right" VerticalAlignment="Center" Content="&#xe76b;" FontFamily="{StaticResource SymbolThemeFontFamily}" Padding="0"
                 Click="{x:Bind ViewModel.UseCurrentImageAsInput}" IsEnabled="{x:Bind ViewModel.HasImageSelected, Mode=OneWay}" ToolTipService.ToolTip="Use current image as input"/>
       </Grid>
 
@@ -288,7 +288,7 @@
           </Grid.ColumnDefinitions>
 
           <!-- Open input pane -->
-          <Button Grid.Column="0" FontFamily="Segoe Fluent Icons" FontSize="20" Content="&#xe91b;" Style="{StaticResource FlatButtonStyle}"
+          <Button Grid.Column="0" FontFamily="{StaticResource SymbolThemeFontFamily}" FontSize="20" Content="&#xe91b;" Style="{StaticResource FlatButtonStyle}"
                   Click="{x:Bind ToggleInputPane}">
             <ToolTipService.ToolTip>
               <StackPanel>
@@ -301,7 +301,7 @@
           <!-- Denoising strength -->
           <Slider Grid.Column="1" Minimum="0" Maximum="1" SmallChange="0.01" LargeChange="0.1" StepFrequency="0.01" VerticalAlignment="Center" Margin="6,-10"
                   Value="{x:Bind ViewModel.DenoisingStrength, Mode=TwoWay}"/>
-          <FontIcon Grid.Column="2" FontFamily="Segoe Fluent Icons" FontSize="20" Glyph="&#xf4a5;" VerticalAlignment="Center" Margin="6,-10,0,-10">
+          <FontIcon Grid.Column="2" FontFamily="{StaticResource SymbolThemeFontFamily}" FontSize="20" Glyph="&#xf4a5;" VerticalAlignment="Center" Margin="6,-10,0,-10">
             <ToolTipService.ToolTip>
               <StackPanel>
                 <TextBlock Text="Denoising strength" FontWeight="Bold"/>
@@ -326,14 +326,14 @@
 
         <!-- General controls -->
         <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="6">
-          <Button FontFamily="Segoe Fluent Icons" FontSize="20" Content="&#xe71b;" Style="{StaticResource FlatButtonStyle}" ToolTipService.ToolTip="Copy prompt link to clipboard."
+          <Button FontFamily="{StaticResource SymbolThemeFontFamily}" FontSize="20" Content="&#xe71b;" Style="{StaticResource FlatButtonStyle}" ToolTipService.ToolTip="Copy prompt link to clipboard."
                   Click="{x:Bind ViewModel.CopyPromptLink}"/>
-          <Button FontFamily="Segoe Fluent Icons" FontSize="20" Content="&#xe92f;" Style="{StaticResource FlatButtonStyle}" ToolTipService.ToolTip="Copy generation settings from the current image."
+          <Button FontFamily="{StaticResource SymbolThemeFontFamily}" FontSize="20" Content="&#xe92f;" Style="{StaticResource FlatButtonStyle}" ToolTipService.ToolTip="Copy generation settings from the current image."
                   Click="{x:Bind ViewModel.LoadSettingsFromCurrentImage}" IsEnabled="{x:Bind ViewModel.HasImageSelected, Mode=OneWay}"/>
-          <ToggleSwitch FontFamily="Segoe Fluent Icons" FontSize="20" OnContent="&#xe718;" OffContent="&#xe77a;" VerticalAlignment="Center" Margin="0,-10" Background="Transparent"
+          <ToggleSwitch FontFamily="{StaticResource SymbolThemeFontFamily}" FontSize="20" OnContent="&#xe718;" OffContent="&#xe77a;" VerticalAlignment="Center" Margin="0,-10" Background="Transparent"
                         IsOn="{x:Bind ViewModel.IsSettingsLocked, Mode=TwoWay}" Style="{StaticResource FlatToggleSwitchStyle}" PointerPressed="{x:Bind ToggleSettingsLock}"
                         ToolTipService.ToolTip="Lock custom settings or show the settings used for generating the selected image."/>
-          <ToggleSwitch FontFamily="Segoe Fluent Icons" FontSize="20" OnContent="&#xe893;" OffContent="&#xe769;" VerticalAlignment="Center" Margin="0,-10" Background="Transparent"
+          <ToggleSwitch FontFamily="{StaticResource SymbolThemeFontFamily}" FontSize="20" OnContent="&#xe893;" OffContent="&#xe769;" VerticalAlignment="Center" Margin="0,-10" Background="Transparent"
                         IsOn="{x:Bind ViewModel.IsJumpingToLatestImage, Mode=TwoWay}" Style="{StaticResource FlatToggleSwitchStyle}" PointerPressed="{x:Bind ToggleJumpingToLatestImage}"
                         ToolTipService.ToolTip="Go to the latest image after generation or keep showing the current image."/>
         </StackPanel>
@@ -355,7 +355,7 @@
         </Grid.RowDefinitions>
 
         <!-- Inference settings -->
-        <Button Grid.Column="0" Grid.RowSpan="2" FontFamily="Segoe Fluent Icons" FontSize="24" Content="&#xe9e9;" ToolTipService.ToolTip="Inference Options" VerticalAlignment="Stretch">
+        <Button Grid.Column="0" Grid.RowSpan="2" FontFamily="{StaticResource SymbolThemeFontFamily}" FontSize="24" Content="&#xe9e9;" ToolTipService.ToolTip="Inference Options" VerticalAlignment="Stretch">
           <Button.Flyout>
             <Flyout>
               <Grid ColumnSpacing="12" RowSpacing="6">
@@ -395,7 +395,7 @@
 
                   <ComboBox ItemsSource="{x:Bind ViewModel.Models, Mode=OneWay}"
                             SelectedIndex="{x:Bind ViewModel.SelectedModelIndex, Mode=TwoWay}"/>
-                  <Button Grid.Column="1" FontFamily="Segoe Fluent Icons" Content="&#xe8f1;" ToolTipService.ToolTip="Manage models" VerticalAlignment="Stretch"
+                  <Button Grid.Column="1" FontFamily="{StaticResource SymbolThemeFontFamily}" Content="&#xe8f1;" ToolTipService.ToolTip="Manage models" VerticalAlignment="Stretch"
                           Click="{x:Bind ViewModel.ManageModels}"/>
                 </Grid>
 
@@ -442,7 +442,7 @@
                   </Grid.ColumnDefinitions>
 
                   <muxc:NumberBox Value="{x:Bind ViewModel.RandomSeed, Mode=TwoWay}"/>
-                  <ToggleButton Grid.Column="1" FontFamily="Segoe Fluent Icons" Content="&#xe72e;" ToolTipService.ToolTip="Freeze seed" VerticalAlignment="Stretch"
+                  <ToggleButton Grid.Column="1" FontFamily="{StaticResource SymbolThemeFontFamily}" Content="&#xe72e;" ToolTipService.ToolTip="Freeze seed" VerticalAlignment="Stretch"
                                 IsChecked="{x:Bind ViewModel.IsSeedFrozen, Mode=TwoWay}"/>
                 </Grid>
               </Grid>
@@ -462,7 +462,7 @@
           </ToolTipService.ToolTip>
         </TextBox>
         <TextBlock Grid.Column="1" Grid.Row="0" Text="{x:Bind ViewModel.AvailablePositiveTokenCount, Mode=OneWay}" Style="{StaticResource AvailableTokenCountStyle}"/>
-        <FontIcon Grid.Column="1" Grid.Row="0" FontFamily="Segoe Fluent Icons" FontSize="20" Glyph="&#xe948;" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,6,0,0"/>
+        <FontIcon Grid.Column="1" Grid.Row="0" FontFamily="{StaticResource SymbolThemeFontFamily}" FontSize="20" Glyph="&#xe948;" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,6,0,0"/>
 
         <!-- Negative prompt -->
         <TextBox Grid.Column="1" Grid.Row="1" TextWrapping="Wrap" Padding="36,4,25,0"
@@ -476,7 +476,7 @@
           </ToolTipService.ToolTip>
         </TextBox>
         <TextBlock Grid.Column="1" Grid.Row="1" Text="{x:Bind ViewModel.AvailableNegativeTokenCount, Mode=OneWay}" Style="{StaticResource AvailableTokenCountStyle}"/>
-        <FontIcon Grid.Column="1" Grid.Row="1" FontFamily="Segoe Fluent Icons" FontSize="20" Glyph="&#xe949;" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,6,0,0"/>
+        <FontIcon Grid.Column="1" Grid.Row="1" FontFamily="{StaticResource SymbolThemeFontFamily}" FontSize="20" Glyph="&#xe949;" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,6,0,0"/>
 
         <!-- Execute -->
         <Button Grid.Column="2" Grid.RowSpan="2" VerticalAlignment="Stretch" Click="{x:Bind ViewModel.GenerateImage}">
@@ -487,7 +487,7 @@
             </StackPanel>
           </ToolTipService.ToolTip>
           <Button.Content>
-            <FontIcon Glyph="{x:Bind ViewModel.IsAutoGenerationEnabled, Converter={StaticResource BooleanToGenerateIconConverter}, Mode=OneWay}" FontFamily="Segoe Fluent Icons" FontSize="24"/>
+            <FontIcon Glyph="{x:Bind ViewModel.IsAutoGenerationEnabled, Converter={StaticResource BooleanToGenerateIconConverter}, Mode=OneWay}" FontFamily="{StaticResource SymbolThemeFontFamily}" FontSize="24"/>
           </Button.Content>
           <Button.KeyboardAccelerators>
             <KeyboardAccelerator Key="Enter"/>

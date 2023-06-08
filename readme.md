@@ -25,7 +25,9 @@ To install the app the *first time* follow these steps:
 - Select `Trusted Root Certification Authorities` and click `OK`
 - Click `Next` and then `Finish`
 
-> This installs Unpaint's self-signed security certificate which is required by the new MSIX installer pipeline. As the project grows I will likely purchase a proper paid certificate, but it is around 250USD/yr, and I am doing free work here... Windows Store could be a solution as well, which I am looking into.
+> This installs Unpaint's self-signed security certificate which is required by the new MSIX installer pipeline. As the project grows I will likely purchase a proper paid certificate, but it is around 250USD/yr, and I am doing free work here... Windows Store could be a solution as well, which I am looking into. 
+ 
+**If you feel unsafe consider using [SignTool](https://learn.microsoft.com/en-us/dotnet/framework/tools/signtool-exe) to resign the Unpaint package** with your own certificate (you need to import your own one as well), you can refer to the end of [this](https://github.com/axodox/unpaint/blob/main/build_app.ps1) file on how to do it.
 
 After this just open the `.msix` file and should install fine and start the app.
 
