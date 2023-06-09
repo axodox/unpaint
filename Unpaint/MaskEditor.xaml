@@ -10,12 +10,12 @@
 
   <ContentControl.Resources>
     <Style TargetType="RadioButton" BasedOn="{StaticResource RadioToggleButtonStyle}">
-      <Setter Property="FontFamily" Value="Segoe Fluent Icons"/>
+      <Setter Property="FontFamily" Value="{StaticResource SymbolThemeFontFamily}"/>
       <Setter Property="FontSize" Value="20"/>
     </Style>
 
     <Style TargetType="Button" BasedOn="{StaticResource FlatButtonStyle}">
-      <Setter Property="FontFamily" Value="Segoe Fluent Icons"/>
+      <Setter Property="FontFamily" Value="{StaticResource SymbolThemeFontFamily}"/>
       <Setter Property="FontSize" Value="20"/>
       <Setter Property="Margin" Value="0"/>
     </Style>
