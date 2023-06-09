@@ -11,8 +11,10 @@ using namespace winrt::Windows::ApplicationModel::Activation;
 using namespace winrt::Windows::ApplicationModel::Core;
 using namespace winrt::Windows::Foundation;
 using namespace winrt::Windows::UI::Core;
+using namespace winrt::Windows::UI::ViewManagement;
 using namespace winrt::Windows::UI::Xaml;
 using namespace winrt::Windows::UI::Xaml::Controls;
+using namespace winrt::Windows::UI::Xaml::Media;
 using namespace winrt::Windows::UI::Xaml::Navigation;
 using namespace winrt::Microsoft::UI::Xaml::Controls;
 using namespace winrt::Unpaint;
@@ -47,6 +49,7 @@ App::App() :
 void App::Activate(Windows::ApplicationModel::Activation::IActivatedEventArgs eventArgs)
 {
   auto window = Window::Current();  
+  ApplicationView::GetForCurrentView().SetDesiredBoundsMode(ApplicationViewBoundsMode::UseCoreWindow);
 
   _frame = window.Content().try_as<Frame>();
 
