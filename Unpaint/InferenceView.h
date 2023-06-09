@@ -35,7 +35,6 @@ namespace winrt::Unpaint::implementation
     event<Windows::UI::Xaml::Data::PropertyChangedEventHandler> _propertyChanged;
     INavigationService _navigationService;
 
-    Windows::ApplicationModel::Core::CoreApplicationViewTitleBar::LayoutMetricsChanged_revoker _titleBarLayoutMetricsChangedRevoker;
     INavigationService::IsPointerOverTitleBarChanged_revoker _isPointerOverTitleBarChangedRevoker;
     Windows::UI::Xaml::Data::INotifyPropertyChanged::PropertyChanged_revoker _viewModelPropertyChangedRevoker;
 

@@ -160,6 +160,10 @@
     </ClInclude>
     <ClInclude Include="SizeToStringConverter.h" />
     <ClInclude Include="StringToImageSourceConverter.h" />
+    <ClInclude Include="TitleBarHost.h">
+      <DependentUpon>TitleBarHost.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </ClInclude>
     <ClInclude Include="UnpaintOptions.h" />
     <ClInclude Include="UnpaintState.h" />
     <ClInclude Include="WelcomeView.h">
@@ -196,6 +200,9 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="ShowcaseView.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="TitleBarHost.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Include="WelcomeView.xaml">
@@ -285,6 +292,10 @@
     <ClCompile Include="StorageFileToImageSourceConverter.cpp" />
     <ClCompile Include="StringMapper.cpp" />
     <ClCompile Include="StringToImageSourceConverter.cpp" />
+    <ClCompile Include="TitleBarHost.cpp">
+      <DependentUpon>TitleBarHost.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </ClCompile>
     <ClCompile Include="UnpaintOptions.cpp" />
     <ClCompile Include="WelcomeView.cpp">
       <DependentUpon>WelcomeView.xaml</DependentUpon>
@@ -292,9 +303,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <Midl Include="App.idl">
-      <DependentUpon>App.xaml</DependentUpon>
-    </Midl>
     <Midl Include="Controls.idl" />
     <Midl Include="Converters.idl" />
     <Midl Include="Dialogs.idl" />

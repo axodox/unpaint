@@ -43,4 +43,16 @@ namespace Unpaint
     Boolean IsRedoAvailable{ get; };
     void RedoAction();
   }
+
+  [default_interface]
+  runtimeclass TitleBarHost : Windows.UI.Xaml.Controls.ContentControl, Windows.UI.Xaml.Data.INotifyPropertyChanged
+  {
+    TitleBarHost();
+
+    Windows.UI.Xaml.GridLength TitleBarLeftPadding{ get; };
+    Windows.UI.Xaml.GridLength TitleBarRightPadding{ get; };
+
+    Boolean IsPointerOverTitleBar{ get; };
+    event Windows.Foundation.EventHandler<Boolean> IsPointerOverTitleBarChanged;
+  }
 }
