@@ -155,9 +155,6 @@
     <ClInclude Include="App.h">
       <DependentUpon>App.xaml</DependentUpon>
     </ClInclude>
-    <ClInclude Include="MainView.h">
-      <DependentUpon>MainView.xaml</DependentUpon>
-    </ClInclude>
     <ClInclude Include="SizeToStringConverter.h" />
     <ClInclude Include="StringToImageSourceConverter.h" />
     <ClInclude Include="TitleBarHost.h">
@@ -182,9 +179,6 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="InferenceView.xaml">
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="MainView.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Include="MaskEditor.xaml">
@@ -283,9 +277,6 @@
     </ClCompile>
     <ClCompile Include="App.cpp">
       <DependentUpon>App.xaml</DependentUpon>
-    </ClCompile>
-    <ClCompile Include="MainView.cpp">
-      <DependentUpon>MainView.xaml</DependentUpon>
     </ClCompile>
     <ClCompile Include="$(GeneratedFilesDir)module.g.cpp" />
     <ClCompile Include="SizeToStringConverter.cpp" />

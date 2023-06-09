@@ -1,7 +1,5 @@
 ﻿#include "pch.h"
 #include "App.h"
-#include "MainView.h"
-#include "ShowcaseView.h"
 #include "Infrastructure/WinRtDependencies.h"
 #include "Threading/Parallel.h"
 
@@ -59,8 +57,7 @@ void App::Activate(Windows::ApplicationModel::Activation::IActivatedEventArgs ev
     _frame.SetValue(BackdropMaterial::ApplyToRootOrPageBackgroundProperty(), box_value(true));
     _frame.NavigationFailed({ this, &App::OnNavigationFailed });
     window.Content(_frame);
-    //NavigateToView(xaml_typename<Unpaint::ShowcaseView>());
-    NavigateToView(xaml_typename<Unpaint::ModelsView>());
+    NavigateToView(xaml_typename<Unpaint::InferenceView>());
   }
 
   auto protocolActivatedEventArgs = eventArgs.try_as<ProtocolActivatedEventArgs>();
