@@ -4,9 +4,6 @@
     <Page Include="ModelsView.xaml">
       <Filter>Views</Filter>
     </Page>
-    <Page Include="MainView.xaml">
-      <Filter>Views</Filter>
-    </Page>
     <Page Include="WelcomeView.xaml">
       <Filter>Views</Filter>
     </Page>
@@ -36,7 +33,6 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Midl Include="App.idl" />
     <Midl Include="Views.idl">
       <Filter>Views</Filter>
     </Midl>
@@ -123,6 +119,9 @@
     </ClCompile>
     <ClCompile Include="ShowcaseViewModel.cpp">
       <Filter>View Models</Filter>
+    </ClCompile>
+    <ClCompile Include="DeviceInformation.cpp">
+      <Filter>Models</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -307,5 +306,11 @@
     <ClInclude Include="ShowcaseViewModel.h">
       <Filter>View Models</Filter>
     </ClInclude>
+    <ClInclude Include="DeviceInformation.h">
+      <Filter>Models</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="changelog.txt" />
   </ItemGroup>
 </Project>

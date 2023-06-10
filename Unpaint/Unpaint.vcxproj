@@ -316,6 +316,9 @@
     <None Include="PropertySheet.props" />
     <None Include="key.pfx" />
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="changelog.txt" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
     <Import Project="..\packages\Microsoft.UI.Xaml.2.8.4\build\native\Microsoft.UI.Xaml.targets" Condition="Exists('..\packages\Microsoft.UI.Xaml.2.8.4\build\native\Microsoft.UI.Xaml.targets')" />

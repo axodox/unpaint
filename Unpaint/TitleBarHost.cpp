@@ -59,9 +59,11 @@ namespace winrt::Unpaint::implementation
 
     auto viewTitleBar = applicationView.TitleBar();
     viewTitleBar.ButtonBackgroundColor(Colors::Transparent());
-    viewTitleBar.ButtonForegroundColor(Colors::White());
     viewTitleBar.ButtonInactiveBackgroundColor(Colors::Transparent());
-    viewTitleBar.ButtonInactiveForegroundColor(Colors::White());
+
+    auto foregroundColor = UISettings{}.GetColorValue(UIColorType::Foreground);
+    viewTitleBar.ButtonForegroundColor(foregroundColor);
+    viewTitleBar.ButtonInactiveForegroundColor(foregroundColor);
 
     _titleBarLayoutMetricsChangedRevoker = coreTitleBar.LayoutMetricsChanged(auto_revoke, [=](auto&, auto&) {
       UpdateTitleBar();
