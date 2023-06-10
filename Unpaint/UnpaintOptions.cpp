@@ -16,7 +16,8 @@ namespace winrt::Unpaint
   const char* UnpaintOptions::_modelIdKey = "Inference.ModelId";
 
   UnpaintOptions::UnpaintOptions() :
-    _settingManager(dependencies.resolve<SettingManager>())
+    _settingManager(dependencies.resolve<SettingManager>()),
+    _deviceInformation(dependencies.resolve<DeviceInformation>())
   { }
 
   bool UnpaintOptions::HasShownShowcaseView() const
@@ -69,7 +70,7 @@ namespace winrt::Unpaint
 
   bool UnpaintOptions::IsDenoiserPinned() const
   {
-    return _settingManager->LoadSettingOr(_isDenoiserPinnedKey, true);
+    return _settingManager->LoadSettingOr(_isDenoiserPinnedKey, !_deviceInformation->IsDeviceXbox());
   }
 
   void UnpaintOptions::IsDenoiserPinned(bool value)

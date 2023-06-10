@@ -13,6 +13,7 @@
 #include "IsNullConverter.h"
 #include "UnpaintOptions.h"
 #include "ModelRepository.h"
+#include "DeviceInformation.h"
 
 namespace winrt::Unpaint::implementation
 {
@@ -36,6 +37,7 @@ namespace winrt::Unpaint::implementation
   private:
     std::shared_ptr<UnpaintOptions> _unpaintOptions;
     std::shared_ptr<ModelRepository> _modelRepository;
+    std::shared_ptr<DeviceInformation> _deviceInformation;
     Windows::UI::Xaml::Controls::Frame _frame;
     bool _isPointerOverTitleBar = false;
 

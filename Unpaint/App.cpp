@@ -31,6 +31,7 @@ App::App() :
   dependencies.add<INavigationService>(*this);
   _unpaintOptions = dependencies.resolve<UnpaintOptions>();
   _modelRepository = dependencies.resolve<ModelRepository>();
+  _deviceInformation = dependencies.resolve<DeviceInformation>();
 
   Suspending({ this, &App::OnSuspending });
 
@@ -49,7 +50,9 @@ App::App() :
 void App::Activate(Windows::ApplicationModel::Activation::IActivatedEventArgs eventArgs)
 {
   auto window = Window::Current();  
+
   ApplicationView::GetForCurrentView().SetDesiredBoundsMode(ApplicationViewBoundsMode::UseCoreWindow);
+  if(_deviceInformation->IsDeviceXbox()) ApplicationViewScaling::TrySetDisableLayoutScaling(true);
 
   _frame = window.Content().try_as<Frame>();
 

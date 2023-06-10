@@ -92,7 +92,10 @@ namespace winrt::Unpaint::implementation
   {
     auto titleBar = CoreApplication::GetCurrentView().TitleBar();
 
-    Height(titleBar.Height());
+    auto height = titleBar.Height();
+    if (height == 0.f) height = 32.f;
+
+    Height(height);
     _titleBarLeftPadding = titleBar.SystemOverlayLeftInset();
     _titleBarRightPadding = titleBar.SystemOverlayRightInset();
 
