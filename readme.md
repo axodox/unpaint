@@ -2,6 +2,8 @@
 
 ![an image showing a windowed application where the left side shows a painter's workshop with a canvas selected, while the right side shows the same image, but with the selected canvas replaced with a variation of Mona Lisa](screenshot.png "The in-painting view in Unpaint")
 
+> New: [Unpaint demonstration on Xbox consoles](https://github.com/axodox/unpaint/wiki/Running-Unpaint-on-the-Xbox-Series-consoles)
+
 This repository contains a fully C++ implementation of Stable Diffusion-based image synthesis tool called Unpaint. It supports txt2img, img2img and inpainting pipelines and the safety checker. This solution does not depend on Python and runs the entire image generation process in a single process, making deployments significantly simpler and smaller, essentially consisting of a few executable and library files (~30MB), and the model weights (~2.5GB / model). Using the library it is possible to integrate Stable Diffusion into almost any application, which can import C++ or C functions.
 
 For technical details please check the page of the C++ Stable Diffusion library which Unpaint is based on [here](https://github.com/axodox/axodox-machinelearning).
