@@ -108,12 +108,13 @@ namespace winrt::Unpaint
 
   void StableDiffusionModelExecutor::EnsureEnvironment(std::string_view modelId)
   {
-    if (_modelId != modelId || !_onnxEnvironment)
+    if (_modelId != modelId || _onnxEnvironment->DeviceId != int32_t(_unpaintOptions->AdapterIndex()) || !_onnxEnvironment)
     {
       _textEmbedder.reset();
       _denoiser.reset();
 
-      _onnxEnvironment = make_unique<OnnxEnvironment>(_modelRepository->Root() / modelId);      
+      _onnxEnvironment = make_unique<OnnxEnvironment>(_modelRepository->Root() / modelId);
+      _onnxEnvironment->DeviceId = _unpaintOptions->AdapterIndex();
       _modelId = modelId;
 
       _stepCount = 0;

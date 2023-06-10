@@ -139,6 +139,12 @@ namespace Unpaint
     void OpenUri(Windows.Foundation.Uri uri);
   }
 
+  struct AdapterViewModel
+  {
+    String Name;
+    UInt32 Index;
+  };
+
   [default_interface]
   runtimeclass SettingsViewModel
   {
@@ -153,6 +159,9 @@ namespace Unpaint
     String Version{ get; };
 
     Windows.Foundation.Uri SelectedModelUri{ get; };
+
+    IObservableVector<AdapterViewModel> Adapters{ get; };
+    Int32 SelectedAdapterIndex;
 
     void Continue();
   }

@@ -22,11 +22,17 @@ namespace winrt::Unpaint::implementation
     hstring Version();
     Windows::Foundation::Uri SelectedModelUri();
 
+    Windows::Foundation::Collections::IObservableVector<AdapterViewModel> Adapters();
+    int32_t SelectedAdapterIndex();
+    void SelectedAdapterIndex(int32_t value);
+
     void Continue();
 
   private:
     INavigationService _navigationService;
     std::shared_ptr<UnpaintOptions> _unpaintOptions;
+
+    Windows::Foundation::Collections::IObservableVector<AdapterViewModel> _adapters;
   };
 }
 

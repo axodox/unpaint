@@ -13,6 +13,7 @@ namespace winrt::Unpaint
   const char* UnpaintOptions::_isSafeModeEnabledKey = "Inference.IsSafeModeEnabled";
   const char* UnpaintOptions::_isSafetyCheckerEnabledKey = "Inference.IsSafetyCheckerEnabled";
   const char* UnpaintOptions::_isDenoiserPinnedKey = "Inference.IsDenoiserPinned";
+  const char* UnpaintOptions::_adapterIndexKey = "Inference.AdapterIndex";
   const char* UnpaintOptions::_modelIdKey = "Inference.ModelId";
 
   UnpaintOptions::UnpaintOptions() :
@@ -76,6 +77,16 @@ namespace winrt::Unpaint
   void UnpaintOptions::IsDenoiserPinned(bool value)
   {
     _settingManager->StoreSetting(_isDenoiserPinnedKey, value);
+  }
+
+  uint32_t UnpaintOptions::AdapterIndex() const
+  {
+    return _settingManager->LoadSettingOr(_adapterIndexKey, 0u);
+  }
+
+  void UnpaintOptions::AdapterIndex(uint32_t value)
+  {
+    _settingManager->StoreSetting(_adapterIndexKey, value);
   }
 
   std::string UnpaintOptions::ModelId() const

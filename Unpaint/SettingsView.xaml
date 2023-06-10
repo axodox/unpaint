@@ -53,6 +53,16 @@
           <ToggleSwitch FlowDirection="RightToLeft" IsOn="{x:Bind ViewModel.IsSafetyCheckerEnabled, Mode=TwoWay}" Visibility="{x:Bind ViewModel.AreUnsafeOptionsEnabled}"/>
         </local:SettingControl>
 
+        <local:SettingControl Icon="&#xf211;" Title="Rendering device" Subtitle="Specifies which GPU to use for inference.">
+          <ComboBox ItemsSource="{x:Bind ViewModel.Adapters}" SelectedIndex="{x:Bind ViewModel.SelectedAdapterIndex, Mode=TwoWay}"  VerticalAlignment="Center" Width="256">
+            <ComboBox.ItemTemplate>
+              <DataTemplate x:DataType="local:AdapterViewModel">
+                <TextBlock Text="{x:Bind Name}"/>
+              </DataTemplate>
+            </ComboBox.ItemTemplate>
+          </ComboBox>
+        </local:SettingControl>
+        
         <local:SettingControl Icon="&#xe718;" Title="Keep denoiser in memory" Subtitle="Improves performance, but uses more VRAM.">
           <ToggleSwitch FlowDirection="RightToLeft" IsOn="{x:Bind ViewModel.IsDenoiserPinned, Mode=TwoWay}"/>
         </local:SettingControl>
