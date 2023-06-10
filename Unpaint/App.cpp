@@ -1,14 +1,22 @@
 ﻿#include "pch.h"
 #include "App.h"
-#include "MainView.h"
+#include "Infrastructure/WinRtDependencies.h"
+#include "Threading/Parallel.h"
 
+using namespace Axodox::Infrastructure;
+using namespace Axodox::Threading;
 using namespace winrt;
 using namespace winrt::Windows::ApplicationModel;
 using namespace winrt::Windows::ApplicationModel::Activation;
+using namespace winrt::Windows::ApplicationModel::Core;
 using namespace winrt::Windows::Foundation;
+using namespace winrt::Windows::UI::Core;
+using namespace winrt::Windows::UI::ViewManagement;
 using namespace winrt::Windows::UI::Xaml;
 using namespace winrt::Windows::UI::Xaml::Controls;
+using namespace winrt::Windows::UI::Xaml::Media;
 using namespace winrt::Windows::UI::Xaml::Navigation;
+using namespace winrt::Microsoft::UI::Xaml::Controls;
 using namespace winrt::Unpaint;
 using namespace winrt::Unpaint::implementation;
 
@@ -16,8 +24,15 @@ using namespace winrt::Unpaint::implementation;
 /// Creates the singleton application object.  This is the first line of authored code
 /// executed, and as such is the logical equivalent of main() or WinMain().
 /// </summary>
-App::App()
+App::App() :
+  _frame(nullptr)
 {
+  set_thread_name(L"* ui");
+  dependencies.add<INavigationService>(*this);
+  _unpaintOptions = dependencies.resolve<UnpaintOptions>();
+  _modelRepository = dependencies.resolve<ModelRepository>();
+  _deviceInformation = dependencies.resolve<DeviceInformation>();
+
   Suspending({ this, &App::OnSuspending });
 
 #if defined _DEBUG && !defined DISABLE_XAML_GENERATED_BREAK_ON_UNHANDLED_EXCEPTION
@@ -34,31 +49,51 @@ App::App()
 
 void App::Activate(Windows::ApplicationModel::Activation::IActivatedEventArgs eventArgs)
 {
-  Frame rootFrame{ nullptr };
-  auto content = Window::Current().Content();
-  if (content)
-  {
-    rootFrame = content.try_as<Frame>();
-  }
+  auto window = Window::Current();  
+
+  ApplicationView::GetForCurrentView().SetDesiredBoundsMode(ApplicationViewBoundsMode::UseCoreWindow);
+  if(_deviceInformation->IsDeviceXbox()) ApplicationViewScaling::TrySetDisableLayoutScaling(true);
+
+  _frame = window.Content().try_as<Frame>();
 
   auto launchActivatedEventArgs = eventArgs.try_as<LaunchActivatedEventArgs>();
-  if (rootFrame == nullptr)
+  if (_frame == nullptr)
   {
-    rootFrame = Frame();
-    rootFrame.NavigationFailed({ this, &App::OnNavigationFailed });
-    Window::Current().Content(rootFrame);    
-    rootFrame.Navigate(xaml_typename<Unpaint::MainView>(), eventArgs);
+    _frame = Frame();
+    _frame.SetValue(BackdropMaterial::ApplyToRootOrPageBackgroundProperty(), box_value(true));
+    _frame.NavigationFailed({ this, &App::OnNavigationFailed });
+    window.Content(_frame);
+    NavigateToView(xaml_typename<Unpaint::InferenceView>());
   }
 
   auto protocolActivatedEventArgs = eventArgs.try_as<ProtocolActivatedEventArgs>();
   if (protocolActivatedEventArgs)
   {
-    auto mainView = rootFrame.Content().as<MainView>();
-    mainView->NavigateToView(xaml_typename<InferenceView>());
+    NavigateToView(xaml_typename<Unpaint::InferenceView>());
 
-    auto inferenceView = mainView->ContentFrame().Content().try_as<InferenceView>();
+    auto inferenceView = _frame.Content().try_as<Unpaint::InferenceView>();
     if (inferenceView) inferenceView.ViewModel().OpenUri(protocolActivatedEventArgs.Uri());
   }
+
+  auto coreWindow = CoreWindow::GetForCurrentThread();
+  auto coreTitleBar = CoreApplication::GetCurrentView().TitleBar();
+
+  coreWindow.PointerMoved([=](auto&, PointerEventArgs const& eventArgs) {
+    auto verticalPosition = eventArgs.CurrentPoint().Position().Y;
+    auto isPointerOverTitleBar = verticalPosition > 0.f && verticalPosition < coreTitleBar.Height();
+
+    if (isPointerOverTitleBar == _isPointerOverTitleBar) return;
+
+    _isPointerOverTitleBar = isPointerOverTitleBar;
+    _isPointerOverTitleBarChanged(*this, isPointerOverTitleBar);
+    });
+
+  coreWindow.PointerExited([=](auto&, auto&) {
+    if (_isPointerOverTitleBar) return;
+
+    _isPointerOverTitleBar = true;
+    _isPointerOverTitleBarChanged(*this, true);
+    });
 
   Window::Current().Activate();
 }
@@ -98,4 +133,43 @@ void App::OnSuspending([[maybe_unused]] IInspectable const& sender, [[maybe_unus
 void App::OnNavigationFailed(IInspectable const&, NavigationFailedEventArgs const& e)
 {
   throw hresult_error(E_FAIL, hstring(L"Failed to load Page ") + e.SourcePageType().Name);
+}
+
+void App::NavigateToView(Windows::UI::Xaml::Interop::TypeName viewType)
+{
+  auto window = Window::Current();
+  window.SetTitleBar(nullptr);
+
+  if (!_unpaintOptions->HasShownShowcaseView())
+  {
+    viewType = xaml_typename<Unpaint::ShowcaseView>();
+  }
+  else if (!_unpaintOptions->HasShownWelcomeView())
+  {
+    viewType = xaml_typename<Unpaint::WelcomeView>();
+  }
+  else if (viewType == xaml_typename<Unpaint::InferenceView>() && _modelRepository->Models().empty())
+  {
+    viewType = xaml_typename<Unpaint::ModelsView>();
+  }
+
+  if (_frame.SourcePageType().Name != viewType.Name)
+  {
+    _frame.Navigate(viewType);
+  }
+}
+
+bool App::IsPointerOverTitleBar()
+{
+  return _isPointerOverTitleBar;
+}
+
+event_token App::IsPointerOverTitleBarChanged(Windows::Foundation::EventHandler<bool> const& handler)
+{
+  return _isPointerOverTitleBarChanged.add(handler);
+}
+
+void App::IsPointerOverTitleBarChanged(event_token const& token) noexcept
+{
+  _isPointerOverTitleBarChanged.remove(token);
 }

@@ -22,13 +22,6 @@ namespace winrt::Unpaint::implementation
   {
     InitializeComponent();
 
-    //Configure title bar
-    auto coreTitleBar = CoreApplication::GetCurrentView().TitleBar();
-    _titleBarLayoutMetricsChangedRevoker = coreTitleBar.LayoutMetricsChanged(auto_revoke, [=](auto&, auto&) {
-      StatusBar().Height(coreTitleBar.Height());
-      });
-    StatusBar().Height(coreTitleBar.Height());
-
     //Configure command panel
     _isPointerOverTitleBarChangedRevoker = _navigationService.IsPointerOverTitleBarChanged(auto_revoke, [=](auto&, auto&) {
       UpdateStatusVisibility();

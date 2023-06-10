@@ -1,0 +1,34 @@
+﻿<ContentControl
+  x:Class="Unpaint.TitleBarHost"
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:local="using:Unpaint"
+  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+  mc:Ignorable="d">
+
+  <ContentControl.Template>
+    <ControlTemplate TargetType="local:TitleBarHost">
+      <Grid>
+        <Grid x:Name="TitleBar" Background="Transparent" Loaded="OnTitleBarLoaded">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="{x:Bind TitleBarLeftPadding, Mode=OneWay}"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="{x:Bind TitleBarRightPadding, Mode=OneWay}"/>
+          </Grid.ColumnDefinitions>
+
+          <TextBlock Grid.Column="1" TextAlignment="Left" VerticalAlignment="Center" Text="Unpaint" Margin="6,0"/>
+        </Grid>
+
+        <ContentPresenter x:Name="ContentPresenter" Grid.Column="1" Grid.ColumnSpan="3"
+                          HorizontalAlignment="Stretch"
+                          HorizontalContentAlignment="Stretch"
+                          VerticalContentAlignment="Stretch"
+                          BorderBrush="{TemplateBinding BorderBrush}"
+                          BorderThickness="{TemplateBinding BorderThickness}"
+                          Padding="{TemplateBinding Padding}"
+                          ManipulationMode="None"/>
+      </Grid>
+    </ControlTemplate>
+  </ContentControl.Template>
+</ContentControl>

@@ -43,6 +43,7 @@ namespace winrt::Unpaint::implementation
     _modelExecutor(dependencies.resolve<StableDiffusionModelExecutor>()),
     _imageRepository(dependencies.resolve<ImageRepository>()),
     _navigationService(dependencies.resolve<INavigationService>()),
+    _deviceInformation(dependencies.resolve<DeviceInformation>()),
     _isBusy(false),
     _availablePositiveTokenCount(int32_t(TextTokenizer::MaxTokenCount)),
     _availableNegativeTokenCount(int32_t(TextTokenizer::MaxTokenCount)),
@@ -75,6 +76,11 @@ namespace winrt::Unpaint::implementation
     }
 
     //Initialize resolutions
+    if (_unpaintState->Resolution == SizeInt32{0, 0})
+    {
+      _unpaintState->Resolution = _deviceInformation->IsDeviceXbox() ? SizeInt32{ 512, 512 } : SizeInt32{ 768, 768 };
+    }
+
     _resolutions.Append(SizeInt32{ 1024, 1024 });
     _resolutions.Append(SizeInt32{ 768, 768 });
     _resolutions.Append(SizeInt32{ 512, 512 });

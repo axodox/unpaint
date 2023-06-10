@@ -8,103 +8,107 @@
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
   mc:Ignorable="d">
 
-  <StackPanel Margin="24" Spacing="12" VerticalAlignment="Center" HorizontalAlignment="Center" MaxWidth="520">
-    <!-- Header -->
-    <Grid>
-      <Grid.ColumnDefinitions>
-        <ColumnDefinition Width="*"/>
-        <ColumnDefinition Width="Auto"/>
-      </Grid.ColumnDefinitions>
-
-      <TextBlock Text="Model Library" Style="{StaticResource TitleTextBlockStyle}" VerticalAlignment="Center"/>
-      <FontIcon Grid.Column="1" FontFamily="{StaticResource SymbolThemeFontFamily}" FontSize="48" Glyph="&#xe8f1;" VerticalAlignment="Center"/>
-    </Grid>
-
-    <!-- Introduction -->
-    <muxc:InfoBar IsOpen="{x:Bind ViewModel.AreInstalledModelsEmpty, Mode=OneWay}" IsClosable="False"
-                  Title="No models found"
-                  Message="You must provide a model to continue."/>
-
-
-    <TextBlock Style="{StaticResource ParagraphTextBlockStyle}">Unpaint is an execution engine for <Hyperlink NavigateUri="https://stability.ai/stablediffusion">StableDiffusion</Hyperlink> image synthesis <Hyperlink ToolTipService.ToolTip="Unpaint generates images using artificial intelligence (AI). The image generation itself is performed by complex mathematical models, these - after being exposed to a large array of images - form a statistical representation on how various visual elements (for example a tiger or a house) can look like, and can be used to generate new or modify existing images with human guidance. Different models can be tuned to different subjects and styles, thus have a large effect on the quality of the output generated.">models</Hyperlink> provided in the <Hyperlink NavigateUri="https://onnx.ai/">ONNX</Hyperlink> format. Unpaint uses publicly available or user provided models for generating images. You can manage your models below.</TextBlock>
-
-    <Grid MinHeight="360" RowSpacing="6" ColumnSpacing="6">
-      <Grid.ColumnDefinitions>
-        <ColumnDefinition/>
-        <ColumnDefinition Width="Auto"/>
-        <ColumnDefinition/>
-      </Grid.ColumnDefinitions>
-
-      <Grid.RowDefinitions>
-        <RowDefinition Height="Auto"/>
-        <RowDefinition Height="*"/>
-        <RowDefinition Height="Auto"/>
-      </Grid.RowDefinitions>
-
-      <!-- Available models -->
-      <Grid Grid.Column="0">
+  <Grid>
+    <local:TitleBarHost VerticalAlignment="Top"/>
+  
+    <StackPanel Margin="24" Spacing="12" VerticalAlignment="Center" HorizontalAlignment="Center" MaxWidth="520">
+      <!-- Header -->
+      <Grid>
         <Grid.ColumnDefinitions>
           <ColumnDefinition Width="*"/>
           <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
-        <TextBlock Text="Available models" VerticalAlignment="Center"/>
-        <StackPanel Orientation="Horizontal" Grid.Column="1" Spacing="6">
-          <Button FontFamily="{StaticResource SymbolThemeFontFamily}" Content="&#xe946;" ToolTipService.ToolTip="Open model website" Click="{x:Bind ViewModel.OpenAvailableModelWebsite}" IsEnabled="{x:Bind ViewModel.IsAvailableModelSelected, Mode=OneWay}"/>
-          <Button FontFamily="{StaticResource SymbolThemeFontFamily}" Content="&#xe72c;" ToolTipService.ToolTip="Refresh" Click="{x:Bind ViewModel.UpdateAvailableModelsAsync}"/>
-        </StackPanel>
+
+        <TextBlock Text="Model Library" Style="{StaticResource TitleTextBlockStyle}" VerticalAlignment="Center"/>
+        <FontIcon Grid.Column="1" FontFamily="{StaticResource SymbolThemeFontFamily}" FontSize="48" Glyph="&#xe8f1;" VerticalAlignment="Center"/>
       </Grid>
-      
-      <Border Grid.Column="0" Grid.Row="1" Style="{StaticResource ListBorderStyle}">
-        <Grid>
-          <ListView ItemsSource="{x:Bind ViewModel.AvailableModels}" SelectedIndex="{x:Bind ViewModel.SelectedAvailableModel, Mode=TwoWay}">
-            <ListView.ItemTemplate>
-              <DataTemplate x:DataType="local:ModelViewModel">
-                <TextBlock Text="{x:Bind Id}"/>
-              </DataTemplate>
-            </ListView.ItemTemplate>
-          </ListView>
-          <TextBlock Text="There are no online models available at this time." Style="{StaticResource ListPlaceholderTextBlockStyle}" Visibility="{x:Bind ViewModel.AreAvailableModelsEmpty, Mode=OneWay}"/>
+
+      <!-- Introduction -->
+      <muxc:InfoBar IsOpen="{x:Bind ViewModel.AreInstalledModelsEmpty, Mode=OneWay}" IsClosable="False"
+                    Title="No models found"
+                    Message="You must provide a model to continue."/>
+
+
+      <TextBlock Style="{StaticResource ParagraphTextBlockStyle}">Unpaint is an execution engine for <Hyperlink NavigateUri="https://stability.ai/stablediffusion">StableDiffusion</Hyperlink> image synthesis <Hyperlink ToolTipService.ToolTip="Unpaint generates images using artificial intelligence (AI). The image generation itself is performed by complex mathematical models, these - after being exposed to a large array of images - form a statistical representation on how various visual elements (for example a tiger or a house) can look like, and can be used to generate new or modify existing images with human guidance. Different models can be tuned to different subjects and styles, thus have a large effect on the quality of the output generated.">models</Hyperlink> provided in the <Hyperlink NavigateUri="https://onnx.ai/">ONNX</Hyperlink> format. Unpaint uses publicly available or user provided models for generating images. You can manage your models below.</TextBlock>
+
+      <Grid MinHeight="240" RowSpacing="6" ColumnSpacing="6">
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition/>
+          <ColumnDefinition Width="Auto"/>
+          <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+
+        <Grid.RowDefinitions>
+          <RowDefinition Height="Auto"/>
+          <RowDefinition Height="*"/>
+          <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Available models -->
+        <Grid Grid.Column="0">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
+          </Grid.ColumnDefinitions>
+          <TextBlock Text="Available models" VerticalAlignment="Center"/>
+          <StackPanel Orientation="Horizontal" Grid.Column="1" Spacing="6">
+            <Button FontFamily="{StaticResource SymbolThemeFontFamily}" Content="&#xe946;" ToolTipService.ToolTip="Open model website" Click="{x:Bind ViewModel.OpenAvailableModelWebsite}" IsEnabled="{x:Bind ViewModel.IsAvailableModelSelected, Mode=OneWay}"/>
+            <Button FontFamily="{StaticResource SymbolThemeFontFamily}" Content="&#xe72c;" ToolTipService.ToolTip="Refresh" Click="{x:Bind ViewModel.UpdateAvailableModelsAsync}"/>
+          </StackPanel>
         </Grid>
-      </Border>
-
-      <TextBlock Grid.Column="0" Grid.Row="2" Style="{StaticResource ParagraphTextBlockStyle}">You can select models from <Hyperlink NavigateUri="https://huggingface.co/">HuggingFace</Hyperlink> on this side, and install / remove them using the arrow buttons.</TextBlock>
-
-      <!-- Middle section -->
-      <StackPanel Grid.Column="1" Grid.Row="1" VerticalAlignment="Center" Spacing="12">
-        <Button FontFamily="{StaticResource SymbolThemeFontFamily}" FontSize="24" Content="&#xe76c;" ToolTipService.ToolTip="Add model" Click="{x:Bind ViewModel.DownloadModelAsync}" IsEnabled="{x:Bind ViewModel.IsAvailableModelSelected, Mode=OneWay}"/>
-        <Button FontFamily="{StaticResource SymbolThemeFontFamily}" FontSize="24" Content="&#xe76b;" ToolTipService.ToolTip="Remove model" Click="{x:Bind ViewModel.RemoveModelAsync}" IsEnabled="{x:Bind ViewModel.IsInstalledModelSelected, Mode=OneWay}"/>
-      </StackPanel>
-
-      <!-- Installed models -->
-      <Grid Grid.Column="3">
-        <Grid.ColumnDefinitions>
-          <ColumnDefinition Width="*"/>
-          <ColumnDefinition Width="Auto"/>
-        </Grid.ColumnDefinitions>
-        <TextBlock Text="Installed models" VerticalAlignment="Center"/>
-        <StackPanel Orientation="Horizontal" Grid.Column="1" Spacing="6">
-          <Button FontFamily="{StaticResource SymbolThemeFontFamily}" Content="&#xe946;" ToolTipService.ToolTip="Open model website" Click="{x:Bind ViewModel.OpenInstalledModelWebsite}" IsEnabled="{x:Bind ViewModel.IsInstalledModelSelected, Mode=OneWay}"/>
-          <Button FontFamily="{StaticResource SymbolThemeFontFamily}" Content="&#xe838;" ToolTipService.ToolTip="Open model directory" Click="{x:Bind ViewModel.OpenModelDirectory}"/>
-        </StackPanel>
-      </Grid>
       
-      <Border Grid.Column="2" Grid.Row="1" Style="{StaticResource ListBorderStyle}">
-        <Grid>
-          <ListView ItemsSource="{x:Bind ViewModel.InstalledModels}" SelectedIndex="{x:Bind ViewModel.SelectedInstalledModel, Mode=TwoWay}">
-            <ListView.ItemTemplate>
-              <DataTemplate x:DataType="local:ModelViewModel">
-                <TextBlock Text="{x:Bind Id}"/>
-              </DataTemplate>
-            </ListView.ItemTemplate>
-          </ListView>
-          <TextBlock Text="There are no models installed yet." Style="{StaticResource ListPlaceholderTextBlockStyle}" Visibility="{x:Bind ViewModel.AreInstalledModelsEmpty, Mode=OneWay}"/>
-        </Grid>        
-      </Border>
+        <Border Grid.Column="0" Grid.Row="1" Style="{StaticResource ListBorderStyle}">
+          <Grid>
+            <ListView ItemsSource="{x:Bind ViewModel.AvailableModels}" SelectedIndex="{x:Bind ViewModel.SelectedAvailableModel, Mode=TwoWay}">
+              <ListView.ItemTemplate>
+                <DataTemplate x:DataType="local:ModelViewModel">
+                  <TextBlock Text="{x:Bind Id}"/>
+                </DataTemplate>
+              </ListView.ItemTemplate>
+            </ListView>
+            <TextBlock Text="There are no online models available at this time." Style="{StaticResource ListPlaceholderTextBlockStyle}" Visibility="{x:Bind ViewModel.AreAvailableModelsEmpty, Mode=OneWay}"/>
+          </Grid>
+        </Border>
 
-      <TextBlock Grid.Column="2" Grid.Row="2" Style="{StaticResource ParagraphTextBlockStyle}">You can see your installed models here. You can also open the model folder and copy your own models into it.</TextBlock>
-    </Grid>
+        <TextBlock Grid.Column="0" Grid.Row="2" Style="{StaticResource ParagraphTextBlockStyle}">You can select models from <Hyperlink NavigateUri="https://huggingface.co/">HuggingFace</Hyperlink> on this side, and install / remove them using the arrow buttons.</TextBlock>
 
-    <!-- Footer -->
-    <Button HorizontalAlignment="Center" Content="Continue" Click="{x:Bind ViewModel.Continue}" IsEnabled="{x:Bind ViewModel.CanContinue, Mode=OneWay}"/>
-  </StackPanel>
+        <!-- Middle section -->
+        <StackPanel Grid.Column="1" Grid.Row="1" VerticalAlignment="Center" Spacing="12">
+          <Button FontFamily="{StaticResource SymbolThemeFontFamily}" FontSize="24" Content="&#xe76c;" ToolTipService.ToolTip="Add model" Click="{x:Bind ViewModel.DownloadModelAsync}" IsEnabled="{x:Bind ViewModel.IsAvailableModelSelected, Mode=OneWay}"/>
+          <Button FontFamily="{StaticResource SymbolThemeFontFamily}" FontSize="24" Content="&#xe76b;" ToolTipService.ToolTip="Remove model" Click="{x:Bind ViewModel.RemoveModelAsync}" IsEnabled="{x:Bind ViewModel.IsInstalledModelSelected, Mode=OneWay}"/>
+        </StackPanel>
+
+        <!-- Installed models -->
+        <Grid Grid.Column="3">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
+          </Grid.ColumnDefinitions>
+          <TextBlock Text="Installed models" VerticalAlignment="Center"/>
+          <StackPanel Orientation="Horizontal" Grid.Column="1" Spacing="6">
+            <Button FontFamily="{StaticResource SymbolThemeFontFamily}" Content="&#xe946;" ToolTipService.ToolTip="Open model website" Click="{x:Bind ViewModel.OpenInstalledModelWebsite}" IsEnabled="{x:Bind ViewModel.IsInstalledModelSelected, Mode=OneWay}"/>
+            <Button FontFamily="{StaticResource SymbolThemeFontFamily}" Content="&#xe838;" ToolTipService.ToolTip="Open model directory" Click="{x:Bind ViewModel.OpenModelDirectory}"/>
+          </StackPanel>
+        </Grid>
+      
+        <Border Grid.Column="2" Grid.Row="1" Style="{StaticResource ListBorderStyle}">
+          <Grid>
+            <ListView ItemsSource="{x:Bind ViewModel.InstalledModels}" SelectedIndex="{x:Bind ViewModel.SelectedInstalledModel, Mode=TwoWay}">
+              <ListView.ItemTemplate>
+                <DataTemplate x:DataType="local:ModelViewModel">
+                  <TextBlock Text="{x:Bind Id}"/>
+                </DataTemplate>
+              </ListView.ItemTemplate>
+            </ListView>
+            <TextBlock Text="There are no models installed yet." Style="{StaticResource ListPlaceholderTextBlockStyle}" Visibility="{x:Bind ViewModel.AreInstalledModelsEmpty, Mode=OneWay}"/>
+          </Grid>        
+        </Border>
+
+        <TextBlock Grid.Column="2" Grid.Row="2" Style="{StaticResource ParagraphTextBlockStyle}">You can see your installed models here. You can also open the model folder and copy your own models into it.</TextBlock>
+      </Grid>
+
+      <!-- Footer -->
+      <Button HorizontalAlignment="Center" Content="Continue" Click="{x:Bind ViewModel.Continue}" IsEnabled="{x:Bind ViewModel.CanContinue, Mode=OneWay}"/>
+    </StackPanel>    
+  </Grid>    
 </Page>

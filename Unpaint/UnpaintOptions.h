@@ -1,5 +1,6 @@
 #pragma once
 #include "Storage/SettingManager.h"
+#include "DeviceInformation.h"
 
 namespace winrt::Unpaint
 {
@@ -35,5 +36,6 @@ namespace winrt::Unpaint
     static const char* _modelIdKey;
 
     std::shared_ptr<Axodox::Storage::SettingManager> _settingManager;
+    std::shared_ptr<DeviceInformation> _deviceInformation;
   };
 }

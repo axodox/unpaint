@@ -31,6 +31,9 @@
     <Page Include="ShowcaseView.xaml">
       <Filter>Views</Filter>
     </Page>
+    <Page Include="TitleBarHost.xaml">
+      <Filter>Controls</Filter>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Midl Include="App.idl" />

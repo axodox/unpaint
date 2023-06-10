@@ -108,6 +108,7 @@
     <ClInclude Include="BooleanInverter.h" />
     <ClInclude Include="BooleanSwitchConverter.h" />
     <ClInclude Include="BooleanToGridLengthConverter.h" />
+    <ClInclude Include="DeviceInformation.h" />
     <ClInclude Include="DownloadModelDialog.h">
       <DependentUpon>DownloadModelDialog.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -155,11 +156,12 @@
     <ClInclude Include="App.h">
       <DependentUpon>App.xaml</DependentUpon>
     </ClInclude>
-    <ClInclude Include="MainView.h">
-      <DependentUpon>MainView.xaml</DependentUpon>
-    </ClInclude>
     <ClInclude Include="SizeToStringConverter.h" />
     <ClInclude Include="StringToImageSourceConverter.h" />
+    <ClInclude Include="TitleBarHost.h">
+      <DependentUpon>TitleBarHost.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </ClInclude>
     <ClInclude Include="UnpaintOptions.h" />
     <ClInclude Include="UnpaintState.h" />
     <ClInclude Include="WelcomeView.h">
@@ -180,9 +182,6 @@
     <Page Include="InferenceView.xaml">
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="MainView.xaml">
-      <SubType>Designer</SubType>
-    </Page>
     <Page Include="MaskEditor.xaml">
       <SubType>Designer</SubType>
     </Page>
@@ -196,6 +195,9 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="ShowcaseView.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="TitleBarHost.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Include="WelcomeView.xaml">
@@ -230,6 +232,7 @@
     <ClCompile Include="BooleanInverter.cpp" />
     <ClCompile Include="BooleanSwitchConverter.cpp" />
     <ClCompile Include="BooleanToGridLengthConverter.cpp" />
+    <ClCompile Include="DeviceInformation.cpp" />
     <ClCompile Include="DownloadModelDialog.cpp">
       <DependentUpon>DownloadModelDialog.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -277,14 +280,15 @@
     <ClCompile Include="App.cpp">
       <DependentUpon>App.xaml</DependentUpon>
     </ClCompile>
-    <ClCompile Include="MainView.cpp">
-      <DependentUpon>MainView.xaml</DependentUpon>
-    </ClCompile>
     <ClCompile Include="$(GeneratedFilesDir)module.g.cpp" />
     <ClCompile Include="SizeToStringConverter.cpp" />
     <ClCompile Include="StorageFileToImageSourceConverter.cpp" />
     <ClCompile Include="StringMapper.cpp" />
     <ClCompile Include="StringToImageSourceConverter.cpp" />
+    <ClCompile Include="TitleBarHost.cpp">
+      <DependentUpon>TitleBarHost.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </ClCompile>
     <ClCompile Include="UnpaintOptions.cpp" />
     <ClCompile Include="WelcomeView.cpp">
       <DependentUpon>WelcomeView.xaml</DependentUpon>
@@ -292,9 +296,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <Midl Include="App.idl">
-      <DependentUpon>App.xaml</DependentUpon>
-    </Midl>
     <Midl Include="Controls.idl" />
     <Midl Include="Converters.idl" />
     <Midl Include="Dialogs.idl" />
@@ -323,8 +324,8 @@
     <Import Project="..\packages\Microsoft.ML.OnnxRuntime.DirectML.1.15.0\build\native\Microsoft.ML.OnnxRuntime.DirectML.targets" Condition="Exists('..\packages\Microsoft.ML.OnnxRuntime.DirectML.1.15.0\build\native\Microsoft.ML.OnnxRuntime.DirectML.targets')" />
     <Import Project="..\packages\Microsoft.Windows.CppWinRT.2.0.230524.4\build\native\Microsoft.Windows.CppWinRT.targets" Condition="Exists('..\packages\Microsoft.Windows.CppWinRT.2.0.230524.4\build\native\Microsoft.Windows.CppWinRT.targets')" />
     <Import Project="..\packages\Win2D.uwp.1.26.0\build\native\Win2D.uwp.targets" Condition="Exists('..\packages\Win2D.uwp.1.26.0\build\native\Win2D.uwp.targets')" />
-    <Import Project="..\packages\Axodox.Common.1.0.14\build\native\Axodox.Common.targets" Condition="Exists('..\packages\Axodox.Common.1.0.14\build\native\Axodox.Common.targets')" />
-    <Import Project="..\packages\Axodox.MachineLearning.1.0.7\build\native\Axodox.MachineLearning.targets" Condition="Exists('..\packages\Axodox.MachineLearning.1.0.7\build\native\Axodox.MachineLearning.targets')" />
+    <Import Project="..\packages\Axodox.Common.1.0.16\build\native\Axodox.Common.targets" Condition="Exists('..\packages\Axodox.Common.1.0.16\build\native\Axodox.Common.targets')" />
+    <Import Project="..\packages\Axodox.MachineLearning.1.0.14\build\native\Axodox.MachineLearning.targets" Condition="Exists('..\packages\Axodox.MachineLearning.1.0.14\build\native\Axodox.MachineLearning.targets')" />
   </ImportGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
@@ -340,7 +341,7 @@
     <Error Condition="!Exists('..\packages\Microsoft.Windows.CppWinRT.2.0.230524.4\build\native\Microsoft.Windows.CppWinRT.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Windows.CppWinRT.2.0.230524.4\build\native\Microsoft.Windows.CppWinRT.props'))" />
     <Error Condition="!Exists('..\packages\Microsoft.Windows.CppWinRT.2.0.230524.4\build\native\Microsoft.Windows.CppWinRT.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Windows.CppWinRT.2.0.230524.4\build\native\Microsoft.Windows.CppWinRT.targets'))" />
     <Error Condition="!Exists('..\packages\Win2D.uwp.1.26.0\build\native\Win2D.uwp.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Win2D.uwp.1.26.0\build\native\Win2D.uwp.targets'))" />
-    <Error Condition="!Exists('..\packages\Axodox.Common.1.0.14\build\native\Axodox.Common.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Axodox.Common.1.0.14\build\native\Axodox.Common.targets'))" />
-    <Error Condition="!Exists('..\packages\Axodox.MachineLearning.1.0.7\build\native\Axodox.MachineLearning.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Axodox.MachineLearning.1.0.7\build\native\Axodox.MachineLearning.targets'))" />
+    <Error Condition="!Exists('..\packages\Axodox.Common.1.0.16\build\native\Axodox.Common.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Axodox.Common.1.0.16\build\native\Axodox.Common.targets'))" />
+    <Error Condition="!Exists('..\packages\Axodox.MachineLearning.1.0.14\build\native\Axodox.MachineLearning.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Axodox.MachineLearning.1.0.14\build\native\Axodox.MachineLearning.targets'))" />
   </Target>
 </Project>

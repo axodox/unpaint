@@ -5,8 +5,6 @@ namespace winrt::Unpaint::implementation
 {
   struct ModelsView : ModelsViewT<ModelsView>
   {
-    ModelsView() = default;
-
     ModelsViewModel ViewModel();
 
   private:

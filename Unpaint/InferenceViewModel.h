@@ -6,6 +6,7 @@
 #include "UnpaintOptions.h"
 #include "UnpaintState.h"
 #include "Infrastructure/Events.h"
+#include "DeviceInformation.h"
 
 namespace winrt::Unpaint::implementation
 {
@@ -118,6 +119,7 @@ namespace winrt::Unpaint::implementation
     std::shared_ptr<ModelRepository> _modelRepository;
     std::shared_ptr<StableDiffusionModelExecutor> _modelExecutor;
     std::shared_ptr<ImageRepository> _imageRepository;
+    std::shared_ptr<DeviceInformation> _deviceInformation;
 
     std::minstd_rand _random;
     std::uniform_int_distribution<uint32_t> _seedDistribution;
