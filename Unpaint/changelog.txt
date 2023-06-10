@@ -2,3 +2,4 @@
 
 Fixed:
 - Bright color scheme now work in the title bar
+- Blinking output image

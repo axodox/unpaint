@@ -9,6 +9,10 @@ namespace winrt::Unpaint::implementation
 
     Windows::Foundation::IInspectable Convert(Windows::Foundation::IInspectable const& value, Windows::UI::Xaml::Interop::TypeName const& targetType, Windows::Foundation::IInspectable const& parameter, hstring const& language);
     Windows::Foundation::IInspectable ConvertBack(Windows::Foundation::IInspectable const& value, Windows::UI::Xaml::Interop::TypeName const& targetType, Windows::Foundation::IInspectable const& parameter, hstring const& language);
+
+  private:
+    static const size_t _cachedImageCount;
+    static std::list<std::pair<hstring, Windows::UI::Xaml::Media::Imaging::BitmapImage>> _cachedImages;
   };
 }
 
