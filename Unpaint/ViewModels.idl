@@ -32,15 +32,7 @@ namespace Unpaint
   {
     ModelsViewModel();
 
-    IObservableVector<ModelViewModel> AvailableModels{ get; };
-    Boolean AreAvailableModelsEmpty{ get; };
-    void UpdateAvailableModelsAsync();
-    void OpenAvailableModelWebsite();
-    void DownloadModelAsync();
     void ImportModelFromHuggingFaceAsync();
-
-    Int32 SelectedAvailableModel;
-    Boolean IsAvailableModelSelected{ get; };
     
     IObservableVector<ModelViewModel> InstalledModels{ get; };
     Boolean AreInstalledModelsEmpty{ get; };

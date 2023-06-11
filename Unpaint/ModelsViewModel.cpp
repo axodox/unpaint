@@ -20,60 +20,13 @@ namespace winrt::Unpaint::implementation
   const char* const ModelsViewModel::_modelFilter = "unpaint,stable_diffusion_model";
 
   ModelsViewModel::ModelsViewModel() :
-    _availableModels(single_threaded_observable_vector<ModelViewModel>()),
     _installedModels(single_threaded_observable_vector<ModelViewModel>()),
     _navigationService(dependencies.resolve<INavigationService>()),
     _modelRepository(dependencies.resolve<ModelRepository>())
   {
     UpdateInstalledModels();
-    UpdateAvailableModelsAsync();
   }
-
-  Windows::Foundation::Collections::IObservableVector<ModelViewModel> ModelsViewModel::AvailableModels()
-  {
-    return _availableModels;
-  }
-
-  bool ModelsViewModel::AreAvailableModelsEmpty()
-  {
-    return _availableModels.Size() == 0;
-  }
-
-  fire_and_forget ModelsViewModel::UpdateAvailableModelsAsync()
-  {
-    apartment_context callerContext;
     
-    auto lifetime = get_strong();
-    co_await resume_background();
-
-    HuggingFaceClient client{};
-    auto models = client.GetModels(_modelFilter);
-    auto installedModels = _modelRepository->Models();
-
-    co_await callerContext;
-
-    _availableModels.Clear();
-    for (auto& model : models)
-    {
-      if (installedModels.contains(model)) continue;
-
-#ifdef NDEBUG
-      //Sorry mates I do not trust you this much...
-      if (!model.starts_with("axodoxian/")) continue;
-#endif
-
-      _availableModels.Append(CreateModelViewModel(model));
-    }
-
-    _propertyChanged(*this, PropertyChangedEventArgs(L"AreAvailableModelsEmpty"));
-  }
-
-  void ModelsViewModel::DownloadModelAsync()
-  {
-    auto modelId = _availableModels.GetAt(_selectedAvailableModel).Id;
-    DownloadHuggingFaceModelAsync(modelId);
-  }
-
   fire_and_forget ModelsViewModel::ImportModelFromHuggingFaceAsync()
   {
     ImportHuggingFaceModelDialog dialog{};
@@ -82,31 +35,6 @@ namespace winrt::Unpaint::implementation
 
     auto viewModel = dialog.ViewModel();
     if (viewModel.IsValid()) DownloadHuggingFaceModelAsync(viewModel.ModelId());
-  }
-
-  void ModelsViewModel::OpenAvailableModelWebsite()
-  {
-    auto uri = _availableModels.GetAt(_selectedAvailableModel).Uri;
-    Launcher::LaunchUriAsync(Uri(uri));
-  }
-
-  int32_t ModelsViewModel::SelectedAvailableModel()
-  {
-    return _selectedAvailableModel;
-  }
-
-  void ModelsViewModel::SelectedAvailableModel(int32_t value)
-  {
-    if (value == _selectedAvailableModel) return;
-
-    _selectedAvailableModel = value;
-    _propertyChanged(*this, PropertyChangedEventArgs(L"SelectedAvailableModel"));
-    _propertyChanged(*this, PropertyChangedEventArgs(L"IsAvailableModelSelected"));
-  }
-
-  bool ModelsViewModel::IsAvailableModelSelected()
-  {
-    return _selectedAvailableModel != -1;
   }
 
   Windows::Foundation::Collections::IObservableVector<ModelViewModel> ModelsViewModel::InstalledModels()
@@ -137,7 +65,6 @@ namespace winrt::Unpaint::implementation
       _modelRepository->UninstallModel(modelId);
 
       UpdateInstalledModels();
-      UpdateAvailableModelsAsync();
     }
   }
 
@@ -224,6 +151,5 @@ namespace winrt::Unpaint::implementation
     co_await dialog.ShowAsync();
 
     UpdateInstalledModels();
-    UpdateAvailableModelsAsync();
   }
 }

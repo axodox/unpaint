@@ -8,16 +8,7 @@ namespace winrt::Unpaint::implementation
   {
     ModelsViewModel();
 
-    Windows::Foundation::Collections::IObservableVector<ModelViewModel> AvailableModels();
-    bool AreAvailableModelsEmpty();
-    fire_and_forget UpdateAvailableModelsAsync();
-    void DownloadModelAsync();
     fire_and_forget ImportModelFromHuggingFaceAsync();
-    void OpenAvailableModelWebsite();
-
-    int32_t SelectedAvailableModel();
-    void SelectedAvailableModel(int32_t value);
-    bool IsAvailableModelSelected();
 
     Windows::Foundation::Collections::IObservableVector<ModelViewModel> InstalledModels();
     bool AreInstalledModelsEmpty();
@@ -40,9 +31,6 @@ namespace winrt::Unpaint::implementation
     INavigationService _navigationService;
     std::shared_ptr<ModelRepository> _modelRepository;
     event<Windows::UI::Xaml::Data::PropertyChangedEventHandler> _propertyChanged;
-
-    Windows::Foundation::Collections::IObservableVector<ModelViewModel> _availableModels;
-    int32_t _selectedAvailableModel = -1;
 
     Windows::Foundation::Collections::IObservableVector<ModelViewModel> _installedModels;
     int32_t _selectedInstalledModel = -1;
