@@ -27,7 +27,7 @@ using namespace winrt::Unpaint::implementation;
 App::App() :
   _frame(nullptr)
 {
-  set_thread_name(L"* ui");
+  set_thread_name("* ui");
   dependencies.add<INavigationService>(*this);
   _unpaintOptions = dependencies.resolve<UnpaintOptions>();
   _modelRepository = dependencies.resolve<ModelRepository>();

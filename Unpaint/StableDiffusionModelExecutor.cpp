@@ -44,7 +44,7 @@ namespace winrt::Unpaint
   {
     //Set up async source
     lock_guard lock(_mutex);
-    thread_name_context threadName{ L"* inference" };
+    thread_name_context threadName{ "* inference" };
 
     async_operation_source async;
     operation.set_source(async);

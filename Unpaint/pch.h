@@ -36,4 +36,5 @@
 #include "winrt/Microsoft.Graphics.Canvas.Effects.h"
 #include "winrt/Microsoft.Graphics.Canvas.UI.Xaml.h"
 
+#define USE_DIRECTX
 #include "Include/Axodox.MachineLearning.h"
