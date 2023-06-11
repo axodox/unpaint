@@ -1,0 +1,42 @@
+﻿<ContentDialog
+  x:Class="Unpaint.ImportHuggingFaceModelDialog"
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:local="using:Unpaint"
+  xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
+  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+  Title="Import HuggingFace model"
+  PrimaryButtonText="Import"
+  DefaultButton="Primary"
+  CloseButtonText="Cancel"
+  mc:Ignorable="d">
+  <ContentDialog.Resources>
+    <Style TargetType="local:ImportHuggingFaceModelDialog" BasedOn="{StaticResource DefaultContentDialogStyle}"/>
+    <local:BooleanSwitchConverter x:Key="CheckmarkConverter" TrueValue="&#xe73e;" FalseValue="&#xe894;"/>
+    <local:EqualsConverter x:Key="IsNotEmptyStringToVisibilityConverter" IsNegating="True" Value=""/>
+  </ContentDialog.Resources>
+
+  <StackPanel Spacing="12">
+    <TextBlock TextWrapping="Wrap">You can import Stable Diffusion models from <Hyperlink NavigateUri="https://huggingface.co/models?library=onnx&amp;other=stable-diffusion&amp;other=unpaint">HuggingFace.co</Hyperlink> below. Please note that only ONNX models are supported by Unpaint.</TextBlock>
+    
+    <Grid ColumnSpacing="12">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="Auto"/>
+        <ColumnDefinition Width="*"/>
+        <ColumnDefinition Width="Auto"/>
+      </Grid.ColumnDefinitions>
+
+      <TextBlock Text="Model ID" VerticalAlignment="Center"/>
+      <TextBox Grid.Column="1" PlaceholderText="user/repository" VerticalAlignment="Center" IsSpellCheckEnabled="False" Text="{x:Bind ViewModel.ModelId, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
+      <FontIcon Grid.Column="2" Glyph="{x:Bind ViewModel.IsValid, Converter={StaticResource CheckmarkConverter}, Mode=OneWay}" FontFamily="{ThemeResource SymbolThemeFontFamily}" VerticalAlignment="Center"/>
+    </Grid>
+
+    <muxc:InfoBar Severity="Error" IsOpen="{x:Bind ViewModel.Status, Converter={StaticResource IsNotEmptyStringToVisibilityConverter}, Mode=OneWay}" Message="{x:Bind ViewModel.Status, Mode=OneWay}" IsClosable="False"/>
+
+    <muxc:InfoBar Severity="Warning" IsOpen="True" IsClosable="False" Message="Only download models from reputable sources. Some models might have been trained to reproduce harmful visual concepts. If you encounter a dangerous model, we advise you to report it."/>
+
+  </StackPanel>
+  
+  
+</ContentDialog>

@@ -31,6 +31,9 @@
     <Page Include="TitleBarHost.xaml">
       <Filter>Controls</Filter>
     </Page>
+    <Page Include="ImportHuggingFaceModelDialog.xaml">
+      <Filter>Dialogs</Filter>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Midl Include="Views.idl">
@@ -122,6 +125,9 @@
     </ClCompile>
     <ClCompile Include="DeviceInformation.cpp">
       <Filter>Models</Filter>
+    </ClCompile>
+    <ClCompile Include="ImportHuggingFaceModelViewModel.cpp">
+      <Filter>View Models</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -308,6 +314,9 @@
     </ClInclude>
     <ClInclude Include="DeviceInformation.h">
       <Filter>Models</Filter>
+    </ClInclude>
+    <ClInclude Include="ImportHuggingFaceModelViewModel.h">
+      <Filter>View Models</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

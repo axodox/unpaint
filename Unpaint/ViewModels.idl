@@ -37,6 +37,7 @@ namespace Unpaint
     void UpdateAvailableModelsAsync();
     void OpenAvailableModelWebsite();
     void DownloadModelAsync();
+    void ImportModelFromHuggingFaceAsync();
 
     Int32 SelectedAvailableModel;
     Boolean IsAvailableModelSelected{ get; };
@@ -164,5 +165,15 @@ namespace Unpaint
     Int32 SelectedAdapterIndex;
 
     void Continue();
+  }
+
+  [default_interface]
+  runtimeclass ImportHuggingFaceModelViewModel : Windows.UI.Xaml.Data.INotifyPropertyChanged
+  {
+    ImportHuggingFaceModelViewModel();
+
+    String ModelId;
+    Boolean IsValid{ get; };
+    String Status{ get; };
   }
 }

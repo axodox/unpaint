@@ -28,7 +28,6 @@
                     Title="No models found"
                     Message="You must provide a model to continue."/>
 
-
       <TextBlock Style="{StaticResource ParagraphTextBlockStyle}">Unpaint is an execution engine for <Hyperlink NavigateUri="https://stability.ai/stablediffusion">StableDiffusion</Hyperlink> image synthesis <Hyperlink ToolTipService.ToolTip="Unpaint generates images using artificial intelligence (AI). The image generation itself is performed by complex mathematical models, these - after being exposed to a large array of images - form a statistical representation on how various visual elements (for example a tiger or a house) can look like, and can be used to generate new or modify existing images with human guidance. Different models can be tuned to different subjects and styles, thus have a large effect on the quality of the output generated.">models</Hyperlink> provided in the <Hyperlink NavigateUri="https://onnx.ai/">ONNX</Hyperlink> format. Unpaint uses publicly available or user provided models for generating images. You can manage your models below.</TextBlock>
 
       <Grid MinHeight="240" RowSpacing="6" ColumnSpacing="6">
@@ -52,6 +51,7 @@
           </Grid.ColumnDefinitions>
           <TextBlock Text="Available models" VerticalAlignment="Center"/>
           <StackPanel Orientation="Horizontal" Grid.Column="1" Spacing="6">
+            <Button FontFamily="{StaticResource SymbolThemeFontFamily}" Content="&#xebd3;" ToolTipService.ToolTip="Import model from HuggingFace" Click="{x:Bind ViewModel.ImportModelFromHuggingFaceAsync}"/>
             <Button FontFamily="{StaticResource SymbolThemeFontFamily}" Content="&#xe946;" ToolTipService.ToolTip="Open model website" Click="{x:Bind ViewModel.OpenAvailableModelWebsite}" IsEnabled="{x:Bind ViewModel.IsAvailableModelSelected, Mode=OneWay}"/>
             <Button FontFamily="{StaticResource SymbolThemeFontFamily}" Content="&#xe72c;" ToolTipService.ToolTip="Refresh" Click="{x:Bind ViewModel.UpdateAvailableModelsAsync}"/>
           </StackPanel>

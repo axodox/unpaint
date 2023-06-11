@@ -9,4 +9,12 @@ namespace Unpaint
 
     DownloadModelViewModel ViewModel{ get; };
   }
+  
+  [default_interface]
+  runtimeclass ImportHuggingFaceModelDialog : Windows.UI.Xaml.Controls.ContentDialog
+  {
+    ImportHuggingFaceModelDialog();
+
+    ImportHuggingFaceModelViewModel ViewModel{ get; };
+  }
 }

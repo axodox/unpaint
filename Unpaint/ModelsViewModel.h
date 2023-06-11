@@ -11,7 +11,8 @@ namespace winrt::Unpaint::implementation
     Windows::Foundation::Collections::IObservableVector<ModelViewModel> AvailableModels();
     bool AreAvailableModelsEmpty();
     fire_and_forget UpdateAvailableModelsAsync();
-    fire_and_forget DownloadModelAsync();
+    void DownloadModelAsync();
+    fire_and_forget ImportModelFromHuggingFaceAsync();
     void OpenAvailableModelWebsite();
 
     int32_t SelectedAvailableModel();
@@ -49,6 +50,7 @@ namespace winrt::Unpaint::implementation
     void UpdateInstalledModels();
 
     static ModelViewModel CreateModelViewModel(const std::string& modelId);
+    fire_and_forget DownloadHuggingFaceModelAsync(hstring const& modelId);
   };
 }
 

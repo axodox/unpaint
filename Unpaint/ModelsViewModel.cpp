@@ -68,16 +68,20 @@ namespace winrt::Unpaint::implementation
     _propertyChanged(*this, PropertyChangedEventArgs(L"AreAvailableModelsEmpty"));
   }
 
-  fire_and_forget ModelsViewModel::DownloadModelAsync()
+  void ModelsViewModel::DownloadModelAsync()
   {
     auto modelId = _availableModels.GetAt(_selectedAvailableModel).Id;
-    DownloadModelDialog dialog{ modelId };
+    DownloadHuggingFaceModelAsync(modelId);
+  }
 
-    auto lifetime = get_strong();
-    co_await dialog.ShowAsync();
+  fire_and_forget ModelsViewModel::ImportModelFromHuggingFaceAsync()
+  {
+    ImportHuggingFaceModelDialog dialog{};
+    auto result = co_await dialog.ShowAsync();
+    if (result != ContentDialogResult::Primary) co_return;
 
-    UpdateInstalledModels();
-    UpdateAvailableModelsAsync();
+    auto viewModel = dialog.ViewModel();
+    if (viewModel.IsValid()) DownloadHuggingFaceModelAsync(viewModel.ModelId());
   }
 
   void ModelsViewModel::OpenAvailableModelWebsite()
@@ -210,5 +214,16 @@ namespace winrt::Unpaint::implementation
       .Id = to_hstring(modelId),
       .Uri = to_hstring("https://huggingface.co/" + modelId)
     };
+  }
+
+  fire_and_forget ModelsViewModel::DownloadHuggingFaceModelAsync(hstring const& modelId)
+  {
+    DownloadModelDialog dialog{ modelId };
+
+    auto lifetime = get_strong();
+    co_await dialog.ShowAsync();
+
+    UpdateInstalledModels();
+    UpdateAvailableModelsAsync();
   }
 }
