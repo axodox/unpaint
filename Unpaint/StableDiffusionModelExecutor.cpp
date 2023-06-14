@@ -108,7 +108,7 @@ namespace winrt::Unpaint
 
   void StableDiffusionModelExecutor::EnsureEnvironment(std::string_view modelId)
   {
-    if (_modelId != modelId || _onnxEnvironment->DeviceId != int32_t(_unpaintOptions->AdapterIndex()) || !_onnxEnvironment)
+    if (!_onnxEnvironment || _onnxEnvironment->DeviceId != int32_t(_unpaintOptions->AdapterIndex()) || _modelId != modelId)
     {
       _textEmbedder.reset();
       _denoiser.reset();
