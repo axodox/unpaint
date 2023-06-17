@@ -20,7 +20,6 @@ namespace winrt::Unpaint::implementation
     void IsDenoiserPinned(bool value);
 
     hstring Version();
-    Windows::Foundation::Uri SelectedModelUri();
 
     Windows::Foundation::Collections::IObservableVector<AdapterViewModel> Adapters();
     int32_t SelectedAdapterIndex();

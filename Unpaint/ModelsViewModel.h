@@ -19,6 +19,8 @@ namespace winrt::Unpaint::implementation
     int32_t SelectedInstalledModel();
     void SelectedInstalledModel(int32_t value);
     bool IsInstalledModelSelected();
+    bool IsModelWebsiteAvailable();
+
     fire_and_forget OpenModelDirectory();
 
     bool CanContinue();

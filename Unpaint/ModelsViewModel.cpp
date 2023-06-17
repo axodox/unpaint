@@ -98,18 +98,27 @@ namespace winrt::Unpaint::implementation
     _selectedInstalledModel = value;
     _propertyChanged(*this, PropertyChangedEventArgs(L"SelectedInstalledModel"));
     _propertyChanged(*this, PropertyChangedEventArgs(L"IsInstalledModelSelected"));
+    _propertyChanged(*this, PropertyChangedEventArgs(L"IsModelWebsiteAvailable"));
   }
 
   bool ModelsViewModel::IsInstalledModelSelected()
   {
-    return _selectedInstalledModel != -1;
+    return _selectedInstalledModel >= 0 && _selectedInstalledModel < int32_t(_installedModels.Size());
+  }
+
+  bool ModelsViewModel::IsModelWebsiteAvailable()
+  {
+    return IsInstalledModelSelected() && !_installedModels.GetAt(_selectedInstalledModel).Uri.empty();
   }
 
   fire_and_forget ModelsViewModel::OpenModelDirectory()
   {
+    auto modelId = to_string(_installedModels.GetAt(_selectedInstalledModel).Id);
+
     auto lifetime = get_strong();
-    auto path = _modelRepository->Root();
-    auto modelFolder = co_await StorageFolder::GetFolderFromPathAsync(path.c_str());
+    auto modelFolder = co_await _modelRepository->GetModelFolderAsync(modelId);
+    if (!modelFolder) co_return;
+
     co_await Launcher::LaunchFolderAsync(modelFolder);
   }
 

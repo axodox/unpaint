@@ -55,8 +55,8 @@
           </Grid>
 
           <CommandBar DefaultLabelPosition="Right" HorizontalAlignment="Center">
-            <AppBarButton Icon="OpenLocal" Label="Open directory" Click="{x:Bind ViewModel.OpenModelDirectory}"/>
-            <AppBarButton Icon="Link" Label="Visit website" Click="{x:Bind ViewModel.OpenInstalledModelWebsite}" IsEnabled="{x:Bind ViewModel.IsInstalledModelSelected, Mode=OneWay}"/>
+            <AppBarButton Icon="OpenLocal" Label="Open directory" Click="{x:Bind ViewModel.OpenModelDirectory}" IsEnabled="{x:Bind ViewModel.IsInstalledModelSelected, Mode=OneWay}"/>
+            <AppBarButton Icon="Link" Label="Visit website" Click="{x:Bind ViewModel.OpenInstalledModelWebsite}" IsEnabled="{x:Bind ViewModel.IsModelWebsiteAvailable, Mode=OneWay}"/>
             <AppBarButton Icon="Delete" Label="Delete model" Click="{x:Bind ViewModel.RemoveModelAsync}" IsEnabled="{x:Bind ViewModel.IsInstalledModelSelected, Mode=OneWay}"/>
           </CommandBar>
         </StackPanel>

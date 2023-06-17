@@ -20,6 +20,7 @@ namespace winrt::Unpaint
   ModelMetadata::ModelMetadata() :
     Id(this, "id"),
     Name(this, "name"),
+    Website(this, "website"),
     AccessToken(this, "accessToken")
   { }
 
@@ -51,6 +52,7 @@ namespace winrt::Unpaint
       ModelMetadata metadata;
       *metadata.Id = modelId;
       *metadata.Name = modelId;
+      *metadata.Website = "https://huggingface.co/" + string(modelId);
 
       try_write_text(_root / modelId / "unpaint.json", stringify_json(metadata));
     }
@@ -119,6 +121,7 @@ namespace winrt::Unpaint
       models.emplace(ModelInfo{ 
         *metadata->Id, 
         metadata->Name->empty() ? *metadata->Id : *metadata->Name,
+        *metadata->Website,
         *metadata->AccessToken 
       });
     }
@@ -138,22 +141,27 @@ namespace winrt::Unpaint
     return nullopt;
   }
 
-  std::unordered_map<std::string, winrt::Windows::Storage::StorageFile> ModelRepository::GetModelFiles(std::string_view modelId) const
+  Windows::Foundation::IAsyncOperation<Windows::Storage::StorageFolder> ModelRepository::GetModelFolderAsync(std::string_view modelId) const
   {
     auto model = GetModel(modelId);
-    if (!model) return {};
+    if (!model) co_return StorageFolder(nullptr);
 
-    StorageFolder modelFolder{ nullptr };
     if (model->AccessToken.empty())
     {
       auto path = _root / model->Id;
       path.make_preferred();
-      modelFolder = StorageFolder::GetFolderFromPathAsync(path.c_str()).get();
+      co_return co_await StorageFolder::GetFolderFromPathAsync(path.c_str());
     }
     else
     {
-      modelFolder = StorageApplicationPermissions::FutureAccessList().GetFolderAsync(to_hstring(model->AccessToken)).get();
+      co_return co_await StorageApplicationPermissions::FutureAccessList().GetFolderAsync(to_hstring(model->AccessToken));
     }
+  }
+
+  std::unordered_map<std::string, winrt::Windows::Storage::StorageFile> ModelRepository::GetModelFiles(std::string_view modelId) const
+  {
+    auto modelFolder = GetModelFolderAsync(modelId).get();
+    if (!modelFolder) return {};
 
     vector<StorageFile> files;
     read_files_recursively(modelFolder, files).get();
@@ -172,7 +180,7 @@ namespace winrt::Unpaint
     return ModelViewModel{
       .Id = to_hstring(Id),
       .Name = to_hstring(Name),
-      .Uri = to_hstring("https://huggingface.co/" + Id)
+      .Uri = to_hstring(Website)
     };
   }
 }

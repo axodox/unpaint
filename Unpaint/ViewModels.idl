@@ -44,6 +44,7 @@ namespace Unpaint
 
     Int32 SelectedInstalledModel;
     Boolean IsInstalledModelSelected{ get; };
+    Boolean IsModelWebsiteAvailable{ get; };
 
     Boolean CanContinue{ get; };
     void Continue();
@@ -152,8 +153,6 @@ namespace Unpaint
     Boolean IsDenoiserPinned;
 
     String Version{ get; };
-
-    Windows.Foundation.Uri SelectedModelUri{ get; };
 
     IObservableVector<AdapterViewModel> Adapters{ get; };
     Int32 SelectedAdapterIndex;

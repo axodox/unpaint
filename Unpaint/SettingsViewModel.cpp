@@ -74,11 +74,6 @@ namespace winrt::Unpaint::implementation
     return format(L"{}.{}.{}.{}", version.Major, version.Minor, version.Build, version.Revision);
   }
 
-  Windows::Foundation::Uri SettingsViewModel::SelectedModelUri()
-  {
-    return Uri(to_hstring("https://huggingface.co/" + _unpaintOptions->ModelId()));
-  }
-
   Windows::Foundation::Collections::IObservableVector<AdapterViewModel> SettingsViewModel::Adapters()
   {
     return _adapters;

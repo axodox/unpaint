@@ -10,6 +10,7 @@ namespace winrt::Unpaint
   {
     Axodox::Json::json_property<std::string> Id;
     Axodox::Json::json_property<std::string> Name;
+    Axodox::Json::json_property<std::string> Website;
     Axodox::Json::json_property<std::string> AccessToken;
 
     ModelMetadata();
@@ -19,6 +20,7 @@ namespace winrt::Unpaint
   {
     std::string Id;
     std::string Name;
+    std::string Website;
     std::string AccessToken;
 
     auto operator<=>(const ModelInfo&) const = default;
@@ -41,7 +43,9 @@ namespace winrt::Unpaint
     void Refresh();
 
     std::optional<ModelInfo> GetModel(std::string_view modelId) const;
-    std::unordered_map<std::string, winrt::Windows::Storage::StorageFile> GetModelFiles(std::string_view modelId) const;
+
+    Windows::Foundation::IAsyncOperation<Windows::Storage::StorageFolder> GetModelFolderAsync(std::string_view modelId) const;
+    std::unordered_map<std::string, Windows::Storage::StorageFile> GetModelFiles(std::string_view modelId) const;
 
   private:
     mutable std::mutex _mutex;

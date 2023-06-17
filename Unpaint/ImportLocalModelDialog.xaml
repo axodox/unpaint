@@ -29,7 +29,7 @@
       <RowDefinition Height="Auto"/>
     </Grid.RowDefinitions>
 
-    <TextBlock TextWrapping="Wrap" Grid.ColumnSpan="3">Please read the <Hyperlink NavigateUri="https://github.com/axodox/unpaint/wiki/Model-import">this</Hyperlink> guide on how to convert models to an Unpaint compatible format.</TextBlock>
+    <TextBlock TextWrapping="Wrap" Grid.ColumnSpan="3">Please read <Hyperlink NavigateUri="https://github.com/axodox/unpaint/wiki/Model-import">this</Hyperlink> guide on how to convert models to an Unpaint compatible format.</TextBlock>
 
     <FontIcon Grid.Row="1" Glyph="{x:Bind ViewModel.IsValid, Converter={StaticResource CheckmarkConverter}, Mode=OneWay}" FontFamily="{ThemeResource SymbolThemeFontFamily}" VerticalAlignment="Center"/>
     <TextBox Grid.Row="1" Grid.Column="1" IsEnabled="False" Text="{x:Bind ViewModel.ModelPath, Mode=OneWay}"/>
