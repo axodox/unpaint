@@ -40,17 +40,32 @@
           </StackPanel>
           <StackPanel Grid.Column="1" Grid.Row="1">
             <TextBlock Text="Copyright &#xA9; 2023 Péter Major and contributors." Opacity="0.5"/>
-            <TextBlock Text="All rights reserved." Opacity="0.5"/>
+            <TextBlock Opacity="0.5">All rights reserved. (<Hyperlink NavigateUri="https://github.com/axodox/unpaint/blob/main/LICENSE">license</Hyperlink>)</TextBlock>     
             <TextBlock Margin="0,6">Check out the code on <Hyperlink NavigateUri="https://github.com/axodox/unpaint">GitHub</Hyperlink>.</TextBlock>
           </StackPanel>
         </Grid>
 
-        <local:SettingControl Icon="&#xea18;" Title="Safe mode" Subtitle="Adds keywords to negative prompt to avoid inappropriate imagery.">
-          <ToggleSwitch FlowDirection="RightToLeft" IsOn="{x:Bind ViewModel.IsSafeModeEnabled, Mode=TwoWay}" Visibility="{x:Bind ViewModel.AreUnsafeOptionsEnabled}"/>
+        <local:SettingControl Icon="&#xeb51;" Title="Acknowledgements" Subtitle="Unpaint would have been impossible to realize without the below contributions."  Orientation="Vertical">
+          <StackPanel Spacing="12">
+            <TextBlock TextWrapping="Wrap">Huge thanks to the
+              <Hyperlink NavigateUri="https://ommer-lab.com/">Computer Vision &amp; Learning research group</Hyperlink> at the
+              <Hyperlink NavigateUri="https://www.lmu.de/de/index.html">Ludwig Maximilian University of Munich</Hyperlink> for providing a free and open-source AI image generation model for the world.
+            </TextBlock>
+            <TextBlock TextWrapping="Wrap">Unpaint uses the following software libraries: <Hyperlink NavigateUri="https://github.com/axodox/axodox-machinelearning">axodox/axodox-machinelearning</Hyperlink> (<Hyperlink NavigateUri="https://github.com/axodox/axodox-machinelearning/blob/main/LICENSE">license</Hyperlink>), <Hyperlink NavigateUri="https://github.com/microsoft/onnxruntime">microsoft/onnxruntime</Hyperlink> (<Hyperlink NavigateUri="https://github.com/microsoft/onnxruntime/blob/main/LICENSE">license</Hyperlink>) and <Hyperlink NavigateUri="https://github.com/microsoft/onnxruntime-extensions">microsoft/onnxruntime-extensions</Hyperlink> (<Hyperlink NavigateUri="https://github.com/microsoft/onnxruntime-extensions/blob/main/LICENSE">license</Hyperlink>).
+            </TextBlock>
+            <TextBlock TextWrapping="Wrap">Unpaint was inspired by following projects: <Hyperlink NavigateUri="https://github.com/Amblyopius/Stable-Diffusion-ONNX-FP16">Amblyopius/Stable-Diffusion-ONNX-FP16</Hyperlink> (<Hyperlink NavigateUri="https://github.com/Amblyopius/Stable-Diffusion-ONNX-FP16/blob/main/LICENSE">license</Hyperlink>), <Hyperlink NavigateUri="https://github.com/cassiebreviu/StableDiffusion">cassiebreviu/StableDiffusion</Hyperlink> (<Hyperlink NavigateUri="https://github.com/cassiebreviu/StableDiffusion/blob/main/LICENSE">license</Hyperlink>), <Hyperlink NavigateUri="https://github.com/CompVis/stable-diffusion">CompVis/stable-diffusion</Hyperlink> (<Hyperlink NavigateUri="https://github.com/CompVis/stable-diffusion/blob/main/LICENSE">license</Hyperlink>), <Hyperlink NavigateUri="https://github.com/huggingface/diffusers">huggingface/diffusers</Hyperlink> (<Hyperlink NavigateUri="https://github.com/huggingface/diffusers/blob/main/LICENSE">license</Hyperlink>) and <Hyperlink NavigateUri="https://github.com/microsoft/Olive">microsoft/Olive</Hyperlink> (<Hyperlink NavigateUri="https://github.com/microsoft/Olive/blob/main/LICENSE">license</Hyperlink>).
+            </TextBlock>
+          </StackPanel>
         </local:SettingControl>
 
-        <local:SettingControl Icon="&#xe9d5;" Title="Safety checker" Subtitle="Checks the image after generation and suppresses inappropriate (NSFW) output.">
-          <ToggleSwitch FlowDirection="RightToLeft" IsOn="{x:Bind ViewModel.IsSafetyCheckerEnabled, Mode=TwoWay}" Visibility="{x:Bind ViewModel.AreUnsafeOptionsEnabled}"/>
+        <local:SettingControl Icon="&#xea18;" Title="Safe mode" Subtitle="Adds keywords to negative prompt to avoid inappropriate imagery."
+                              Visibility="{x:Bind ViewModel.AreUnsafeOptionsEnabled}">
+          <ToggleSwitch FlowDirection="RightToLeft" IsOn="{x:Bind ViewModel.IsSafeModeEnabled, Mode=TwoWay}"/>
+        </local:SettingControl>
+
+        <local:SettingControl Icon="&#xe9d5;" Title="Safety checker" Subtitle="Checks the image after generation and suppresses inappropriate (NSFW) output."
+                              Visibility="{x:Bind ViewModel.AreUnsafeOptionsEnabled}">
+          <ToggleSwitch FlowDirection="RightToLeft" IsOn="{x:Bind ViewModel.IsSafetyCheckerEnabled, Mode=TwoWay}"/>
         </local:SettingControl>
 
         <local:SettingControl Icon="&#xf211;" Title="Rendering device" Subtitle="Specifies which GPU to use for inference.">
