@@ -353,8 +353,8 @@
     <Import Project="..\packages\Microsoft.ML.OnnxRuntime.DirectML.1.15.0\build\native\Microsoft.ML.OnnxRuntime.DirectML.targets" Condition="Exists('..\packages\Microsoft.ML.OnnxRuntime.DirectML.1.15.0\build\native\Microsoft.ML.OnnxRuntime.DirectML.targets')" />
     <Import Project="..\packages\Microsoft.Windows.CppWinRT.2.0.230524.4\build\native\Microsoft.Windows.CppWinRT.targets" Condition="Exists('..\packages\Microsoft.Windows.CppWinRT.2.0.230524.4\build\native\Microsoft.Windows.CppWinRT.targets')" />
     <Import Project="..\packages\Win2D.uwp.1.26.0\build\native\Win2D.uwp.targets" Condition="Exists('..\packages\Win2D.uwp.1.26.0\build\native\Win2D.uwp.targets')" />
-    <Import Project="..\packages\Axodox.Common.1.0.19\build\native\Axodox.Common.targets" Condition="Exists('..\packages\Axodox.Common.1.0.19\build\native\Axodox.Common.targets')" />
-    <Import Project="..\packages\Axodox.MachineLearning.1.0.22\build\native\Axodox.MachineLearning.targets" Condition="Exists('..\packages\Axodox.MachineLearning.1.0.22\build\native\Axodox.MachineLearning.targets')" />
+    <Import Project="..\packages\Axodox.Common.1.0.21\build\native\Axodox.Common.targets" Condition="Exists('..\packages\Axodox.Common.1.0.21\build\native\Axodox.Common.targets')" />
+    <Import Project="..\packages\Axodox.MachineLearning.1.0.24\build\native\Axodox.MachineLearning.targets" Condition="Exists('..\packages\Axodox.MachineLearning.1.0.24\build\native\Axodox.MachineLearning.targets')" />
   </ImportGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
@@ -370,7 +370,7 @@
     <Error Condition="!Exists('..\packages\Microsoft.Windows.CppWinRT.2.0.230524.4\build\native\Microsoft.Windows.CppWinRT.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Windows.CppWinRT.2.0.230524.4\build\native\Microsoft.Windows.CppWinRT.props'))" />
     <Error Condition="!Exists('..\packages\Microsoft.Windows.CppWinRT.2.0.230524.4\build\native\Microsoft.Windows.CppWinRT.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Windows.CppWinRT.2.0.230524.4\build\native\Microsoft.Windows.CppWinRT.targets'))" />
     <Error Condition="!Exists('..\packages\Win2D.uwp.1.26.0\build\native\Win2D.uwp.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Win2D.uwp.1.26.0\build\native\Win2D.uwp.targets'))" />
-    <Error Condition="!Exists('..\packages\Axodox.Common.1.0.19\build\native\Axodox.Common.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Axodox.Common.1.0.19\build\native\Axodox.Common.targets'))" />
-    <Error Condition="!Exists('..\packages\Axodox.MachineLearning.1.0.22\build\native\Axodox.MachineLearning.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Axodox.MachineLearning.1.0.22\build\native\Axodox.MachineLearning.targets'))" />
+    <Error Condition="!Exists('..\packages\Axodox.Common.1.0.21\build\native\Axodox.Common.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Axodox.Common.1.0.21\build\native\Axodox.Common.targets'))" />
+    <Error Condition="!Exists('..\packages\Axodox.MachineLearning.1.0.24\build\native\Axodox.MachineLearning.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Axodox.MachineLearning.1.0.24\build\native\Axodox.MachineLearning.targets'))" />
   </Target>
 </Project>
