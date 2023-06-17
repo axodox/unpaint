@@ -28,10 +28,11 @@
                     Title="No models found"
                     Message="You must provide a model to continue."/>
 
-      <TextBlock TextWrapping="Wrap">Unpaint is an execution engine for <Hyperlink NavigateUri="https://stability.ai/stablediffusion">Stable Diffusion</Hyperlink> image synthesis models provided in the <Hyperlink NavigateUri="https://onnx.ai/">ONNX</Hyperlink> format. Unpaint uses publicly available or user provided models for generating images. You can manage your models below.</TextBlock>
+      <TextBlock TextWrapping="Wrap">Unpaint is an execution engine for <Hyperlink NavigateUri="https://stability.ai/stablediffusion">Stable Diffusion</Hyperlink> based image synthesis models provided in the <Hyperlink NavigateUri="https://onnx.ai/">ONNX</Hyperlink> format. You can manage your models below.</TextBlock>
 
       <local:SettingControl Icon="&#xe710;" Title="Install a new model" Subtitle="Experiment with various moduls to get different results.">
         <StackPanel Orientation="Horizontal" Grid.Column="1" Spacing="6">
+          <Button FontFamily="{StaticResource SymbolThemeFontFamily}" Content="&#xe8b7;" ToolTipService.ToolTip="Import model from disk" Click="{x:Bind ViewModel.ImportModelFromDiskAsync}" FontSize="24" Padding="12"/>
           <Button FontFamily="{StaticResource SymbolThemeFontFamily}" Content="&#xebd3;" ToolTipService.ToolTip="Import model from HuggingFace" Click="{x:Bind ViewModel.ImportModelFromHuggingFaceAsync}" FontSize="24" Padding="12"/>
         </StackPanel>
       </local:SettingControl>
@@ -44,7 +45,7 @@
                 <ListView ItemsSource="{x:Bind ViewModel.InstalledModels}" SelectedIndex="{x:Bind ViewModel.SelectedInstalledModel, Mode=TwoWay}">
                   <ListView.ItemTemplate>
                     <DataTemplate x:DataType="local:ModelViewModel">
-                      <TextBlock Text="{x:Bind Id}"/>
+                      <TextBlock Text="{x:Bind Name}" ToolTipService.ToolTip="{x:Bind Name}" TextTrimming="CharacterEllipsis"/>
                     </DataTemplate>
                   </ListView.ItemTemplate>
                 </ListView>

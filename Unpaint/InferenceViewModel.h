@@ -33,7 +33,7 @@ namespace winrt::Unpaint::implementation
     fire_and_forget NegativePrompt(hstring const& value);
     int32_t AvailableNegativeTokenCount();
 
-    Windows::Foundation::Collections::IObservableVector<hstring> Models();
+    Windows::Foundation::Collections::IObservableVector<ModelViewModel> Models();
     int32_t SelectedModelIndex();
     void SelectedModelIndex(int32_t value);
 
@@ -130,7 +130,7 @@ namespace winrt::Unpaint::implementation
 
     int32_t _availablePositiveTokenCount, _availableNegativeTokenCount;
     
-    Windows::Foundation::Collections::IObservableVector<hstring> _models;
+    Windows::Foundation::Collections::IObservableVector<ModelViewModel> _models;
     int32_t _selectedModelIndex;
 
     Windows::Foundation::Collections::IObservableVector<Windows::Graphics::SizeInt32> _resolutions;

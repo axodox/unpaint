@@ -7,8 +7,8 @@
   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
   Title="Import model from HuggingFace"
-  PrimaryButtonText="Import"
   IsPrimaryButtonEnabled="{x:Bind ViewModel.IsValid, Mode=OneWay}"
+  PrimaryButtonText="Import"
   DefaultButton="Primary"
   CloseButtonText="Cancel"
   mc:Ignorable="d">
@@ -17,7 +17,7 @@
   </ContentDialog.Resources>
 
   <StackPanel Spacing="12">
-    <TextBlock TextWrapping="Wrap">You can import Stable Diffusion models from <Hyperlink NavigateUri="https://huggingface.co/models?library=onnx&amp;other=stable-diffusion&amp;other=unpaint">HuggingFace.co</Hyperlink> below. Please note that only ONNX models are supported by Unpaint.</TextBlock>
+    <TextBlock TextWrapping="Wrap">You can import Stable Diffusion models from <Hyperlink NavigateUri="https://huggingface.co">HuggingFace.co</Hyperlink> below. Please note that only ONNX models are supported by Unpaint.</TextBlock>
     
     <Grid ColumnSpacing="12">
       <Grid.ColumnDefinitions>

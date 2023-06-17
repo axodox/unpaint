@@ -121,6 +121,11 @@
       <SubType>Code</SubType>
     </ClInclude>
     <ClInclude Include="ImportHuggingFaceModelViewModel.h" />
+    <ClInclude Include="ImportLocalModelDialog.h">
+      <DependentUpon>ImportLocalModelDialog.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </ClInclude>
+    <ClInclude Include="ImportLocalModelViewModel.h" />
     <ClInclude Include="IsNullConverter.h" />
     <ClInclude Include="MaskEditor.h">
       <DependentUpon>MaskEditor.xaml</DependentUpon>
@@ -185,6 +190,9 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="ImportHuggingFaceModelDialog.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="ImportLocalModelDialog.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Include="InferenceView.xaml">
@@ -254,6 +262,11 @@
       <SubType>Code</SubType>
     </ClCompile>
     <ClCompile Include="ImportHuggingFaceModelViewModel.cpp" />
+    <ClCompile Include="ImportLocalModelDialog.cpp">
+      <DependentUpon>ImportLocalModelDialog.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </ClCompile>
+    <ClCompile Include="ImportLocalModelViewModel.cpp" />
     <ClCompile Include="InferenceView.cpp">
       <DependentUpon>InferenceView.xaml</DependentUpon>
       <SubType>Code</SubType>

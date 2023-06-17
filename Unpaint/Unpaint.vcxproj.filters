@@ -34,6 +34,9 @@
     <Page Include="ImportHuggingFaceModelDialog.xaml">
       <Filter>Dialogs</Filter>
     </Page>
+    <Page Include="ImportLocalModelDialog.xaml">
+      <Filter>Dialogs</Filter>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Midl Include="Views.idl">
@@ -127,6 +130,9 @@
       <Filter>Models</Filter>
     </ClCompile>
     <ClCompile Include="ImportHuggingFaceModelViewModel.cpp">
+      <Filter>View Models</Filter>
+    </ClCompile>
+    <ClCompile Include="ImportLocalModelViewModel.cpp">
       <Filter>View Models</Filter>
     </ClCompile>
   </ItemGroup>
@@ -316,6 +322,9 @@
       <Filter>Models</Filter>
     </ClInclude>
     <ClInclude Include="ImportHuggingFaceModelViewModel.h">
+      <Filter>View Models</Filter>
+    </ClInclude>
+    <ClInclude Include="ImportLocalModelViewModel.h">
       <Filter>View Models</Filter>
     </ClInclude>
   </ItemGroup>

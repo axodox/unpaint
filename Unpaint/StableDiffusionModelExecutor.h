@@ -49,6 +49,14 @@ namespace winrt::Unpaint
       Axodox::MachineLearning::ScheduledTensor TextEmbeddings;
     };
 
+    struct ModelFile
+    {
+      std::filesystem::path ModelPath;
+      std::vector<uint8_t> ModelData;
+
+      operator Axodox::MachineLearning::ModelSource() const;
+    };
+
   public:
     StableDiffusionModelExecutor();
 
@@ -67,6 +75,7 @@ namespace winrt::Unpaint
     std::mutex _mutex;
 
     std::string _modelId;
+    std::unordered_map<std::string, winrt::Windows::Storage::StorageFile> _modelFiles;
 
     uint32_t _stepCount;
     bool _isSafeModeEnabled;
@@ -76,6 +85,7 @@ namespace winrt::Unpaint
     Axodox::MachineLearning::Tensor _inputImage, _inputLatent;
 
     void EnsureEnvironment(std::string_view modelId);
+    ModelFile GetModelFile(const std::string& fileId) const;
 
     Axodox::MachineLearning::Tensor LoadImage(const StableDiffusionInferenceTask& task, Axodox::Graphics::TextureData& sourceTexture, Axodox::Graphics::Rect& sourceRect, Axodox::Graphics::Rect& targetRect, Axodox::Threading::async_operation_source& async);
     Axodox::MachineLearning::Tensor LoadMask(const StableDiffusionInferenceTask& task, Axodox::Graphics::Rect& sourceRect, Axodox::Graphics::Rect& targetRect, Axodox::Threading::async_operation_source& async);

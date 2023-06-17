@@ -37,6 +37,18 @@ namespace winrt::Unpaint::implementation
     if (viewModel.IsValid()) DownloadHuggingFaceModelAsync(viewModel.ModelId());
   }
 
+  fire_and_forget ModelsViewModel::ImportModelFromDiskAsync()
+  {
+    ImportLocalModelDialog dialog{};
+    auto result = co_await dialog.ShowAsync();
+    if (result != ContentDialogResult::Primary) co_return;
+
+    auto modelFolder = dialog.ViewModel().Result();
+    _modelRepository->AddModelFromDisk(modelFolder);
+
+    UpdateInstalledModels();
+  }
+
   Windows::Foundation::Collections::IObservableVector<ModelViewModel> ModelsViewModel::InstalledModels()
   {
     return _installedModels;
@@ -128,19 +140,11 @@ namespace winrt::Unpaint::implementation
     _installedModels.Clear();
     for (auto& model : _modelRepository->Models())
     {
-      _installedModels.Append(CreateModelViewModel(model));
+      _installedModels.Append(model);
     }
 
     _propertyChanged(*this, PropertyChangedEventArgs(L"AreInstalledModelsEmpty"));
     _propertyChanged(*this, PropertyChangedEventArgs(L"CanContinue"));
-  }
-  
-  ModelViewModel ModelsViewModel::CreateModelViewModel(const std::string& modelId)
-  {
-    return ModelViewModel{
-      .Id = to_hstring(modelId),
-      .Uri = to_hstring("https://huggingface.co/" + modelId)
-    };
   }
 
   fire_and_forget ModelsViewModel::DownloadHuggingFaceModelAsync(hstring const& modelId)

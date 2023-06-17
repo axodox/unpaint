@@ -12,6 +12,7 @@
 #include <winrt/Windows.Graphics.Imaging.h>
 #include <winrt/Windows.System.h>
 #include <winrt/Windows.System.Profile.h>
+#include <winrt/Windows.Storage.AccessCache.h>
 #include <winrt/Windows.Storage.Pickers.h>
 #include <winrt/Windows.UI.Core.h>
 #include <winrt/Windows.UI.Input.h>

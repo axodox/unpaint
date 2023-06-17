@@ -10,8 +10,6 @@ namespace winrt::Unpaint::implementation
 {
   struct ImportHuggingFaceModelDialog : ImportHuggingFaceModelDialogT<ImportHuggingFaceModelDialog>
   {
-    ImportHuggingFaceModelDialog() = default;
-
     ImportHuggingFaceModelViewModel ViewModel();
 
   private:

@@ -396,7 +396,13 @@
                   </Grid.ColumnDefinitions>
 
                   <ComboBox ItemsSource="{x:Bind ViewModel.Models, Mode=OneWay}"
-                            SelectedIndex="{x:Bind ViewModel.SelectedModelIndex, Mode=TwoWay}"/>
+                            SelectedIndex="{x:Bind ViewModel.SelectedModelIndex, Mode=TwoWay}">
+                    <ComboBox.ItemTemplate>
+                      <DataTemplate x:DataType="local:ModelViewModel">
+                        <TextBlock Text="{x:Bind Name}"/>
+                      </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                  </ComboBox>
                   <Button Grid.Column="1" FontFamily="{StaticResource SymbolThemeFontFamily}" Content="&#xe8f1;" ToolTipService.ToolTip="Manage models" VerticalAlignment="Stretch"
                           Click="{x:Bind ViewModel.ManageModels}"/>
                 </Grid>
