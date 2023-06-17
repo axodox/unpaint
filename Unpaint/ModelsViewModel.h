@@ -8,15 +8,8 @@ namespace winrt::Unpaint::implementation
   {
     ModelsViewModel();
 
-    Windows::Foundation::Collections::IObservableVector<ModelViewModel> AvailableModels();
-    bool AreAvailableModelsEmpty();
-    fire_and_forget UpdateAvailableModelsAsync();
-    fire_and_forget DownloadModelAsync();
-    void OpenAvailableModelWebsite();
-
-    int32_t SelectedAvailableModel();
-    void SelectedAvailableModel(int32_t value);
-    bool IsAvailableModelSelected();
+    fire_and_forget ImportModelFromHuggingFaceAsync();
+    fire_and_forget ImportModelFromDiskAsync();
 
     Windows::Foundation::Collections::IObservableVector<ModelViewModel> InstalledModels();
     bool AreInstalledModelsEmpty();
@@ -26,6 +19,8 @@ namespace winrt::Unpaint::implementation
     int32_t SelectedInstalledModel();
     void SelectedInstalledModel(int32_t value);
     bool IsInstalledModelSelected();
+    bool IsModelWebsiteAvailable();
+
     fire_and_forget OpenModelDirectory();
 
     bool CanContinue();
@@ -40,15 +35,12 @@ namespace winrt::Unpaint::implementation
     std::shared_ptr<ModelRepository> _modelRepository;
     event<Windows::UI::Xaml::Data::PropertyChangedEventHandler> _propertyChanged;
 
-    Windows::Foundation::Collections::IObservableVector<ModelViewModel> _availableModels;
-    int32_t _selectedAvailableModel = -1;
-
     Windows::Foundation::Collections::IObservableVector<ModelViewModel> _installedModels;
     int32_t _selectedInstalledModel = -1;
 
     void UpdateInstalledModels();
 
-    static ModelViewModel CreateModelViewModel(const std::string& modelId);
+    fire_and_forget DownloadHuggingFaceModelAsync(hstring const& modelId);
   };
 }
 

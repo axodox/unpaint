@@ -24,6 +24,7 @@ namespace Unpaint
   struct ModelViewModel
   {
     String Id;
+    String Name;
     String Uri;
   };
 
@@ -32,15 +33,9 @@ namespace Unpaint
   {
     ModelsViewModel();
 
-    IObservableVector<ModelViewModel> AvailableModels{ get; };
-    Boolean AreAvailableModelsEmpty{ get; };
-    void UpdateAvailableModelsAsync();
-    void OpenAvailableModelWebsite();
-    void DownloadModelAsync();
+    void ImportModelFromHuggingFaceAsync();
+    void ImportModelFromDiskAsync();
 
-    Int32 SelectedAvailableModel;
-    Boolean IsAvailableModelSelected{ get; };
-    
     IObservableVector<ModelViewModel> InstalledModels{ get; };
     Boolean AreInstalledModelsEmpty{ get; };
     void OpenInstalledModelWebsite();
@@ -49,6 +44,7 @@ namespace Unpaint
 
     Int32 SelectedInstalledModel;
     Boolean IsInstalledModelSelected{ get; };
+    Boolean IsModelWebsiteAvailable{ get; };
 
     Boolean CanContinue{ get; };
     void Continue();
@@ -86,7 +82,7 @@ namespace Unpaint
     String NegativePromptPlaceholder{ get; };
     Int32 AvailableNegativeTokenCount{ get; };
 
-    IObservableVector<String> Models{ get; };
+    IObservableVector<ModelViewModel> Models{ get; };
     Int32 SelectedModelIndex;
 
     IObservableVector<Windows.Graphics.SizeInt32> Resolutions{ get; };
@@ -158,11 +154,33 @@ namespace Unpaint
 
     String Version{ get; };
 
-    Windows.Foundation.Uri SelectedModelUri{ get; };
-
     IObservableVector<AdapterViewModel> Adapters{ get; };
     Int32 SelectedAdapterIndex;
 
     void Continue();
+  }
+
+  [default_interface]
+  runtimeclass ImportHuggingFaceModelViewModel : Windows.UI.Xaml.Data.INotifyPropertyChanged
+  {
+    ImportHuggingFaceModelViewModel();
+
+    String ModelId;
+    Boolean IsValid{ get; };
+    String Status{ get; };
+  }
+
+  [default_interface]
+  runtimeclass ImportLocalModelViewModel : Windows.UI.Xaml.Data.INotifyPropertyChanged
+  {
+    ImportLocalModelViewModel();
+
+    String ModelPath{ get; };
+    Boolean IsValid{ get; };
+    String Status{ get; };
+
+    Windows.Storage.StorageFolder Result{ get; };
+
+    void BrowseModelAsync();
   }
 }

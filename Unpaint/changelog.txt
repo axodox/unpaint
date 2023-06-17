@@ -1,5 +1,11 @@
 1.0.0.0
 
+Added:
+- Ability to load external models
+- Model conversion guide
+- Acknowledgements
+- Licensing info
+
 Fixed:
 - Bright color scheme now work in the title bar
 - Blinking output image

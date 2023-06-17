@@ -9,27 +9,32 @@
   <ContentControl.Template>
     <ControlTemplate TargetType="local:SettingControl">
       <Grid Background="{ThemeResource LayerFillColorDefaultBrush}"
-            Padding="20"
+            Padding="16"
             CornerRadius="3"
             BorderThickness="1"
             ColumnSpacing="12"
             BorderBrush="{ThemeResource ControlElevationBorderBrush}">
+
         <Grid.RowDefinitions>
           <RowDefinition Height="Auto"/>
           <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
+
         <Grid.ColumnDefinitions>
           <ColumnDefinition Width="Auto"/>
           <ColumnDefinition Width="*"/>
           <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
 
-        <FontIcon Grid.RowSpan="2" FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="{x:Bind Icon, Mode=OneWay}"/>
+        <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" Glyph="{x:Bind Icon, Mode=OneWay}" VerticalAlignment="Center"/>
 
-        <TextBlock Grid.Row="0" Grid.Column="1" Text="{x:Bind Title, Mode=OneWay}"/>
-        <TextBlock Grid.Row="1" Grid.Column="1" Text="{x:Bind Subtitle, Mode=OneWay}" FontSize="14" Opacity="0.5" TextWrapping="Wrap"/>
+        <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="0,0,0,3">
+          <TextBlock Text="{x:Bind Title, Mode=OneWay}"/>
+          <TextBlock Text="{x:Bind Subtitle, Mode=OneWay}" FontSize="14" Opacity="0.5" TextWrapping="Wrap"
+                     Visibility="{x:Bind HasSubtitle, Mode=OneWay}"/>
+        </StackPanel>
 
-        <ContentPresenter Grid.RowSpan="2" Grid.Column="2" Content="{x:Bind Content, Mode=OneWay}" HorizontalContentAlignment="Right"/>
+        <ContentPresenter Grid.Row="{x:Bind ContentRow, Mode=OneWay}" Grid.Column="{x:Bind ContentColumn, Mode=OneWay}" Grid.ColumnSpan="3" Content="{x:Bind Content, Mode=OneWay}"/>
       </Grid>
     </ControlTemplate>
   </ContentControl.Template>
