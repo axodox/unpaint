@@ -1,5 +1,6 @@
 #pragma once
 #include "Storage/SettingManager.h"
+#include "DeviceInformation.h"
 
 namespace winrt::Unpaint
 {
@@ -23,6 +24,9 @@ namespace winrt::Unpaint
     bool IsDenoiserPinned() const;
     void IsDenoiserPinned(bool value);
 
+    uint32_t AdapterIndex() const;
+    void AdapterIndex(uint32_t value);
+
     std::string ModelId() const;
     void ModelId(const std::string& value) const;
 
@@ -32,8 +36,10 @@ namespace winrt::Unpaint
     static const char* _isSafeModeEnabledKey;
     static const char* _isSafetyCheckerEnabledKey;
     static const char* _isDenoiserPinnedKey;
+    static const char* _adapterIndexKey;
     static const char* _modelIdKey;
 
     std::shared_ptr<Axodox::Storage::SettingManager> _settingManager;
+    std::shared_ptr<DeviceInformation> _deviceInformation;
   };
 }

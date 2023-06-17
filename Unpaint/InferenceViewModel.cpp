@@ -43,10 +43,11 @@ namespace winrt::Unpaint::implementation
     _modelExecutor(dependencies.resolve<StableDiffusionModelExecutor>()),
     _imageRepository(dependencies.resolve<ImageRepository>()),
     _navigationService(dependencies.resolve<INavigationService>()),
+    _deviceInformation(dependencies.resolve<DeviceInformation>()),
     _isBusy(false),
     _availablePositiveTokenCount(int32_t(TextTokenizer::MaxTokenCount)),
     _availableNegativeTokenCount(int32_t(TextTokenizer::MaxTokenCount)),
-    _models(single_threaded_observable_vector<hstring>()),
+    _models(single_threaded_observable_vector<ModelViewModel>()),
     _resolutions(single_threaded_observable_vector<SizeInt32>()),
     _selectedResolutionIndex(1),
     _selectedModelIndex(0),
@@ -68,13 +69,18 @@ namespace winrt::Unpaint::implementation
     auto modelId = _unpaintOptions->ModelId();
     for (auto i = 0; auto & model : _modelRepository->Models())
     {
-      if (model == modelId) _selectedModelIndex = i;
-      _models.Append(to_hstring(model));
+      if (model.Id == modelId) _selectedModelIndex = i;
+      _models.Append(model);
 
       i++;
     }
 
     //Initialize resolutions
+    if (_unpaintState->Resolution == SizeInt32{0, 0})
+    {
+      _unpaintState->Resolution = _deviceInformation->IsDeviceXbox() ? SizeInt32{ 512, 512 } : SizeInt32{ 768, 768 };
+    }
+
     _resolutions.Append(SizeInt32{ 1024, 1024 });
     _resolutions.Append(SizeInt32{ 768, 768 });
     _resolutions.Append(SizeInt32{ 512, 512 });
@@ -212,7 +218,7 @@ namespace winrt::Unpaint::implementation
     return _availableNegativeTokenCount;
   }
 
-  Windows::Foundation::Collections::IObservableVector<hstring> InferenceViewModel::Models()
+  Windows::Foundation::Collections::IObservableVector<ModelViewModel> InferenceViewModel::Models()
   {
     return _models;
   }
@@ -227,7 +233,7 @@ namespace winrt::Unpaint::implementation
     if (value == _selectedModelIndex) return;
 
     _selectedModelIndex = value;
-    if (value != -1) _unpaintOptions->ModelId(to_string(_models.GetAt(value)));
+    if (value != -1) _unpaintOptions->ModelId(to_string(_models.GetAt(value).Id));
     _propertyChanged(*this, PropertyChangedEventArgs(L"SelectedModelIndex"));
   }
 
@@ -533,7 +539,7 @@ namespace winrt::Unpaint::implementation
       .BatchSize = _unpaintState->IsBatchGenerationEnabled ? _unpaintState->BatchSize : 1,
       .IsSafeModeEnabled = _unpaintOptions->IsSafeModeEnabled(),
       .IsSafetyCheckerEnabled = _unpaintOptions->IsSafetyCheckerEnabled(),
-      .ModelId = to_string(_models.GetAt(_selectedModelIndex))
+      .ModelId = to_string(_models.GetAt(_selectedModelIndex).Id)
     };
 
     if (_unpaintState->InferenceMode == InferenceMode::Modify)
@@ -904,7 +910,7 @@ namespace winrt::Unpaint::implementation
   {
     apartment_context callingContext{};
 
-    auto modelId = to_string(_models.GetAt(_selectedModelIndex));
+    auto modelId = to_string(_models.GetAt(_selectedModelIndex).Id);
 
     auto lifetime = get_strong();
     co_await resume_background();

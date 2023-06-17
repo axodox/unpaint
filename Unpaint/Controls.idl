@@ -1,7 +1,7 @@
 namespace Unpaint
 {
   [default_interface]
-  runtimeclass SettingControl : Windows.UI.Xaml.Controls.ContentControl
+  runtimeclass SettingControl : Windows.UI.Xaml.Controls.ContentControl, Windows.UI.Xaml.Data.INotifyPropertyChanged
   {
     SettingControl();
 
@@ -13,6 +13,14 @@ namespace Unpaint
 
     String Subtitle;
     static Windows.UI.Xaml.DependencyProperty SubtitleProperty{ get; };
+
+    Windows.UI.Xaml.Controls.Orientation Orientation;
+    static Windows.UI.Xaml.DependencyProperty OrientationProperty{ get; };
+
+    Boolean HasSubtitle{ get; };
+
+    Int32 ContentRow{ get; };
+    Int32 ContentColumn{ get; };
   }
 
   [default_interface]
@@ -42,5 +50,17 @@ namespace Unpaint
 
     Boolean IsRedoAvailable{ get; };
     void RedoAction();
+  }
+
+  [default_interface]
+  runtimeclass TitleBarHost : Windows.UI.Xaml.Controls.ContentControl, Windows.UI.Xaml.Data.INotifyPropertyChanged
+  {
+    TitleBarHost();
+
+    Windows.UI.Xaml.GridLength TitleBarLeftPadding{ get; };
+    Windows.UI.Xaml.GridLength TitleBarRightPadding{ get; };
+
+    Boolean IsPointerOverTitleBar{ get; };
+    event Windows.Foundation.EventHandler<Boolean> IsPointerOverTitleBarChanged;
   }
 }

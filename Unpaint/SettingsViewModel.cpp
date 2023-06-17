@@ -5,6 +5,7 @@
 
 using namespace Axodox::Infrastructure;
 using namespace Axodox::Storage;
+using namespace Axodox::Graphics;
 using namespace std;
 using namespace winrt::Windows::ApplicationModel;
 using namespace winrt::Windows::Foundation;
@@ -13,8 +14,19 @@ namespace winrt::Unpaint::implementation
 {
   SettingsViewModel::SettingsViewModel() :
     _navigationService(dependencies.resolve<INavigationService>()),
-    _unpaintOptions(dependencies.resolve<UnpaintOptions>())
-  { }
+    _unpaintOptions(dependencies.resolve<UnpaintOptions>()),
+    _adapters(single_threaded_observable_vector<AdapterViewModel>())
+  { 
+    //Populate adapter list
+    auto adapters = GraphicsDevice::Adapters();
+    for (auto& adapter : adapters)
+    {
+      _adapters.Append(AdapterViewModel{
+        .Name = adapter.Index == 0u ? format(L"Default ({})", adapter.Name.c_str()) : adapter.Name.c_str(),
+        .Index = adapter.Index
+        });
+    }
+  }
 
   bool SettingsViewModel::AreUnsafeOptionsEnabled()
   {
@@ -62,9 +74,19 @@ namespace winrt::Unpaint::implementation
     return format(L"{}.{}.{}.{}", version.Major, version.Minor, version.Build, version.Revision);
   }
 
-  Windows::Foundation::Uri SettingsViewModel::SelectedModelUri()
+  Windows::Foundation::Collections::IObservableVector<AdapterViewModel> SettingsViewModel::Adapters()
   {
-    return Uri(to_hstring("https://huggingface.co/" + _unpaintOptions->ModelId()));
+    return _adapters;
+  }
+
+  int32_t SettingsViewModel::SelectedAdapterIndex()
+  {
+    return _unpaintOptions->AdapterIndex();
+  }
+
+  void SettingsViewModel::SelectedAdapterIndex(int32_t value)
+  {
+    _unpaintOptions->AdapterIndex(value);
   }
   
   void SettingsViewModel::Continue()

@@ -4,9 +4,6 @@
     <Page Include="ModelsView.xaml">
       <Filter>Views</Filter>
     </Page>
-    <Page Include="MainView.xaml">
-      <Filter>Views</Filter>
-    </Page>
     <Page Include="WelcomeView.xaml">
       <Filter>Views</Filter>
     </Page>
@@ -31,9 +28,17 @@
     <Page Include="ShowcaseView.xaml">
       <Filter>Views</Filter>
     </Page>
+    <Page Include="TitleBarHost.xaml">
+      <Filter>Controls</Filter>
+    </Page>
+    <Page Include="ImportHuggingFaceModelDialog.xaml">
+      <Filter>Dialogs</Filter>
+    </Page>
+    <Page Include="ImportLocalModelDialog.xaml">
+      <Filter>Dialogs</Filter>
+    </Page>
   </ItemGroup>
   <ItemGroup>
-    <Midl Include="App.idl" />
     <Midl Include="Views.idl">
       <Filter>Views</Filter>
     </Midl>
@@ -119,6 +124,15 @@
       <Filter>Converters</Filter>
     </ClCompile>
     <ClCompile Include="ShowcaseViewModel.cpp">
+      <Filter>View Models</Filter>
+    </ClCompile>
+    <ClCompile Include="DeviceInformation.cpp">
+      <Filter>Models</Filter>
+    </ClCompile>
+    <ClCompile Include="ImportHuggingFaceModelViewModel.cpp">
+      <Filter>View Models</Filter>
+    </ClCompile>
+    <ClCompile Include="ImportLocalModelViewModel.cpp">
       <Filter>View Models</Filter>
     </ClCompile>
   </ItemGroup>
@@ -305,5 +319,17 @@
     <ClInclude Include="ShowcaseViewModel.h">
       <Filter>View Models</Filter>
     </ClInclude>
+    <ClInclude Include="DeviceInformation.h">
+      <Filter>Models</Filter>
+    </ClInclude>
+    <ClInclude Include="ImportHuggingFaceModelViewModel.h">
+      <Filter>View Models</Filter>
+    </ClInclude>
+    <ClInclude Include="ImportLocalModelViewModel.h">
+      <Filter>View Models</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="changelog.txt" />
   </ItemGroup>
 </Project>

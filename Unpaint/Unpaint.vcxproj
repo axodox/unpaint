@@ -72,7 +72,7 @@
     <AppxBundle>Auto</AppxBundle>
     <AppxBundlePlatforms>x64</AppxBundlePlatforms>
     <HoursBetweenUpdateChecks>0</HoursBetweenUpdateChecks>
-    <PackageCertificateThumbprint>8495A243ADEF106100E4482970BADC52DEB45867</PackageCertificateThumbprint>
+    <PackageCertificateThumbprint>7A177E85E26305BC0D8CF3AE0C63AFFD58973C64</PackageCertificateThumbprint>
     <GenerateTemporaryStoreCertificate>True</GenerateTemporaryStoreCertificate>
   </PropertyGroup>
   <ItemDefinitionGroup>
@@ -109,6 +109,7 @@
     <ClInclude Include="BooleanInverter.h" />
     <ClInclude Include="BooleanSwitchConverter.h" />
     <ClInclude Include="BooleanToGridLengthConverter.h" />
+    <ClInclude Include="DeviceInformation.h" />
     <ClInclude Include="DownloadModelDialog.h">
       <DependentUpon>DownloadModelDialog.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -116,6 +117,16 @@
     <ClInclude Include="DownloadModelViewModel.h" />
     <ClInclude Include="EqualsConverter.h" />
     <ClInclude Include="ImageMetadata.h" />
+    <ClInclude Include="ImportHuggingFaceModelDialog.h">
+      <DependentUpon>ImportHuggingFaceModelDialog.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </ClInclude>
+    <ClInclude Include="ImportHuggingFaceModelViewModel.h" />
+    <ClInclude Include="ImportLocalModelDialog.h">
+      <DependentUpon>ImportLocalModelDialog.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </ClInclude>
+    <ClInclude Include="ImportLocalModelViewModel.h" />
     <ClInclude Include="IsNullConverter.h" />
     <ClInclude Include="MaskEditor.h">
       <DependentUpon>MaskEditor.xaml</DependentUpon>
@@ -156,11 +167,12 @@
     <ClInclude Include="App.h">
       <DependentUpon>App.xaml</DependentUpon>
     </ClInclude>
-    <ClInclude Include="MainView.h">
-      <DependentUpon>MainView.xaml</DependentUpon>
-    </ClInclude>
     <ClInclude Include="SizeToStringConverter.h" />
     <ClInclude Include="StringToImageSourceConverter.h" />
+    <ClInclude Include="TitleBarHost.h">
+      <DependentUpon>TitleBarHost.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </ClInclude>
     <ClInclude Include="UnpaintOptions.h" />
     <ClInclude Include="UnpaintState.h" />
     <ClInclude Include="WelcomeView.h">
@@ -178,10 +190,13 @@
     <Page Include="DownloadModelDialog.xaml">
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="InferenceView.xaml">
+    <Page Include="ImportHuggingFaceModelDialog.xaml">
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="MainView.xaml">
+    <Page Include="ImportLocalModelDialog.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="InferenceView.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Include="MaskEditor.xaml">
@@ -197,6 +212,9 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="ShowcaseView.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="TitleBarHost.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Include="WelcomeView.xaml">
@@ -231,6 +249,7 @@
     <ClCompile Include="BooleanInverter.cpp" />
     <ClCompile Include="BooleanSwitchConverter.cpp" />
     <ClCompile Include="BooleanToGridLengthConverter.cpp" />
+    <ClCompile Include="DeviceInformation.cpp" />
     <ClCompile Include="DownloadModelDialog.cpp">
       <DependentUpon>DownloadModelDialog.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -239,6 +258,16 @@
     <ClCompile Include="EqualsConverter.cpp" />
     <ClCompile Include="ImageMetadata.cpp" />
     <ClCompile Include="ImageRepository.cpp" />
+    <ClCompile Include="ImportHuggingFaceModelDialog.cpp">
+      <DependentUpon>ImportHuggingFaceModelDialog.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </ClCompile>
+    <ClCompile Include="ImportHuggingFaceModelViewModel.cpp" />
+    <ClCompile Include="ImportLocalModelDialog.cpp">
+      <DependentUpon>ImportLocalModelDialog.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </ClCompile>
+    <ClCompile Include="ImportLocalModelViewModel.cpp" />
     <ClCompile Include="InferenceView.cpp">
       <DependentUpon>InferenceView.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -278,14 +307,15 @@
     <ClCompile Include="App.cpp">
       <DependentUpon>App.xaml</DependentUpon>
     </ClCompile>
-    <ClCompile Include="MainView.cpp">
-      <DependentUpon>MainView.xaml</DependentUpon>
-    </ClCompile>
     <ClCompile Include="$(GeneratedFilesDir)module.g.cpp" />
     <ClCompile Include="SizeToStringConverter.cpp" />
     <ClCompile Include="StorageFileToImageSourceConverter.cpp" />
     <ClCompile Include="StringMapper.cpp" />
     <ClCompile Include="StringToImageSourceConverter.cpp" />
+    <ClCompile Include="TitleBarHost.cpp">
+      <DependentUpon>TitleBarHost.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </ClCompile>
     <ClCompile Include="UnpaintOptions.cpp" />
     <ClCompile Include="WelcomeView.cpp">
       <DependentUpon>WelcomeView.xaml</DependentUpon>
@@ -293,9 +323,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <Midl Include="App.idl">
-      <DependentUpon>App.xaml</DependentUpon>
-    </Midl>
     <Midl Include="Controls.idl" />
     <Midl Include="Converters.idl" />
     <Midl Include="Dialogs.idl" />
@@ -317,6 +344,9 @@
     <None Include="key.pfx" />
   </ItemGroup>
   <ItemGroup>
+    <Text Include="changelog.txt" />
+  </ItemGroup>
+  <ItemGroup>
     <None Include="Package.StoreAssociation.xml" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
@@ -327,8 +357,8 @@
     <Import Project="..\packages\Microsoft.ML.OnnxRuntime.DirectML.1.15.0\build\native\Microsoft.ML.OnnxRuntime.DirectML.targets" Condition="Exists('..\packages\Microsoft.ML.OnnxRuntime.DirectML.1.15.0\build\native\Microsoft.ML.OnnxRuntime.DirectML.targets')" />
     <Import Project="..\packages\Microsoft.Windows.CppWinRT.2.0.230524.4\build\native\Microsoft.Windows.CppWinRT.targets" Condition="Exists('..\packages\Microsoft.Windows.CppWinRT.2.0.230524.4\build\native\Microsoft.Windows.CppWinRT.targets')" />
     <Import Project="..\packages\Win2D.uwp.1.26.0\build\native\Win2D.uwp.targets" Condition="Exists('..\packages\Win2D.uwp.1.26.0\build\native\Win2D.uwp.targets')" />
-    <Import Project="..\packages\Axodox.Common.1.0.12\build\native\Axodox.Common.targets" Condition="Exists('..\packages\Axodox.Common.1.0.12\build\native\Axodox.Common.targets')" />
-    <Import Project="..\packages\Axodox.MachineLearning.1.0.3\build\native\Axodox.MachineLearning.targets" Condition="Exists('..\packages\Axodox.MachineLearning.1.0.3\build\native\Axodox.MachineLearning.targets')" />
+    <Import Project="..\packages\Axodox.Common.1.0.21\build\native\Axodox.Common.targets" Condition="Exists('..\packages\Axodox.Common.1.0.21\build\native\Axodox.Common.targets')" />
+    <Import Project="..\packages\Axodox.MachineLearning.1.0.24\build\native\Axodox.MachineLearning.targets" Condition="Exists('..\packages\Axodox.MachineLearning.1.0.24\build\native\Axodox.MachineLearning.targets')" />
   </ImportGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
@@ -344,7 +374,7 @@
     <Error Condition="!Exists('..\packages\Microsoft.Windows.CppWinRT.2.0.230524.4\build\native\Microsoft.Windows.CppWinRT.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Windows.CppWinRT.2.0.230524.4\build\native\Microsoft.Windows.CppWinRT.props'))" />
     <Error Condition="!Exists('..\packages\Microsoft.Windows.CppWinRT.2.0.230524.4\build\native\Microsoft.Windows.CppWinRT.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Windows.CppWinRT.2.0.230524.4\build\native\Microsoft.Windows.CppWinRT.targets'))" />
     <Error Condition="!Exists('..\packages\Win2D.uwp.1.26.0\build\native\Win2D.uwp.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Win2D.uwp.1.26.0\build\native\Win2D.uwp.targets'))" />
-    <Error Condition="!Exists('..\packages\Axodox.Common.1.0.12\build\native\Axodox.Common.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Axodox.Common.1.0.12\build\native\Axodox.Common.targets'))" />
-    <Error Condition="!Exists('..\packages\Axodox.MachineLearning.1.0.3\build\native\Axodox.MachineLearning.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Axodox.MachineLearning.1.0.3\build\native\Axodox.MachineLearning.targets'))" />
+    <Error Condition="!Exists('..\packages\Axodox.Common.1.0.21\build\native\Axodox.Common.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Axodox.Common.1.0.21\build\native\Axodox.Common.targets'))" />
+    <Error Condition="!Exists('..\packages\Axodox.MachineLearning.1.0.24\build\native\Axodox.MachineLearning.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Axodox.MachineLearning.1.0.24\build\native\Axodox.MachineLearning.targets'))" />
   </Target>
 </Project>

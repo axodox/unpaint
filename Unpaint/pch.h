@@ -11,6 +11,8 @@
 #include <winrt/Windows.ApplicationModel.DataTransfer.h>
 #include <winrt/Windows.Graphics.Imaging.h>
 #include <winrt/Windows.System.h>
+#include <winrt/Windows.System.Profile.h>
+#include <winrt/Windows.Storage.AccessCache.h>
 #include <winrt/Windows.Storage.Pickers.h>
 #include <winrt/Windows.UI.Core.h>
 #include <winrt/Windows.UI.Input.h>
@@ -35,4 +37,5 @@
 #include "winrt/Microsoft.Graphics.Canvas.Effects.h"
 #include "winrt/Microsoft.Graphics.Canvas.UI.Xaml.h"
 
+#define USE_DIRECTX
 #include "Include/Axodox.MachineLearning.h"

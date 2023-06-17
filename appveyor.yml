@@ -1,5 +1,11 @@
 version: 1.0.{build}.0
+branches:
+  only:
+  - main
 skip_tags: true
+environment:
+  UNPAINT_CERT_PW:
+    secure: c9UVCQE4fooTAG8lEZOxojl/EliBHDaaX1Br7ixA24i488loP3pztXfZ3zAVkuwF
 image: Visual Studio 2022
 build_script:
 - ps: .\build_app.ps1
@@ -10,6 +16,7 @@ deploy:
 - provider: GitHub
   tag: $(APPVEYOR_REPO_BRANCH)-$(APPVEYOR_BUILD_VERSION)
   release: $(APPVEYOR_REPO_BRANCH)-$(APPVEYOR_BUILD_VERSION)
+  prerelease: true
   auth_token:
     secure: cJH8jFWP1GRslj2mqEaIfx/IdyTss+sj0c81d9fAXE/Eq9wCsPju+gM3CkNE0+wc
   artifact: MsixPackages

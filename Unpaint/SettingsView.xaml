@@ -12,52 +12,82 @@
     </Style>
   </Page.Resources>
 
-  <ScrollViewer>
-    <StackPanel VerticalAlignment="Center" Margin="12" Spacing="12">
-      <Grid HorizontalAlignment="Center">
-        <Grid.ColumnDefinitions>
-          <ColumnDefinition Width="Auto"/>
-          <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>
+  <Grid>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="*"/>
+    </Grid.RowDefinitions>
 
-        <Grid.RowDefinitions>
-          <RowDefinition Height="2*"/>
-          <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
+    <local:TitleBarHost VerticalAlignment="Top"/>
 
-        <Image Grid.RowSpan="2" Source="Assets/Unpaint.png" Width="128" Height="128"/>
-        <StackPanel Orientation="Horizontal" Grid.Column="1" Spacing="6">
-          <TextBlock Text="Unpaint" FontWeight="Bold" FontSize="24" VerticalAlignment="Bottom"/>
-          <TextBlock Text="{x:Bind ViewModel.Version}" FontSize="14" VerticalAlignment="Bottom" Margin="0,0,0,4"/>
-        </StackPanel>
-        <StackPanel Grid.Column="1" Grid.Row="1">
-          <TextBlock Text="Copyright &#xA9; 2023 Péter Major and contributors." Opacity="0.5"/>
-          <TextBlock Text="All rights reserved." Opacity="0.5"/>
-          <TextBlock Margin="0,6">Check out the code on <Hyperlink NavigateUri="https://github.com/axodox/unpaint">GitHub</Hyperlink>.</TextBlock>
-        </StackPanel>
-      </Grid>
+    <ScrollViewer Grid.Row="1">
+      <StackPanel VerticalAlignment="Center" Margin="12" Spacing="12">
+        <Grid HorizontalAlignment="Center">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+          </Grid.ColumnDefinitions>
 
-      <local:SettingControl Icon="&#xea18;" Title="Safe mode" Subtitle="Adds keywords to negative prompt to avoid inappropriate imagery.">
-        <ToggleSwitch FlowDirection="RightToLeft" IsOn="{x:Bind ViewModel.IsSafeModeEnabled, Mode=TwoWay}" Visibility="{x:Bind ViewModel.AreUnsafeOptionsEnabled}"/>
-      </local:SettingControl>
+          <Grid.RowDefinitions>
+            <RowDefinition Height="2*"/>
+            <RowDefinition Height="*"/>
+          </Grid.RowDefinitions>
 
-      <local:SettingControl Icon="&#xe9d5;" Title="Safety checker" Subtitle="Checks the image after generation and suppresses inappropriate (NSFW) output.">
-        <ToggleSwitch FlowDirection="RightToLeft" IsOn="{x:Bind ViewModel.IsSafetyCheckerEnabled, Mode=TwoWay}" Visibility="{x:Bind ViewModel.AreUnsafeOptionsEnabled}"/>
-      </local:SettingControl>
+          <Image Grid.RowSpan="2" Source="Assets/Unpaint.png" Width="128" Height="128"/>
+          <StackPanel Orientation="Horizontal" Grid.Column="1" Spacing="6">
+            <TextBlock Text="Unpaint" FontWeight="Bold" FontSize="24" VerticalAlignment="Bottom"/>
+            <TextBlock Text="{x:Bind ViewModel.Version}" FontSize="14" VerticalAlignment="Bottom" Margin="0,0,0,4"/>
+          </StackPanel>
+          <StackPanel Grid.Column="1" Grid.Row="1">
+            <TextBlock Text="Copyright &#xA9; 2023 Péter Major and contributors." Opacity="0.5"/>
+            <TextBlock Opacity="0.5">All rights reserved. (<Hyperlink NavigateUri="https://github.com/axodox/unpaint/blob/main/LICENSE">license</Hyperlink>)</TextBlock>     
+            <TextBlock Margin="0,6">Check out the code on <Hyperlink NavigateUri="https://github.com/axodox/unpaint">GitHub</Hyperlink>.</TextBlock>
+          </StackPanel>
+        </Grid>
 
-      <local:SettingControl Icon="&#xe718;" Title="Keep denoiser in memory" Subtitle="Improves performance, but uses more VRAM.">
-        <ToggleSwitch FlowDirection="RightToLeft" IsOn="{x:Bind ViewModel.IsDenoiserPinned, Mode=TwoWay}"/>
-      </local:SettingControl>
+        <local:SettingControl Icon="&#xeb51;" Title="Acknowledgements" Subtitle="Unpaint would have been impossible to realize without the below contributions."  Orientation="Vertical">
+          <StackPanel Spacing="12">
+            <TextBlock TextWrapping="Wrap">Huge thanks to the
+              <Hyperlink NavigateUri="https://ommer-lab.com/">Computer Vision &amp; Learning research group</Hyperlink> at the
+              <Hyperlink NavigateUri="https://www.lmu.de/de/index.html">Ludwig Maximilian University of Munich</Hyperlink> for providing a free and open-source AI image generation model for the world.
+            </TextBlock>
+            <TextBlock TextWrapping="Wrap">Unpaint uses the following software libraries: <Hyperlink NavigateUri="https://github.com/axodox/axodox-machinelearning">axodox/axodox-machinelearning</Hyperlink> (<Hyperlink NavigateUri="https://github.com/axodox/axodox-machinelearning/blob/main/LICENSE">license</Hyperlink>), <Hyperlink NavigateUri="https://github.com/microsoft/onnxruntime">microsoft/onnxruntime</Hyperlink> (<Hyperlink NavigateUri="https://github.com/microsoft/onnxruntime/blob/main/LICENSE">license</Hyperlink>) and <Hyperlink NavigateUri="https://github.com/microsoft/onnxruntime-extensions">microsoft/onnxruntime-extensions</Hyperlink> (<Hyperlink NavigateUri="https://github.com/microsoft/onnxruntime-extensions/blob/main/LICENSE">license</Hyperlink>).
+            </TextBlock>
+            <TextBlock TextWrapping="Wrap">Unpaint was inspired by following projects: <Hyperlink NavigateUri="https://github.com/Amblyopius/Stable-Diffusion-ONNX-FP16">Amblyopius/Stable-Diffusion-ONNX-FP16</Hyperlink> (<Hyperlink NavigateUri="https://github.com/Amblyopius/Stable-Diffusion-ONNX-FP16/blob/main/LICENSE">license</Hyperlink>), <Hyperlink NavigateUri="https://github.com/cassiebreviu/StableDiffusion">cassiebreviu/StableDiffusion</Hyperlink> (<Hyperlink NavigateUri="https://github.com/cassiebreviu/StableDiffusion/blob/main/LICENSE">license</Hyperlink>), <Hyperlink NavigateUri="https://github.com/CompVis/stable-diffusion">CompVis/stable-diffusion</Hyperlink> (<Hyperlink NavigateUri="https://github.com/CompVis/stable-diffusion/blob/main/LICENSE">license</Hyperlink>), <Hyperlink NavigateUri="https://github.com/huggingface/diffusers">huggingface/diffusers</Hyperlink> (<Hyperlink NavigateUri="https://github.com/huggingface/diffusers/blob/main/LICENSE">license</Hyperlink>) and <Hyperlink NavigateUri="https://github.com/microsoft/Olive">microsoft/Olive</Hyperlink> (<Hyperlink NavigateUri="https://github.com/microsoft/Olive/blob/main/LICENSE">license</Hyperlink>).
+            </TextBlock>
+          </StackPanel>
+        </local:SettingControl>
 
-      <local:SettingControl Icon="&#xebe8;" Title="Feedback &amp; support" Subtitle="If the application fails to run, generates unintended NSFW content or you have a suggested feature continue here.">
-        <HyperlinkButton Content="&#xe8a7;" FontFamily="Segoe Fluent Icons" NavigateUri="https://github.com/axodox/unpaint/issues"/>
-      </local:SettingControl>
+        <local:SettingControl Icon="&#xea18;" Title="Safe mode" Subtitle="Adds keywords to negative prompt to avoid inappropriate imagery."
+                              Visibility="{x:Bind ViewModel.AreUnsafeOptionsEnabled}">
+          <ToggleSwitch FlowDirection="RightToLeft" IsOn="{x:Bind ViewModel.IsSafeModeEnabled, Mode=TwoWay}"/>
+        </local:SettingControl>
 
-      <local:SettingControl Icon="&#xedfb;" Title="Report a copyright violation" Subtitle="Opens the source page of the current model. Please note that Unpaint is just an execution engine, it does not hold any data from which the images are derived.">
-        <HyperlinkButton Content="&#xe8a7;" FontFamily="Segoe Fluent Icons" NavigateUri="{x:Bind ViewModel.SelectedModelUri}"/>
-      </local:SettingControl>
+        <local:SettingControl Icon="&#xe9d5;" Title="Safety checker" Subtitle="Checks the image after generation and suppresses inappropriate (NSFW) output."
+                              Visibility="{x:Bind ViewModel.AreUnsafeOptionsEnabled}">
+          <ToggleSwitch FlowDirection="RightToLeft" IsOn="{x:Bind ViewModel.IsSafetyCheckerEnabled, Mode=TwoWay}"/>
+        </local:SettingControl>
 
-      <Button Content="Continue" HorizontalAlignment="Center" Click="{x:Bind ViewModel.Continue}"/>
-    </StackPanel>
-  </ScrollViewer>
+        <local:SettingControl Icon="&#xf211;" Title="Rendering device" Subtitle="Specifies which GPU to use for inference.">
+          <ComboBox ItemsSource="{x:Bind ViewModel.Adapters}" SelectedIndex="{x:Bind ViewModel.SelectedAdapterIndex, Mode=TwoWay}"  VerticalAlignment="Center" Width="256">
+            <ComboBox.ItemTemplate>
+              <DataTemplate x:DataType="local:AdapterViewModel">
+                <TextBlock Text="{x:Bind Name}"/>
+              </DataTemplate>
+            </ComboBox.ItemTemplate>
+          </ComboBox>
+        </local:SettingControl>
+        
+        <local:SettingControl Icon="&#xe718;" Title="Keep denoiser in memory" Subtitle="Improves performance, but uses more VRAM.">
+          <ToggleSwitch FlowDirection="RightToLeft" IsOn="{x:Bind ViewModel.IsDenoiserPinned, Mode=TwoWay}"/>
+        </local:SettingControl>
+
+        <local:SettingControl Icon="&#xebe8;" Title="Feedback &amp; support" Subtitle="If the application fails to run, generates unintended NSFW content or you have a suggested feature continue here.">
+          <HyperlinkButton Content="&#xe8a7;" FontFamily="{StaticResource SymbolThemeFontFamily}" NavigateUri="https://github.com/axodox/unpaint/issues"/>
+        </local:SettingControl>
+
+        <Button Content="Continue" HorizontalAlignment="Center" Click="{x:Bind ViewModel.Continue}"/>
+      </StackPanel>
+    </ScrollViewer>
+  </Grid>
 </Page>

@@ -20,89 +20,33 @@ namespace winrt::Unpaint::implementation
   const char* const ModelsViewModel::_modelFilter = "unpaint,stable_diffusion_model";
 
   ModelsViewModel::ModelsViewModel() :
-    _availableModels(single_threaded_observable_vector<ModelViewModel>()),
     _installedModels(single_threaded_observable_vector<ModelViewModel>()),
     _navigationService(dependencies.resolve<INavigationService>()),
     _modelRepository(dependencies.resolve<ModelRepository>())
   {
     UpdateInstalledModels();
-    UpdateAvailableModelsAsync();
   }
-
-  Windows::Foundation::Collections::IObservableVector<ModelViewModel> ModelsViewModel::AvailableModels()
-  {
-    return _availableModels;
-  }
-
-  bool ModelsViewModel::AreAvailableModelsEmpty()
-  {
-    return _availableModels.Size() == 0;
-  }
-
-  fire_and_forget ModelsViewModel::UpdateAvailableModelsAsync()
-  {
-    apartment_context callerContext;
     
-    auto lifetime = get_strong();
-    co_await resume_background();
+  fire_and_forget ModelsViewModel::ImportModelFromHuggingFaceAsync()
+  {
+    ImportHuggingFaceModelDialog dialog{};
+    auto result = co_await dialog.ShowAsync();
+    if (result != ContentDialogResult::Primary) co_return;
 
-    HuggingFaceClient client{};
-    auto models = client.GetModels(_modelFilter);
-    auto installedModels = _modelRepository->Models();
-
-    co_await callerContext;
-
-    _availableModels.Clear();
-    for (auto& model : models)
-    {
-      if (installedModels.contains(model)) continue;
-
-#ifdef NDEBUG
-      //Sorry mates I do not trust you this much...
-      if (!model.starts_with("axodoxian/")) continue;
-#endif
-
-      _availableModels.Append(CreateModelViewModel(model));
-    }
-
-    _propertyChanged(*this, PropertyChangedEventArgs(L"AreAvailableModelsEmpty"));
+    auto viewModel = dialog.ViewModel();
+    if (viewModel.IsValid()) DownloadHuggingFaceModelAsync(viewModel.ModelId());
   }
 
-  fire_and_forget ModelsViewModel::DownloadModelAsync()
+  fire_and_forget ModelsViewModel::ImportModelFromDiskAsync()
   {
-    auto modelId = _availableModels.GetAt(_selectedAvailableModel).Id;
-    DownloadModelDialog dialog{ modelId };
+    ImportLocalModelDialog dialog{};
+    auto result = co_await dialog.ShowAsync();
+    if (result != ContentDialogResult::Primary) co_return;
 
-    auto lifetime = get_strong();
-    co_await dialog.ShowAsync();
+    auto modelFolder = dialog.ViewModel().Result();
+    _modelRepository->AddModelFromDisk(modelFolder);
 
     UpdateInstalledModels();
-    UpdateAvailableModelsAsync();
-  }
-
-  void ModelsViewModel::OpenAvailableModelWebsite()
-  {
-    auto uri = _availableModels.GetAt(_selectedAvailableModel).Uri;
-    Launcher::LaunchUriAsync(Uri(uri));
-  }
-
-  int32_t ModelsViewModel::SelectedAvailableModel()
-  {
-    return _selectedAvailableModel;
-  }
-
-  void ModelsViewModel::SelectedAvailableModel(int32_t value)
-  {
-    if (value == _selectedAvailableModel) return;
-
-    _selectedAvailableModel = value;
-    _propertyChanged(*this, PropertyChangedEventArgs(L"SelectedAvailableModel"));
-    _propertyChanged(*this, PropertyChangedEventArgs(L"IsAvailableModelSelected"));
-  }
-
-  bool ModelsViewModel::IsAvailableModelSelected()
-  {
-    return _selectedAvailableModel != -1;
   }
 
   Windows::Foundation::Collections::IObservableVector<ModelViewModel> ModelsViewModel::InstalledModels()
@@ -133,7 +77,6 @@ namespace winrt::Unpaint::implementation
       _modelRepository->UninstallModel(modelId);
 
       UpdateInstalledModels();
-      UpdateAvailableModelsAsync();
     }
   }
 
@@ -155,18 +98,27 @@ namespace winrt::Unpaint::implementation
     _selectedInstalledModel = value;
     _propertyChanged(*this, PropertyChangedEventArgs(L"SelectedInstalledModel"));
     _propertyChanged(*this, PropertyChangedEventArgs(L"IsInstalledModelSelected"));
+    _propertyChanged(*this, PropertyChangedEventArgs(L"IsModelWebsiteAvailable"));
   }
 
   bool ModelsViewModel::IsInstalledModelSelected()
   {
-    return _selectedInstalledModel != -1;
+    return _selectedInstalledModel >= 0 && _selectedInstalledModel < int32_t(_installedModels.Size());
+  }
+
+  bool ModelsViewModel::IsModelWebsiteAvailable()
+  {
+    return IsInstalledModelSelected() && !_installedModels.GetAt(_selectedInstalledModel).Uri.empty();
   }
 
   fire_and_forget ModelsViewModel::OpenModelDirectory()
   {
+    auto modelId = to_string(_installedModels.GetAt(_selectedInstalledModel).Id);
+
     auto lifetime = get_strong();
-    auto path = _modelRepository->Root();
-    auto modelFolder = co_await StorageFolder::GetFolderFromPathAsync(path.c_str());
+    auto modelFolder = co_await _modelRepository->GetModelFolderAsync(modelId);
+    if (!modelFolder) co_return;
+
     co_await Launcher::LaunchFolderAsync(modelFolder);
   }
 
@@ -197,18 +149,20 @@ namespace winrt::Unpaint::implementation
     _installedModels.Clear();
     for (auto& model : _modelRepository->Models())
     {
-      _installedModels.Append(CreateModelViewModel(model));
+      _installedModels.Append(model);
     }
 
     _propertyChanged(*this, PropertyChangedEventArgs(L"AreInstalledModelsEmpty"));
     _propertyChanged(*this, PropertyChangedEventArgs(L"CanContinue"));
   }
-  
-  ModelViewModel ModelsViewModel::CreateModelViewModel(const std::string& modelId)
+
+  fire_and_forget ModelsViewModel::DownloadHuggingFaceModelAsync(hstring const& modelId)
   {
-    return ModelViewModel{
-      .Id = to_hstring(modelId),
-      .Uri = to_hstring("https://huggingface.co/" + modelId)
-    };
+    DownloadModelDialog dialog{ modelId };
+
+    auto lifetime = get_strong();
+    co_await dialog.ShowAsync();
+
+    UpdateInstalledModels();
   }
 }

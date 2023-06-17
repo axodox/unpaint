@@ -13,10 +13,12 @@ namespace winrt::Unpaint
   const char* UnpaintOptions::_isSafeModeEnabledKey = "Inference.IsSafeModeEnabled";
   const char* UnpaintOptions::_isSafetyCheckerEnabledKey = "Inference.IsSafetyCheckerEnabled";
   const char* UnpaintOptions::_isDenoiserPinnedKey = "Inference.IsDenoiserPinned";
+  const char* UnpaintOptions::_adapterIndexKey = "Inference.AdapterIndex";
   const char* UnpaintOptions::_modelIdKey = "Inference.ModelId";
 
   UnpaintOptions::UnpaintOptions() :
-    _settingManager(dependencies.resolve<SettingManager>())
+    _settingManager(dependencies.resolve<SettingManager>()),
+    _deviceInformation(dependencies.resolve<DeviceInformation>())
   { }
 
   bool UnpaintOptions::HasShownShowcaseView() const
@@ -69,12 +71,22 @@ namespace winrt::Unpaint
 
   bool UnpaintOptions::IsDenoiserPinned() const
   {
-    return _settingManager->LoadSettingOr(_isDenoiserPinnedKey, true);
+    return _settingManager->LoadSettingOr(_isDenoiserPinnedKey, !_deviceInformation->IsDeviceXbox());
   }
 
   void UnpaintOptions::IsDenoiserPinned(bool value)
   {
     _settingManager->StoreSetting(_isDenoiserPinnedKey, value);
+  }
+
+  uint32_t UnpaintOptions::AdapterIndex() const
+  {
+    return _settingManager->LoadSettingOr(_adapterIndexKey, 0u);
+  }
+
+  void UnpaintOptions::AdapterIndex(uint32_t value)
+  {
+    _settingManager->StoreSetting(_adapterIndexKey, value);
   }
 
   std::string UnpaintOptions::ModelId() const

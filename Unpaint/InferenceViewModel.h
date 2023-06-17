@@ -6,6 +6,7 @@
 #include "UnpaintOptions.h"
 #include "UnpaintState.h"
 #include "Infrastructure/Events.h"
+#include "DeviceInformation.h"
 
 namespace winrt::Unpaint::implementation
 {
@@ -32,7 +33,7 @@ namespace winrt::Unpaint::implementation
     fire_and_forget NegativePrompt(hstring const& value);
     int32_t AvailableNegativeTokenCount();
 
-    Windows::Foundation::Collections::IObservableVector<hstring> Models();
+    Windows::Foundation::Collections::IObservableVector<ModelViewModel> Models();
     int32_t SelectedModelIndex();
     void SelectedModelIndex(int32_t value);
 
@@ -118,6 +119,7 @@ namespace winrt::Unpaint::implementation
     std::shared_ptr<ModelRepository> _modelRepository;
     std::shared_ptr<StableDiffusionModelExecutor> _modelExecutor;
     std::shared_ptr<ImageRepository> _imageRepository;
+    std::shared_ptr<DeviceInformation> _deviceInformation;
 
     std::minstd_rand _random;
     std::uniform_int_distribution<uint32_t> _seedDistribution;
@@ -128,7 +130,7 @@ namespace winrt::Unpaint::implementation
 
     int32_t _availablePositiveTokenCount, _availableNegativeTokenCount;
     
-    Windows::Foundation::Collections::IObservableVector<hstring> _models;
+    Windows::Foundation::Collections::IObservableVector<ModelViewModel> _models;
     int32_t _selectedModelIndex;
 
     Windows::Foundation::Collections::IObservableVector<Windows::Graphics::SizeInt32> _resolutions;

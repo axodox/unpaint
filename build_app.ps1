@@ -22,7 +22,7 @@ $version = if ($null -ne $env:APPVEYOR_BUILD_VERSION) { $env:APPVEYOR_BUILD_VERS
 $appManifest.Package.Identity.Version = $version
 $appManifest.Save("$PSScriptRoot/Unpaint/Package.appxmanifest")
 
-certutil -importpfx -p unpaint -f -user .\Unpaint\key.pfx NoRoot
+certutil -importpfx -p $env:UNPAINT_CERT_PW -f -user .\Unpaint\key.pfx NoRoot
 $coreCount = (Get-CimInstance -class Win32_ComputerSystem).NumberOfLogicalProcessors
 $configurations = "Release"
 $platforms = "x64"
@@ -37,4 +37,4 @@ foreach ($platform in $platforms) {
 # Pack app
 Write-Host 'Creating output directory...' -ForegroundColor Magenta
 $packagePath = ".\Unpaint\bin\Release\x64\Unpaint_$($version)_x64.msix"
-signtool.exe sign /fd SHA256 /td SHA256 /a /f "./Unpaint/key.pfx" /p unpaint /tr http://timestamp.digicert.com $packagePath
+signtool.exe sign /fd SHA256 /td SHA256 /a /f "./Unpaint/key.pfx" /p $env:UNPAINT_CERT_PW /tr http://timestamp.digicert.com $packagePath

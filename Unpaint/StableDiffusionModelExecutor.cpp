@@ -3,6 +3,7 @@
 #include "Infrastructure/BitwiseOperations.h"
 #include "Infrastructure/DependencyContainer.h"
 #include "Storage/FileIO.h"
+#include "Storage/UwpStorage.h"
 #include "MachineLearning/VaeEncoder.h"
 #include "MachineLearning/VaeDecoder.h"
 #include "MachineLearning/SafetyChecker.h"
@@ -33,7 +34,7 @@ namespace winrt::Unpaint
   {
     lock_guard lock(_mutex);
     EnsureEnvironment(modelId);
-    if (!_textEmbedder) _textEmbedder = make_unique<TextEmbedder>(*_onnxEnvironment, app_folder());
+    if (!_textEmbedder) _textEmbedder = make_unique<TextEmbedder>(*_onnxEnvironment, app_folder(), GetModelFile("text_encoder\\model.onnx"));
 
     if (isSafeModeEnabled) prompt = _safetyFilter + prompt;
 
@@ -44,7 +45,7 @@ namespace winrt::Unpaint
   {
     //Set up async source
     lock_guard lock(_mutex);
-    thread_name_context threadName{ L"* inference" };
+    thread_name_context threadName{ "* inference" };
 
     async_operation_source async;
     operation.set_source(async);
@@ -108,13 +109,15 @@ namespace winrt::Unpaint
 
   void StableDiffusionModelExecutor::EnsureEnvironment(std::string_view modelId)
   {
-    if (_modelId != modelId || !_onnxEnvironment)
+    if (!_onnxEnvironment || _onnxEnvironment->DeviceId != int32_t(_unpaintOptions->AdapterIndex()) || _modelId != modelId)
     {
       _textEmbedder.reset();
       _denoiser.reset();
 
-      _onnxEnvironment = make_unique<OnnxEnvironment>(_modelRepository->Root() / modelId);      
+      _onnxEnvironment = make_unique<OnnxEnvironment>(_modelRepository->Root() / modelId);
+      _onnxEnvironment->DeviceId = _unpaintOptions->AdapterIndex();
       _modelId = modelId;
+      _modelFiles = _modelRepository->GetModelFiles(modelId);
 
       _stepCount = 0;
       _positivePrompt.clear();
@@ -124,6 +127,21 @@ namespace winrt::Unpaint
       _inputImage = {};
       _inputLatent = {};
     }
+  }
+
+  StableDiffusionModelExecutor::ModelFile StableDiffusionModelExecutor::GetModelFile(const std::string& fileId) const
+  {
+    auto file = _modelFiles.at(fileId);
+
+    ModelFile result;
+    result.ModelPath = filesystem::path(file.Path().c_str());
+    
+    if (!wstring(file.Path().c_str()).starts_with(_modelRepository->Root().c_str()))
+    {
+      result.ModelData = read_file(file);
+    }
+
+    return result;
   }
 
   Axodox::MachineLearning::Tensor StableDiffusionModelExecutor::LoadImage(const StableDiffusionInferenceTask& task, Axodox::Graphics::TextureData& sourceTexture, Axodox::Graphics::Rect& sourceRect, Axodox::Graphics::Rect& targetRect, Axodox::Threading::async_operation_source& async)
@@ -181,7 +199,7 @@ namespace winrt::Unpaint
     if (colorImage == _inputImage && _inputLatent) return _inputLatent;
 
     async.update_state(NAN, "Loading VAE encoder...");
-    VaeEncoder vaeEncoder{ *_onnxEnvironment };
+    VaeEncoder vaeEncoder{ *_onnxEnvironment, GetModelFile("vae_encoder\\model.onnx") };
 
     async.update_state("Encoding color image...");
     _inputLatent = vaeEncoder.EncodeVae(colorImage);
@@ -197,7 +215,7 @@ namespace winrt::Unpaint
 
     //Load embedder
     async.update_state(NAN, "Loading text embedder...");
-    if (!_textEmbedder) _textEmbedder = make_unique<TextEmbedder>(*_onnxEnvironment, app_folder());
+    if (!_textEmbedder) _textEmbedder = make_unique<TextEmbedder>(*_onnxEnvironment, app_folder(), GetModelFile("text_encoder\\model.onnx"));
 
     //Parse and schedule prompt
     async.update_state("Creating text embedding...");
@@ -232,7 +250,7 @@ namespace winrt::Unpaint
   Axodox::MachineLearning::Tensor StableDiffusionModelExecutor::RunStableDiffusion(const StableDiffusionInferenceTask& task, const StableDiffusionInputs& inputs, Axodox::Threading::async_operation_source& async)
   {
     async.update_state(NAN, "Loading denoiser...");
-    if (!_denoiser) _denoiser = make_unique<StableDiffusionInferer>(*_onnxEnvironment);
+    if (!_denoiser) _denoiser = make_unique<StableDiffusionInferer>(*_onnxEnvironment, GetModelFile("unet\\model.onnx"));
 
     StableDiffusionOptions options{
       .StepCount = task.SamplingSteps,
@@ -258,7 +276,7 @@ namespace winrt::Unpaint
   Axodox::MachineLearning::Tensor StableDiffusionModelExecutor::DecodeVAE(const Axodox::MachineLearning::Tensor& latentImage, Axodox::Threading::async_operation_source& async)
   {
     async.update_state(NAN, "Loading VAE decoder...");
-    VaeDecoder vaeDecoder{ *_onnxEnvironment };
+    VaeDecoder vaeDecoder{ *_onnxEnvironment, GetModelFile("vae_decoder\\model.onnx") };
 
     async.update_state("Decoding latent image...");
     return vaeDecoder.DecodeVae(latentImage);
@@ -267,7 +285,7 @@ namespace winrt::Unpaint
   void StableDiffusionModelExecutor::RunSafetyCheck(std::vector<Axodox::Graphics::TextureData>& images, Axodox::Threading::async_operation_source& async)
   {
     async.update_state(NAN, "Loading safety checker...");
-    SafetyChecker safetyChecker{ *_onnxEnvironment };
+    SafetyChecker safetyChecker{ *_onnxEnvironment, GetModelFile("safety_checker\\model.onnx") };
 
     async.update_state(NAN, "Checking safety...");
     for (auto& image : images)
@@ -299,5 +317,17 @@ namespace winrt::Unpaint
     *result.ModelId = ModelId;
 
     return result;
+  }
+
+  StableDiffusionModelExecutor::ModelFile::operator Axodox::MachineLearning::ModelSource() const
+  {
+    if (ModelData.empty())
+    {
+      return ModelPath;
+    }
+    else
+    {
+      return ModelData;
+    }
   }
 }
