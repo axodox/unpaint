@@ -25,7 +25,9 @@ namespace winrt::Unpaint
   { }
 
   ModelRepository::ModelRepository() :
-    _root((ApplicationData::Current().LocalCacheFolder().Path() + L"\\models").c_str())
+    _root((ApplicationData::Current().LocalCacheFolder().Path() + L"\\models").c_str()),
+    ModelsChanged(_events),
+    _unpaintState(dependencies.resolve<UnpaintState>())
   { 
     //Ensure models directory
     if (!filesystem::exists(_root))
@@ -105,6 +107,7 @@ namespace winrt::Unpaint
 
   void ModelRepository::Refresh()
   {
+    //Update model library
     set<ModelInfo> models;
 
     error_code ec;
@@ -128,6 +131,19 @@ namespace winrt::Unpaint
 
     lock_guard lock(_mutex);
     _models = models;
+
+    _events.raise(ModelsChanged, this);
+
+    //Update selected model if needed
+    if (!GetModel(*_unpaintState->ModelId))
+    {
+      _unpaintState->ModelId = "-";
+    }
+
+    if (_unpaintState->ModelId->empty() && !Models().empty())
+    {
+      _unpaintState->ModelId = Models().begin()->Id;
+    }
   }
 
   std::optional<ModelInfo> ModelRepository::GetModel(std::string_view modelId) const

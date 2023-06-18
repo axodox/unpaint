@@ -1,6 +1,5 @@
 #include "pch.h"
 #include "UnpaintState.h"
-#include "ModelRepository.h"
 
 using namespace Axodox::Infrastructure;
 using namespace winrt::Windows::Graphics;
@@ -49,17 +48,6 @@ namespace winrt::Unpaint
     if (*Resolution == SizeInt32{0, 0})
     {
       Resolution = deviceInformation->IsDeviceXbox() ? SizeInt32{ 512, 512 } : SizeInt32{ 768, 768 };
-    }
-
-    auto modelRepository = dependencies.resolve<ModelRepository>();
-    if (!modelRepository->GetModel(*ModelId).has_value())
-    {
-      ModelId = "";
-    }
-
-    if (ModelId->empty() && !modelRepository->Models().empty())
-    {
-      ModelId = modelRepository->Models().begin()->Id;
     }
 
 #ifdef NDEBUG
