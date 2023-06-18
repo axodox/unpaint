@@ -29,7 +29,7 @@ App::App() :
 {
   set_thread_name("* ui");
   dependencies.add<INavigationService>(*this);
-  _unpaintOptions = dependencies.resolve<UnpaintOptions>();
+  _unpaintState = dependencies.resolve<UnpaintState>();
   _modelRepository = dependencies.resolve<ModelRepository>();
   _deviceInformation = dependencies.resolve<DeviceInformation>();
 
@@ -140,11 +140,11 @@ void App::NavigateToView(Windows::UI::Xaml::Interop::TypeName viewType)
   auto window = Window::Current();
   window.SetTitleBar(nullptr);
 
-  if (!_unpaintOptions->HasShownShowcaseView())
+  if (!*_unpaintState->HasShownShowcaseView)
   {
     viewType = xaml_typename<Unpaint::ShowcaseView>();
   }
-  else if (!_unpaintOptions->HasShownWelcomeView())
+  else if (!*_unpaintState->HasShownWelcomeView)
   {
     viewType = xaml_typename<Unpaint::WelcomeView>();
   }

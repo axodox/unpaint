@@ -1,5 +1,6 @@
 #pragma once
 #include "pch.h"
+#include "Storage/SettingManager.h"
 
 namespace winrt::Unpaint
 {
@@ -46,5 +47,35 @@ namespace winrt::Unpaint
     {
       return _value;
     }
+  };
+
+  template<typename T>
+  class PersistentOptionProperty : public OptionProperty<T>
+  {
+  private:
+    const char* _name;
+
+    static std::shared_ptr<Axodox::Storage::SettingManager> SettingManager()
+    {
+      return Axodox::Infrastructure::dependencies.resolve<Axodox::Storage::SettingManager>();
+    }
+
+    void OnValueChanged(OptionPropertyBase*)
+    {
+      SettingManager()->StoreSetting(_name, **this);
+    }
+
+  public:
+    PersistentOptionProperty(const char* name, const T value = {}) :
+      OptionProperty<T>(SettingManager()->LoadSettingOr(name, value)),
+      _name(name)
+    { 
+      OptionProperty<T>::ValueChanged(Axodox::Infrastructure::no_revoke, Axodox::Infrastructure::event_handler{ this, &PersistentOptionProperty<T>::OnValueChanged });
+    }    
+
+    using OptionProperty<T>::operator const T&;
+    using OptionProperty<T>::operator*;
+    using OptionProperty<T>::operator->;
+    using OptionProperty<T>::operator=;
   };
 }

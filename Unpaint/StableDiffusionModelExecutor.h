@@ -7,17 +7,11 @@
 #include "MachineLearning/StableDiffustionInferer.h"
 #include "MachineLearning/TextEmbedder.h"
 #include "ModelRepository.h"
-#include "UnpaintOptions.h"
+#include "UnpaintState.h"
 #include "ImageMetadata.h"
 
 namespace winrt::Unpaint
 {
-  enum class InferenceMode
-  {
-    Create,
-    Modify
-  };
-
   struct StableDiffusionInferenceTask
   {
     InferenceMode Mode;
@@ -66,7 +60,7 @@ namespace winrt::Unpaint
 
   private:
     static const char* const _safetyFilter;
-    std::shared_ptr<UnpaintOptions> _unpaintOptions;
+    std::shared_ptr<UnpaintState> _unpaintState;
     std::shared_ptr<ModelRepository> _modelRepository;
 
     std::unique_ptr<Axodox::MachineLearning::OnnxEnvironment> _onnxEnvironment;

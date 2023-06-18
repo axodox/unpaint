@@ -105,9 +105,6 @@
     <ClCompile Include="SettingsViewModel.cpp">
       <Filter>View Models</Filter>
     </ClCompile>
-    <ClCompile Include="UnpaintOptions.cpp">
-      <Filter>Models</Filter>
-    </ClCompile>
     <ClCompile Include="ImageMetadata.cpp">
       <Filter>Models</Filter>
     </ClCompile>
@@ -283,9 +280,6 @@
       <Filter>Converters</Filter>
     </ClInclude>
     <ClInclude Include="StableDiffusionModelExecutor.h">
-      <Filter>Models</Filter>
-    </ClInclude>
-    <ClInclude Include="UnpaintOptions.h">
       <Filter>Models</Filter>
     </ClInclude>
     <ClInclude Include="ImageRepository.h">

@@ -178,7 +178,6 @@
       <DependentUpon>TitleBarHost.xaml</DependentUpon>
       <SubType>Code</SubType>
     </ClInclude>
-    <ClInclude Include="UnpaintOptions.h" />
     <ClInclude Include="UnpaintState.h" />
     <ClInclude Include="WelcomeView.h">
       <DependentUpon>WelcomeView.xaml</DependentUpon>
@@ -329,7 +328,6 @@
       <DependentUpon>TitleBarHost.xaml</DependentUpon>
       <SubType>Code</SubType>
     </ClCompile>
-    <ClCompile Include="UnpaintOptions.cpp" />
     <ClCompile Include="UnpaintState.cpp" />
     <ClCompile Include="WelcomeView.cpp">
       <DependentUpon>WelcomeView.xaml</DependentUpon>

@@ -24,7 +24,7 @@ namespace winrt::Unpaint
   const char* const StableDiffusionModelExecutor::_safetyFilter = "nsfw, nudity, porn, sex, child, girl, boy, minor, teen, ";
 
   StableDiffusionModelExecutor::StableDiffusionModelExecutor() :
-    _unpaintOptions(dependencies.resolve<UnpaintOptions>()),
+    _unpaintState(dependencies.resolve<UnpaintState>()),
     _modelRepository(dependencies.resolve<ModelRepository>()),
     _stepCount(0),
     _isSafeModeEnabled(true)
@@ -116,13 +116,13 @@ namespace winrt::Unpaint
 
   void StableDiffusionModelExecutor::EnsureEnvironment(std::string_view modelId)
   {
-    if (!_onnxEnvironment || _onnxEnvironment->DeviceId != int32_t(_unpaintOptions->AdapterIndex()) || _modelId != modelId)
+    if (!_onnxEnvironment || _onnxEnvironment->DeviceId != int32_t(*_unpaintState->AdapterIndex) || _modelId != modelId)
     {
       _textEmbedder.reset();
       _denoiser.reset();
 
       _onnxEnvironment = make_unique<OnnxEnvironment>(_modelRepository->Root() / modelId);
-      _onnxEnvironment->DeviceId = _unpaintOptions->AdapterIndex();
+      _onnxEnvironment->DeviceId = *_unpaintState->AdapterIndex;
       _modelId = modelId;
       _modelFiles = _modelRepository->GetModelFiles(modelId);
 
@@ -275,7 +275,7 @@ namespace winrt::Unpaint
     async.update_state("Running denoiser...");
     auto result = _denoiser->RunInference(options, &async);
 
-    if (!_unpaintOptions->IsDenoiserPinned()) _denoiser.reset();
+    if (!*_unpaintState->IsDenoiserPinned) _denoiser.reset();
 
     return result;
   }

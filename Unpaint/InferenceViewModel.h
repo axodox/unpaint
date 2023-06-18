@@ -3,7 +3,6 @@
 #include "ModelRepository.h"
 #include "StableDiffusionModelExecutor.h"
 #include "ImageRepository.h"
-#include "UnpaintOptions.h"
 #include "UnpaintState.h"
 #include "Infrastructure/Events.h"
 #include "DeviceInformation.h"
@@ -88,7 +87,6 @@ namespace winrt::Unpaint::implementation
 
     INavigationService _navigationService;
     std::shared_ptr<UnpaintState> _unpaintState;
-    std::shared_ptr<UnpaintOptions> _unpaintOptions;
     std::shared_ptr<ModelRepository> _modelRepository;
     std::shared_ptr<StableDiffusionModelExecutor> _modelExecutor;
     std::shared_ptr<ImageRepository> _imageRepository;

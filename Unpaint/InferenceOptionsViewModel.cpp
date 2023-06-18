@@ -11,7 +11,6 @@ namespace winrt::Unpaint::implementation
   InferenceOptionsViewModel::InferenceOptionsViewModel() :
     _navigationService(dependencies.resolve<INavigationService>()),
     _unpaintState(dependencies.resolve<UnpaintState>()),
-    _unpaintOptions(dependencies.resolve<UnpaintOptions>()),
     _modelRepository(dependencies.resolve<ModelRepository>()),
     _deviceInformation(dependencies.resolve<DeviceInformation>()),
     _models(single_threaded_observable_vector<ModelViewModel>()),
@@ -45,7 +44,7 @@ namespace winrt::Unpaint::implementation
     if (value == _selectedModelIndex) return;
 
     _selectedModelIndex = value;
-    if (value != -1) _unpaintOptions->ModelId(to_string(_models.GetAt(value).Id));
+    if (value != -1) _unpaintState->ModelId = to_string(_models.GetAt(value).Id);
     _propertyChanged(*this, PropertyChangedEventArgs(L"SelectedModelIndex"));
   }
 
@@ -174,7 +173,7 @@ namespace winrt::Unpaint::implementation
 
   void InferenceOptionsViewModel::OnModelChanged()
   {
-    auto modelId = _unpaintOptions->ModelId();
+    auto modelId = *_unpaintState->ModelId;
     for (auto i = 0; auto & model : _modelRepository->Models())
     {
       if (model.Id == modelId) _selectedModelIndex = i;

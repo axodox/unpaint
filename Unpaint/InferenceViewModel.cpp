@@ -38,7 +38,6 @@ namespace winrt::Unpaint::implementation
 
   InferenceViewModel::InferenceViewModel() :
     _unpaintState(dependencies.resolve<UnpaintState>()),
-    _unpaintOptions(dependencies.resolve<UnpaintOptions>()),
     _modelRepository(dependencies.resolve<ModelRepository>()),
     _modelExecutor(dependencies.resolve<StableDiffusionModelExecutor>()),
     _imageRepository(dependencies.resolve<ImageRepository>()),
@@ -385,9 +384,9 @@ namespace winrt::Unpaint::implementation
       .SamplingSteps = _unpaintState->SamplingSteps,
       .RandomSeed = _unpaintState->RandomSeed,
       .BatchSize = _unpaintState->IsBatchGenerationEnabled ? *_unpaintState->BatchSize : 1,
-      .IsSafeModeEnabled = _unpaintOptions->IsSafeModeEnabled(),
-      .IsSafetyCheckerEnabled = _unpaintOptions->IsSafetyCheckerEnabled(),
-      .ModelId = _unpaintOptions->ModelId()
+      .IsSafeModeEnabled = _unpaintState->IsSafeModeEnabled,
+      .IsSafetyCheckerEnabled = _unpaintState->IsSafetyCheckerEnabled,
+      .ModelId = _unpaintState->ModelId
     };
 
     if (*_unpaintState->InferenceMode == InferenceMode::Modify)
@@ -615,7 +614,7 @@ namespace winrt::Unpaint::implementation
   void InferenceViewModel::CopyPromptLink()
   {
     Uri result{ format(L"unpaint://inference/create?model={}&positive_prompt={}&negative_prompt={}&guidance_strength={}&sampling_steps={}&random_seed={}",
-      Uri::EscapeComponent(to_hstring(_unpaintOptions->ModelId())),
+      Uri::EscapeComponent(to_hstring(*_unpaintState->ModelId)),
       Uri::EscapeComponent(*_unpaintState->PositivePrompt),
       Uri::EscapeComponent(*_unpaintState->NegativePrompt),
       *_unpaintState->GuidanceStrength,
@@ -753,7 +752,7 @@ namespace winrt::Unpaint::implementation
   {
     apartment_context callingContext{};
 
-    auto modelId = _unpaintOptions->ModelId();
+    auto modelId = *_unpaintState->ModelId;
 
     auto lifetime = get_strong();
     co_await resume_background();
@@ -775,7 +774,7 @@ namespace winrt::Unpaint::implementation
   fire_and_forget InferenceViewModel::UpdateNegativePromptAsync()
   {
     auto lifetime = get_strong();
-    _availableNegativeTokenCount = co_await ValidatePromptAsync(NegativePrompt(), _unpaintOptions->IsSafeModeEnabled());
+    _availableNegativeTokenCount = co_await ValidatePromptAsync(NegativePrompt(), _unpaintState->IsSafeModeEnabled);
     _propertyChanged(*this, PropertyChangedEventArgs(L"AvailableNegativeTokenCount"));
   }
 }
