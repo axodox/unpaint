@@ -115,7 +115,7 @@ namespace winrt::Unpaint::implementation
     auto projectName = to_string(projectNameBox.Text());
     if (dialogResult != ContentDialogResult::Primary || projectName.empty()) co_return;
 
-    _imageRepository->ProjectName(projectName);
+    _imageRepository->ProjectName(projectName); 
   }
 
   fire_and_forget ProjectViewModel::OpenProjectDirectory()
@@ -322,16 +322,21 @@ namespace winrt::Unpaint::implementation
 
   void ProjectViewModel::OnImagesChanged(ImageRepository* sender)
   {
+    if (_recursionBlock.is_locked()) return;
+    auto lock = _recursionBlock.lock();
+
     update_observable_collection(sender->Images(), _images, StringMapper{});
     _propertyChanged(*this, PropertyChangedEventArgs(L"ImagePosition"));
 
+    string projectName{ sender->ProjectName() };
     update_observable_collection(sender->Projects(), _projects, StringMapper{});
 
-    auto it = ranges::find(sender->Projects(), sender->ProjectName());
+    auto it = ranges::find(sender->Projects(), projectName);
     if (it != sender->Projects().end())
     {
       _selectedProjectIndex = int32_t(distance(sender->Projects().begin(), it));
       _propertyChanged(*this, PropertyChangedEventArgs(L"SelectedProjectIndex"));
+      _propertyChanged(*this, PropertyChangedEventArgs(L"CanDeleteProject"));
     }
   }
 #pragma endregion

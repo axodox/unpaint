@@ -2,6 +2,7 @@
 #include "ProjectViewModel.g.h"
 #include "UnpaintState.h"
 #include "ImageRepository.h"
+#include "Threading/RecursionLock.h"
 
 namespace winrt::Unpaint::implementation
 {
@@ -45,6 +46,7 @@ namespace winrt::Unpaint::implementation
   private:
     std::shared_ptr<UnpaintState> _unpaintState;
     std::shared_ptr<ImageRepository> _imageRepository;
+    Axodox::Threading::recursion_counter _recursionBlock;
 
 #pragma region Projects
     Windows::Foundation::Collections::IObservableVector<hstring> _projects;
