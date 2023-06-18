@@ -73,15 +73,7 @@ namespace Unpaint
 
     Boolean IsSettingsLocked;
     Boolean IsJumpingToLatestImage;
-
-    String PositivePrompt;
-    String PositivePromptPlaceholder{ get; };
-    Int32 AvailablePositiveTokenCount{ get; };
-
-    String NegativePrompt;
-    String NegativePromptPlaceholder{ get; };
-    Int32 AvailableNegativeTokenCount{ get; };
-    
+        
     Single DenoisingStrength;
 
     String Status{ get; };
@@ -190,5 +182,19 @@ namespace Unpaint
     Boolean IsSeedFrozen;
 
     void ManageModels();
+  }
+
+  [default_interface]
+  runtimeclass PromptEditorViewModel : Windows.UI.Xaml.Data.INotifyPropertyChanged
+  {
+    PromptEditorViewModel();
+
+    String PositivePrompt;
+    String PositivePromptPlaceholder{ get; };
+    Int32 AvailablePositiveTokenCount{ get; };
+
+    String NegativePrompt;
+    String NegativePromptPlaceholder{ get; };
+    Int32 AvailableNegativeTokenCount{ get; };
   }
 }

@@ -44,8 +44,6 @@ namespace winrt::Unpaint::implementation
     _navigationService(dependencies.resolve<INavigationService>()),
     _deviceInformation(dependencies.resolve<DeviceInformation>()),
     _isBusy(false),
-    _availablePositiveTokenCount(int32_t(TextTokenizer::MaxTokenCount)),
-    _availableNegativeTokenCount(int32_t(TextTokenizer::MaxTokenCount)),
     _selectedImageIndex(-1),
     _random(uint32_t(time(nullptr))),
     _status(L""),
@@ -86,10 +84,6 @@ namespace winrt::Unpaint::implementation
     }
 
     if (_selectedImageIndex == -1) SelectedImageIndex(int32_t(_images.Size()) - 1);
-
-    //Update prompts
-    UpdatePositivePromptAsync();
-    UpdateNegativePromptAsync();
   }
 
   int32_t InferenceViewModel::SelectedModeIndex()
@@ -132,57 +126,7 @@ namespace winrt::Unpaint::implementation
     _unpaintState->IsJumpingToLatestImage = value;
     _propertyChanged(*this, PropertyChangedEventArgs(L"IsJumpingToLatestImage"));
   }
-
-  hstring InferenceViewModel::PositivePromptPlaceholder()
-  {
-    return L"an empty canvas standing in a painter's workshop";
-  }
-
-  hstring InferenceViewModel::PositivePrompt()
-  {
-    return _unpaintState->PositivePrompt;
-  }
-
-  fire_and_forget InferenceViewModel::PositivePrompt(hstring const& value)
-  {
-    if (value == _unpaintState->PositivePrompt) co_return;
-
-    _unpaintState->PositivePrompt = value;
-    _propertyChanged(*this, PropertyChangedEventArgs(L"PositivePrompt"));
-
-    UpdatePositivePromptAsync();
-  }
-
-  int32_t InferenceViewModel::AvailablePositiveTokenCount()
-  {
-    return _availablePositiveTokenCount;
-  }
-
-  hstring InferenceViewModel::NegativePromptPlaceholder()
-  {
-    return L"blurry, render";
-  }
-
-  hstring InferenceViewModel::NegativePrompt()
-  {
-    return _unpaintState->NegativePrompt;
-  }
-
-  fire_and_forget InferenceViewModel::NegativePrompt(hstring const& value)
-  {
-    if (value == _unpaintState->NegativePrompt) co_return;
-
-    _unpaintState->NegativePrompt = value;
-    _propertyChanged(*this, PropertyChangedEventArgs(L"NegativePrompt"));
-
-    UpdateNegativePromptAsync();
-  }
-
-  int32_t InferenceViewModel::AvailableNegativeTokenCount()
-  {
-    return _availableNegativeTokenCount;
-  }
-
+    
   float InferenceViewModel::DenoisingStrength()
   {
     return _unpaintState->DenoisingStrength;
@@ -376,8 +320,8 @@ namespace winrt::Unpaint::implementation
 
     StableDiffusionInferenceTask task{
       .Mode = _unpaintState->InferenceMode,
-      .PositivePrompt = to_string(_unpaintState->PositivePrompt->empty() ? PositivePromptPlaceholder() : *_unpaintState->PositivePrompt),
-      .NegativePrompt = to_string(_unpaintState->NegativePrompt->empty() ? NegativePromptPlaceholder() : *_unpaintState->NegativePrompt),
+      .PositivePrompt = _unpaintState->PositivePrompt->empty() ? StableDiffusionInferenceTask::PositivePromptPlaceholder : *_unpaintState->PositivePrompt,
+      .NegativePrompt = _unpaintState->NegativePrompt->empty() ? StableDiffusionInferenceTask::NegativePromptPlaceholder : *_unpaintState->NegativePrompt,
       .Resolution = { uint32_t(_unpaintState->Resolution->Width), uint32_t(_unpaintState->Resolution->Height) },
       .GuidanceStrength = _unpaintState->GuidanceStrength,
       .DenoisingStrength = _unpaintState->DenoisingStrength,
@@ -615,8 +559,8 @@ namespace winrt::Unpaint::implementation
   {
     Uri result{ format(L"unpaint://inference/create?model={}&positive_prompt={}&negative_prompt={}&guidance_strength={}&sampling_steps={}&random_seed={}",
       Uri::EscapeComponent(to_hstring(*_unpaintState->ModelId)),
-      Uri::EscapeComponent(*_unpaintState->PositivePrompt),
-      Uri::EscapeComponent(*_unpaintState->NegativePrompt),
+      Uri::EscapeComponent(to_hstring(*_unpaintState->PositivePrompt)),
+      Uri::EscapeComponent(to_hstring(*_unpaintState->NegativePrompt)),
       *_unpaintState->GuidanceStrength,
       *_unpaintState->SamplingSteps,
       *_unpaintState->RandomSeed)
@@ -634,13 +578,13 @@ namespace winrt::Unpaint::implementation
     {
       if (item.Name() == L"positive_prompt")
       {
-        _unpaintState->PositivePrompt = item.Value();
+        _unpaintState->PositivePrompt = to_string(item.Value());
         _propertyChanged(*this, PropertyChangedEventArgs(L"PositivePrompt"));
       }
 
       if (item.Name() == L"negative_prompt")
       {
-        _unpaintState->NegativePrompt = item.Value();
+        _unpaintState->NegativePrompt = to_string(item.Value());
         _propertyChanged(*this, PropertyChangedEventArgs(L"NegativePrompt"));
       }
 
@@ -666,9 +610,9 @@ namespace winrt::Unpaint::implementation
     GenerateImage();
   }
 
-  event_token InferenceViewModel::PropertyChanged(PropertyChangedEventHandler const& value)
+  event_token InferenceViewModel::PropertyChanged(PropertyChangedEventHandler const& handler)
   {
-    return _propertyChanged.add(value);
+    return _propertyChanged.add(handler);
   }
 
   void InferenceViewModel::PropertyChanged(event_token const& token)
@@ -722,8 +666,8 @@ namespace winrt::Unpaint::implementation
     co_await callerContext;
 
     //Apply settings
-    PositivePrompt(to_hstring(*imageMetadata->PositivePrompt));
-    NegativePrompt(to_hstring(*imageMetadata->NegativePrompt));
+    _unpaintState->PositivePrompt = *imageMetadata->PositivePrompt;
+    _unpaintState->NegativePrompt = *imageMetadata->NegativePrompt;
     _unpaintState->GuidanceStrength = *imageMetadata->GuidanceStrength;
     _unpaintState->DenoisingStrength = *imageMetadata->DenoisingStrength;
     _unpaintState->SamplingSteps = *imageMetadata->SamplingSteps;
@@ -746,35 +690,5 @@ namespace winrt::Unpaint::implementation
 
     _outputImage = outputImage;
     _propertyChanged(*this, PropertyChangedEventArgs(L"OutputImage"));
-  }
-
-  Windows::Foundation::IAsyncOperation<int32_t> InferenceViewModel::ValidatePromptAsync(hstring prompt, bool isSafeModeEnabled)
-  {
-    apartment_context callingContext{};
-
-    auto modelId = *_unpaintState->ModelId;
-
-    auto lifetime = get_strong();
-    co_await resume_background();
-
-    auto result = _modelExecutor->ValidatePrompt(modelId, to_string(prompt), isSafeModeEnabled);
-
-    co_await callingContext;
-
-    co_return result;
-  }
-
-  fire_and_forget InferenceViewModel::UpdatePositivePromptAsync()
-  {
-    auto lifetime = get_strong();
-    _availablePositiveTokenCount = co_await ValidatePromptAsync(PositivePrompt(), false);
-    _propertyChanged(*this, PropertyChangedEventArgs(L"AvailablePositiveTokenCount"));
-  }
-
-  fire_and_forget InferenceViewModel::UpdateNegativePromptAsync()
-  {
-    auto lifetime = get_strong();
-    _availableNegativeTokenCount = co_await ValidatePromptAsync(NegativePrompt(), _unpaintState->IsSafeModeEnabled);
-    _propertyChanged(*this, PropertyChangedEventArgs(L"AvailableNegativeTokenCount"));
   }
 }

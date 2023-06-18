@@ -137,6 +137,11 @@
       <SubType>Code</SubType>
     </ClInclude>
     <ClInclude Include="OptionProperty.h" />
+    <ClInclude Include="PromptEditorView.h">
+      <DependentUpon>PromptEditorView.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </ClInclude>
+    <ClInclude Include="PromptEditorViewModel.h" />
     <ClInclude Include="SettingControl.h">
       <DependentUpon>SettingControl.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -210,6 +215,9 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="ModelsView.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="PromptEditorView.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Include="SettingControl.xaml">
@@ -291,6 +299,11 @@
       <DependentUpon>MaskEditor.xaml</DependentUpon>
       <SubType>Code</SubType>
     </ClCompile>
+    <ClCompile Include="PromptEditorView.cpp">
+      <DependentUpon>PromptEditorView.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </ClCompile>
+    <ClCompile Include="PromptEditorViewModel.cpp" />
     <ClCompile Include="SettingControl.cpp">
       <DependentUpon>SettingControl.xaml</DependentUpon>
       <SubType>Code</SubType>

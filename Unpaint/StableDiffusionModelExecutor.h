@@ -14,6 +14,9 @@ namespace winrt::Unpaint
 {
   struct StableDiffusionInferenceTask
   {
+    static const char* PositivePromptPlaceholder;
+    static const char* NegativePromptPlaceholder;
+
     InferenceMode Mode;
 
     std::string PositivePrompt, NegativePrompt;

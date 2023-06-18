@@ -1,0 +1,53 @@
+﻿<UserControl
+  x:Class="Unpaint.PromptEditorView"
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:local="using:Unpaint"
+  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+  mc:Ignorable="d">
+  <UserControl.Resources>
+    <Style x:Key="AvailableTokenCountStyle" TargetType="TextBlock">
+      <Setter Property="HorizontalAlignment" Value="Right"/>
+      <Setter Property="VerticalAlignment" Value="Top"/>
+      <Setter Property="Margin" Value="6,7"/>
+      <Setter Property="Opacity" Value="0.5"/>
+      <Setter Property="FontFamily" Value="Segoe UI Mono"/>
+    </Style>
+  </UserControl.Resources>
+
+  <Grid RowSpacing="6">
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="Auto"/>
+    </Grid.RowDefinitions>
+    
+    <!-- Positive prompt -->
+    <TextBox Grid.Row="0" TextWrapping="Wrap" Padding="36,4,25,0"
+                 PlaceholderText="{x:Bind ViewModel.PositivePromptPlaceholder}"
+                 Text="{x:Bind ViewModel.PositivePrompt, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+      <ToolTipService.ToolTip>
+        <StackPanel>
+          <TextBlock Text="Positive prompt" FontWeight="Bold"/>
+          <TextBlock Text="Describe what you would like to see on the image. You can control the attention (like this:1.2). You may also restrict a part of the prompt to certain samples, like this: [at the beginning &lt; 0.2], [0.8 &lt; at the end] or [0.2 &lt; in the middle &lt; 0.8]." TextWrapping="WrapWholeWords"/>
+        </StackPanel>
+      </ToolTipService.ToolTip>
+    </TextBox>
+    <TextBlock Grid.Row="0" Text="{x:Bind ViewModel.AvailablePositiveTokenCount, Mode=OneWay}" Style="{StaticResource AvailableTokenCountStyle}"/>
+    <FontIcon Grid.Row="0" FontFamily="{StaticResource SymbolThemeFontFamily}" FontSize="20" Glyph="&#xe948;" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,6,0,0"/>
+
+    <!-- Negative prompt -->
+    <TextBox Grid.Row="1" TextWrapping="Wrap" Padding="36,4,25,0"
+                 PlaceholderText="{x:Bind ViewModel.NegativePromptPlaceholder}"
+                 Text="{x:Bind ViewModel.NegativePrompt, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+      <ToolTipService.ToolTip>
+        <StackPanel>
+          <TextBlock Text="Negative prompt" FontWeight="Bold"/>
+          <TextBlock Text="Describe what you would not like to see on the image. You can control the attention (like this:1.2). You may also restrict a part of the prompt to certain samples, like this: [at the beginning &lt; 0.2], [0.8 &lt; at the end] or [0.2 &lt; in the middle &lt; 0.8]." TextWrapping="WrapWholeWords"/>
+        </StackPanel>
+      </ToolTipService.ToolTip>
+    </TextBox>
+    <TextBlock Grid.Row="1" Text="{x:Bind ViewModel.AvailableNegativeTokenCount, Mode=OneWay}" Style="{StaticResource AvailableTokenCountStyle}"/>
+    <FontIcon Grid.Row="1" FontFamily="{StaticResource SymbolThemeFontFamily}" FontSize="20" Glyph="&#xe949;" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,6,0,0"/>
+  </Grid>
+</UserControl>

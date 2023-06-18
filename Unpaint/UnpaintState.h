@@ -27,7 +27,7 @@ namespace winrt::Unpaint
     OptionProperty<bool> IsJumpingToLatestImage = true;
     OptionProperty<bool> IsSettingsLocked = true;
 
-    OptionProperty<hstring> PositivePrompt, NegativePrompt;
+    OptionProperty<std::string> PositivePrompt, NegativePrompt;
 
     OptionProperty<bool> IsBatchGenerationEnabled = false;
     OptionProperty<uint32_t> BatchSize = 8;

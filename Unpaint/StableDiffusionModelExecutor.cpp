@@ -21,6 +21,9 @@ using namespace std;
 
 namespace winrt::Unpaint
 {
+  const char* StableDiffusionInferenceTask::PositivePromptPlaceholder = "an empty canvas standing in a painter's workshop";
+  const char* StableDiffusionInferenceTask::NegativePromptPlaceholder = "blurry, render";
+
   const char* const StableDiffusionModelExecutor::_safetyFilter = "nsfw, nudity, porn, sex, child, girl, boy, minor, teen, ";
 
   StableDiffusionModelExecutor::StableDiffusionModelExecutor() :

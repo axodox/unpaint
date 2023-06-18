@@ -50,4 +50,11 @@ namespace Unpaint
     InferenceOptionsView();
     InferenceOptionsViewModel ViewModel{ get; };
   }
+
+  [default_interface]
+  runtimeclass PromptEditorView : Windows.UI.Xaml.Controls.UserControl
+  {
+    PromptEditorView();
+    PromptEditorViewModel ViewModel{ get; };
+  }
 }

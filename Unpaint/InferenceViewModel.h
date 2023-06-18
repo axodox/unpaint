@@ -22,16 +22,6 @@ namespace winrt::Unpaint::implementation
     bool IsJumpingToLatestImage();
     void IsJumpingToLatestImage(bool value);
 
-    hstring PositivePromptPlaceholder();
-    hstring PositivePrompt();
-    fire_and_forget PositivePrompt(hstring const& value);
-    int32_t AvailablePositiveTokenCount();
-
-    hstring NegativePromptPlaceholder();
-    hstring NegativePrompt();
-    fire_and_forget NegativePrompt(hstring const& value);
-    int32_t AvailableNegativeTokenCount();
-
     float DenoisingStrength();
     void DenoisingStrength(float value);
 
@@ -99,8 +89,6 @@ namespace winrt::Unpaint::implementation
 
     bool _isBusy;
 
-    int32_t _availablePositiveTokenCount, _availableNegativeTokenCount;
-       
     hstring _status;
     float _progress;
 
@@ -122,10 +110,6 @@ namespace winrt::Unpaint::implementation
 
     fire_and_forget LoadImageMetadataAsync(bool force = false);
     fire_and_forget RefreshOutputImageAsync();
-
-    Windows::Foundation::IAsyncOperation<int32_t> ValidatePromptAsync(hstring prompt, bool isSafeModeEnabled);
-    fire_and_forget UpdatePositivePromptAsync();
-    fire_and_forget UpdateNegativePromptAsync();
   };
 }
 
