@@ -38,16 +38,20 @@ namespace Unpaint
 
     IObservableVector<ModelViewModel> InstalledModels{ get; };
     Boolean AreInstalledModelsEmpty{ get; };
-    void OpenInstalledModelWebsite();
-    void RemoveModelAsync();
-    void OpenModelDirectory();
-
+        
     Int32 SelectedInstalledModel;
     Boolean IsInstalledModelSelected{ get; };
     Boolean IsModelWebsiteAvailable{ get; };
 
+    void OpenModelDirectory();
+    void OpenInstalledModelWebsite();
+    void CopyLinkToClipboard();
+    void RemoveModelAsync();
+
     Boolean CanContinue{ get; };
     void Continue();
+
+    void OpenUri(Windows.Foundation.Uri uri);
   }
 
   [default_interface]

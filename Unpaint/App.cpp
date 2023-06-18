@@ -69,10 +69,20 @@ void App::Activate(Windows::ApplicationModel::Activation::IActivatedEventArgs ev
   auto protocolActivatedEventArgs = eventArgs.try_as<ProtocolActivatedEventArgs>();
   if (protocolActivatedEventArgs)
   {
-    NavigateToView(xaml_typename<Unpaint::InferenceView>());
+    if (protocolActivatedEventArgs.Uri().Host() == L"inference")
+    {
+      NavigateToView(xaml_typename<Unpaint::InferenceView>());
 
-    auto inferenceView = _frame.Content().try_as<Unpaint::InferenceView>();
-    if (inferenceView) inferenceView.ViewModel().OpenUri(protocolActivatedEventArgs.Uri());
+      auto inferenceView = _frame.Content().try_as<Unpaint::InferenceView>();
+      if (inferenceView) inferenceView.ViewModel().OpenUri(protocolActivatedEventArgs.Uri());
+    }
+    else if (protocolActivatedEventArgs.Uri().Host() == L"models")
+    {
+      NavigateToView(xaml_typename<Unpaint::ModelsView>());
+
+      auto inferenceView = _frame.Content().try_as<Unpaint::ModelsView>();
+      if (inferenceView) inferenceView.ViewModel().OpenUri(protocolActivatedEventArgs.Uri());
+    }
   }
 
   auto coreWindow = CoreWindow::GetForCurrentThread();

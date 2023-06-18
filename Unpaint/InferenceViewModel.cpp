@@ -345,6 +345,8 @@ namespace winrt::Unpaint::implementation
 
   void InferenceViewModel::OpenUri(Windows::Foundation::Uri const& uri)
   {
+    if(uri.Path() != L"/create") return;
+
     auto query = uri.QueryParsed();
     for (const auto& item : query)
     {

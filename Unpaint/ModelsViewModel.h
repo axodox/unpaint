@@ -13,18 +13,21 @@ namespace winrt::Unpaint::implementation
 
     Windows::Foundation::Collections::IObservableVector<ModelViewModel> InstalledModels();
     bool AreInstalledModelsEmpty();
-    fire_and_forget RemoveModelAsync();
-    void OpenInstalledModelWebsite();
-
+    
     int32_t SelectedInstalledModel();
     void SelectedInstalledModel(int32_t value);
     bool IsInstalledModelSelected();
     bool IsModelWebsiteAvailable();
 
     fire_and_forget OpenModelDirectory();
+    void OpenInstalledModelWebsite();
+    void CopyLinkToClipboard();
+    fire_and_forget RemoveModelAsync();
 
     bool CanContinue();
     void Continue();
+
+    fire_and_forget OpenUri(Windows::Foundation::Uri const& uri);
 
     event_token PropertyChanged(Windows::UI::Xaml::Data::PropertyChangedEventHandler const& value);
     void PropertyChanged(event_token const& token);
