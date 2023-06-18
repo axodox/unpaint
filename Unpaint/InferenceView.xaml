@@ -10,7 +10,6 @@
   mc:Ignorable="d">
 
   <Page.Resources>
-    <local:SizeToStringConverter x:Key="SizeToStringConverter"/>
     <local:IsNanToBooleanConverter x:Key="IsNanToBooleanConverter"/>
     <local:NanToZeroConverter x:Key="NanToZeroConverter"/>
     <local:StringToImageSourceConverter x:Key="StringToImageSourceConverter"/>
@@ -360,100 +359,7 @@
         <Button Grid.Column="0" Grid.RowSpan="2" FontFamily="{StaticResource SymbolThemeFontFamily}" FontSize="24" Content="&#xe9e9;" ToolTipService.ToolTip="Inference Options" VerticalAlignment="Stretch">
           <Button.Flyout>
             <Flyout>
-              <Grid ColumnSpacing="12" RowSpacing="6">
-                <Grid.Resources>
-                  <Style x:Key="SettingTextBlockStyle" TargetType="TextBlock">
-                    <Setter Property="VerticalAlignment" Value="Center"/>
-                    <Setter Property="HorizontalAlignment" Value="Right"/>
-                    <Setter Property="Grid.Column" Value="0"/>
-                  </Style>
-                </Grid.Resources>
-
-                <Grid.RowDefinitions>
-                  <RowDefinition Height="Auto"/>
-                  <RowDefinition Height="Auto"/>
-                  <RowDefinition Height="Auto"/>
-                  <RowDefinition Height="Auto"/>
-                  <RowDefinition Height="Auto"/>
-                  <RowDefinition Height="Auto"/>
-                  <RowDefinition Height="Auto"/>
-                </Grid.RowDefinitions>
-
-                <Grid.ColumnDefinitions>
-                  <ColumnDefinition Width="Auto"/>
-                  <ColumnDefinition Width="160"/>
-                </Grid.ColumnDefinitions>
-
-                <!-- Headers -->
-                <TextBlock Grid.ColumnSpan="2" Text="Inference Options" TextAlignment="Center" Margin="0,0,0,6" Style="{StaticResource SubtitleTextBlockStyle}"/>
-
-                <!-- Model -->
-                <TextBlock Grid.Row="1" Text="Model" Style="{StaticResource SettingTextBlockStyle}" ToolTipService.ToolTip="Selects the model used for image generation. Different models will generate different images for the same input."/>
-                <Grid Grid.Row="1" Grid.Column="1" ColumnSpacing="6">
-                  <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                  </Grid.ColumnDefinitions>
-
-                  <ComboBox ItemsSource="{x:Bind ViewModel.Models, Mode=OneWay}"
-                            SelectedIndex="{x:Bind ViewModel.SelectedModelIndex, Mode=TwoWay}">
-                    <ComboBox.ItemTemplate>
-                      <DataTemplate x:DataType="local:ModelViewModel">
-                        <TextBlock Text="{x:Bind Name}"/>
-                      </DataTemplate>
-                    </ComboBox.ItemTemplate>
-                  </ComboBox>
-                  <Button Grid.Column="1" FontFamily="{StaticResource SymbolThemeFontFamily}" Content="&#xe8f1;" ToolTipService.ToolTip="Manage models" VerticalAlignment="Stretch"
-                          Click="{x:Bind ViewModel.ManageModels}"/>
-                </Grid>
-
-
-                <!-- Resolution -->
-                <TextBlock Grid.Row="2" Text="Resolution" Style="{StaticResource SettingTextBlockStyle}" ToolTipService.ToolTip="Controls the size of the output image. Using higher resolutions will increase memory usage and reduce image generation speed."/>
-                <ComboBox Grid.Row="2" Grid.Column="1" HorizontalAlignment="Stretch"
-                          ItemsSource="{x:Bind ViewModel.Resolutions, Mode=OneWay}"
-                          SelectedIndex="{x:Bind ViewModel.SelectedResolutionIndex, Mode=TwoWay}">
-                  <ComboBox.ItemTemplate>
-                    <DataTemplate x:DataType="graphics:SizeInt32">
-                      <TextBlock Text="{x:Bind Converter={StaticResource SizeToStringConverter}}"/>
-                    </DataTemplate>
-                  </ComboBox.ItemTemplate>
-                </ComboBox>
-                
-                <!-- Batch size -->
-                <CheckBox Grid.Row="3" Content="Batching" VerticalAlignment="Center" HorizontalAlignment="Right" FlowDirection="RightToLeft"
-                          IsChecked="{x:Bind ViewModel.IsBatchGenerationEnabled, Mode=TwoWay}">
-                  <ToolTipService.ToolTip>
-                    <TextBlock Text="Generate multiple images in one run: this can increase per image efficiency significantly, however generation will take longer and have increased video memory usage. The efficiency improvement diminishes at higher values." TextWrapping="WrapWholeWords" FlowDirection="LeftToRight"/>
-                  </ToolTipService.ToolTip>
-                </CheckBox>
-                <muxc:NumberBox Grid.Row="3" Grid.Column="1" Minimum="1" Maximum="128" SmallChange="1" SpinButtonPlacementMode="Inline"
-                                IsEnabled="{x:Bind ViewModel.IsBatchGenerationEnabled, Mode=OneWay}"
-                                Value="{x:Bind ViewModel.BatchSize, Mode=TwoWay}"/>
-
-                <!-- Guidance scale -->
-                <TextBlock Grid.Row="4" Text="Guidance strength" Style="{StaticResource SettingTextBlockStyle}" ToolTipService.ToolTip="Controls the strength of human input when forming the output. Low values can result in more creative results, while higher values will conform to the input more strictly. Selecting values too high or low degrade the quality of the output."/>
-                <Slider Grid.Row="4" Grid.Column="1" Minimum="0" Maximum="20" SmallChange="0.1" LargeChange="1" StepFrequency="0.1"
-                        Value="{x:Bind ViewModel.GuidanceStrength, Mode=TwoWay}"/>
-
-                <!-- Sampling steps -->
-                <TextBlock Grid.Row="5" Text="Sampling steps" Style="{StaticResource SettingTextBlockStyle}" ToolTipService.ToolTip="Reducing this value speeds up image generation time, however it also degrades image quality."/>
-                <muxc:NumberBox Grid.Row="5" Grid.Column="1" Minimum="5" Maximum="100" SmallChange="1" SpinButtonPlacementMode="Inline"
-                                Value="{x:Bind ViewModel.SamplingSteps, Mode=TwoWay}"/>
-
-                <!-- Random seed -->
-                <TextBlock Grid.Row="6" Text="Random seed" Style="{StaticResource SettingTextBlockStyle}" ToolTipService.ToolTip="Affects random numbers used in the image generation process. Using the same seed number with the same settings will result in the same image being generated. Useful for testing how different settings affect the output image."/>
-                <Grid Grid.Row="6" Grid.Column="1" ColumnSpacing="6">
-                  <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                  </Grid.ColumnDefinitions>
-
-                  <muxc:NumberBox Value="{x:Bind ViewModel.RandomSeed, Mode=TwoWay}"/>
-                  <ToggleButton Grid.Column="1" FontFamily="{StaticResource SymbolThemeFontFamily}" Content="&#xe72e;" ToolTipService.ToolTip="Freeze seed" VerticalAlignment="Stretch"
-                                IsChecked="{x:Bind ViewModel.IsSeedFrozen, Mode=TwoWay}"/>
-                </Grid>
-              </Grid>
+              <local:InferenceOptionsView/>
             </Flyout>
           </Button.Flyout>
         </Button>

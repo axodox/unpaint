@@ -1,26 +1,37 @@
 #pragma once
 #include "StableDiffusionModelExecutor.h"
+#include "OptionProperty.h"
 
 namespace winrt::Unpaint
 {
-  struct UnpaintState
+  class UnpaintState
   {
-    InferenceMode InferenceMode = InferenceMode::Create;
+    Axodox::Infrastructure::event_owner _events;
 
-    winrt::Windows::Graphics::SizeInt32 Resolution;
-    std::string Project;
-    std::string Image;
+  public:
+    OptionProperty<InferenceMode> InferenceMode = InferenceMode::Create;
 
-    bool IsJumpingToLatestImage = true;
-    bool IsSettingsLocked = true;
+    OptionProperty<winrt::Windows::Graphics::SizeInt32> Resolution;
+    OptionProperty<std::string> Project;
+    OptionProperty<std::string> Image;
 
-    hstring PositivePrompt, NegativePrompt;
+    OptionProperty<bool> IsJumpingToLatestImage = true;
+    OptionProperty<bool> IsSettingsLocked = true;
 
-    bool IsBatchGenerationEnabled = false;
-    uint32_t BatchSize = 8;
+    OptionProperty<hstring> PositivePrompt, NegativePrompt;
 
-    float GuidanceStrength = 7.f, DenoisingStrength = 0.6f;
-    uint32_t SamplingSteps = 15, RandomSeed = 0;
-    bool IsSeedFrozen = false;
+    OptionProperty<bool> IsBatchGenerationEnabled = false;
+    OptionProperty<uint32_t> BatchSize = 8;
+
+    OptionProperty<float> GuidanceStrength = 7.f, DenoisingStrength = 0.6f;
+    OptionProperty<uint32_t> SamplingSteps = 15, RandomSeed = 0;
+    OptionProperty<bool> IsSeedFrozen = false;
+    
+    Axodox::Infrastructure::event_publisher<OptionPropertyBase*> StateChanged;
+
+    UnpaintState();
+
+  private:
+    void OnStateChanged(OptionPropertyBase* property);
   };
 }

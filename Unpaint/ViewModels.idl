@@ -81,21 +81,8 @@ namespace Unpaint
     String NegativePrompt;
     String NegativePromptPlaceholder{ get; };
     Int32 AvailableNegativeTokenCount{ get; };
-
-    IObservableVector<ModelViewModel> Models{ get; };
-    Int32 SelectedModelIndex;
-
-    IObservableVector<Windows.Graphics.SizeInt32> Resolutions{ get; };
-    Int32 SelectedResolutionIndex;
-
-    Boolean IsBatchGenerationEnabled;
-    UInt32 BatchSize;
-
-    Single GuidanceStrength;
+    
     Single DenoisingStrength;
-    UInt32 SamplingSteps;
-    UInt32 RandomSeed;
-    Boolean IsSeedFrozen;
 
     String Status{ get; };
     Single Progress{ get; };
@@ -119,7 +106,6 @@ namespace Unpaint
     Boolean HasSafetyCheckFailed{ get; };
 
     void GenerateImage();
-    void ManageModels();
     void OpenSettings();
 
     void CopyToClipboard();
@@ -182,5 +168,27 @@ namespace Unpaint
     Windows.Storage.StorageFolder Result{ get; };
 
     void BrowseModelAsync();
+  }
+
+  [default_interface]
+  runtimeclass InferenceOptionsViewModel : Windows.UI.Xaml.Data.INotifyPropertyChanged
+  {
+    InferenceOptionsViewModel();
+
+    IObservableVector<ModelViewModel> Models{ get; };
+    Int32 SelectedModelIndex;
+
+    IObservableVector<Windows.Graphics.SizeInt32> Resolutions{ get; };
+    Int32 SelectedResolutionIndex;
+
+    Boolean IsBatchGenerationEnabled;
+    UInt32 BatchSize;
+
+    Single GuidanceStrength;
+    UInt32 SamplingSteps;
+    UInt32 RandomSeed;
+    Boolean IsSeedFrozen;
+
+    void ManageModels();
   }
 }

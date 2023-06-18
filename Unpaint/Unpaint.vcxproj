@@ -126,11 +126,17 @@
       <SubType>Code</SubType>
     </ClInclude>
     <ClInclude Include="ImportLocalModelViewModel.h" />
+    <ClInclude Include="InferenceOptionsView.h">
+      <DependentUpon>InferenceOptionsView.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </ClInclude>
+    <ClInclude Include="InferenceOptionsViewModel.h" />
     <ClInclude Include="IsNullConverter.h" />
     <ClInclude Include="MaskEditor.h">
       <DependentUpon>MaskEditor.xaml</DependentUpon>
       <SubType>Code</SubType>
     </ClInclude>
+    <ClInclude Include="OptionProperty.h" />
     <ClInclude Include="SettingControl.h">
       <DependentUpon>SettingControl.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -193,6 +199,9 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="ImportLocalModelDialog.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="InferenceOptionsView.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Include="InferenceView.xaml">
@@ -267,6 +276,11 @@
       <SubType>Code</SubType>
     </ClCompile>
     <ClCompile Include="ImportLocalModelViewModel.cpp" />
+    <ClCompile Include="InferenceOptionsView.cpp">
+      <DependentUpon>InferenceOptionsView.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </ClCompile>
+    <ClCompile Include="InferenceOptionsViewModel.cpp" />
     <ClCompile Include="InferenceView.cpp">
       <DependentUpon>InferenceView.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -316,6 +330,7 @@
       <SubType>Code</SubType>
     </ClCompile>
     <ClCompile Include="UnpaintOptions.cpp" />
+    <ClCompile Include="UnpaintState.cpp" />
     <ClCompile Include="WelcomeView.cpp">
       <DependentUpon>WelcomeView.xaml</DependentUpon>
       <SubType>Code</SubType>

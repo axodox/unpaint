@@ -32,13 +32,20 @@ namespace winrt::Unpaint
 
   int32_t StableDiffusionModelExecutor::ValidatePrompt(std::string_view modelId, std::string prompt, bool isSafeModeEnabled)
   {
-    lock_guard lock(_mutex);
-    EnsureEnvironment(modelId);
-    if (!_textEmbedder) _textEmbedder = make_unique<TextEmbedder>(*_onnxEnvironment, app_folder(), GetModelFile("text_encoder\\model.onnx"));
+    try
+    {
+      lock_guard lock(_mutex);
+      EnsureEnvironment(modelId);
+      if (!_textEmbedder) _textEmbedder = make_unique<TextEmbedder>(*_onnxEnvironment, app_folder(), GetModelFile("text_encoder\\model.onnx"));
 
-    if (isSafeModeEnabled) prompt = _safetyFilter + prompt;
+      if (isSafeModeEnabled) prompt = _safetyFilter + prompt;
 
-    return _textEmbedder->ValidatePrompt(prompt);
+      return _textEmbedder->ValidatePrompt(prompt);
+    }
+    catch (...)
+    {
+      return -1;
+    }
   }
 
   std::vector<Axodox::Graphics::TextureData> StableDiffusionModelExecutor::TryRunInference(const StableDiffusionInferenceTask& task, Axodox::Threading::async_operation& operation)

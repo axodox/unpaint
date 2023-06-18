@@ -47,10 +47,6 @@ namespace winrt::Unpaint::implementation
     _isBusy(false),
     _availablePositiveTokenCount(int32_t(TextTokenizer::MaxTokenCount)),
     _availableNegativeTokenCount(int32_t(TextTokenizer::MaxTokenCount)),
-    _models(single_threaded_observable_vector<ModelViewModel>()),
-    _resolutions(single_threaded_observable_vector<SizeInt32>()),
-    _selectedResolutionIndex(1),
-    _selectedModelIndex(0),
     _selectedImageIndex(-1),
     _random(uint32_t(time(nullptr))),
     _status(L""),
@@ -65,41 +61,11 @@ namespace winrt::Unpaint::implementation
     _safetyStrikes(0),
     _imagesChangedSubscription(_imageRepository->ImagesChanged(event_handler{ this, &InferenceViewModel::OnImagesChanged }))
   {
-    //Initialize models
-    auto modelId = _unpaintOptions->ModelId();
-    for (auto i = 0; auto & model : _modelRepository->Models())
-    {
-      if (model.Id == modelId) _selectedModelIndex = i;
-      _models.Append(model);
-
-      i++;
-    }
-
-    //Initialize resolutions
-    if (_unpaintState->Resolution == SizeInt32{0, 0})
-    {
-      _unpaintState->Resolution = _deviceInformation->IsDeviceXbox() ? SizeInt32{ 512, 512 } : SizeInt32{ 768, 768 };
-    }
-
-    _resolutions.Append(SizeInt32{ 1024, 1024 });
-    _resolutions.Append(SizeInt32{ 768, 768 });
-    _resolutions.Append(SizeInt32{ 512, 512 });
-    for (auto i = 0; auto resolution : _resolutions)
-    {
-      if (resolution == _unpaintState->Resolution)
-      {
-        SelectedResolutionIndex(i);
-        break;
-      }
-
-      i++;
-    }
-
     //Initialize projects
     _imageRepository->Refresh();
     for (auto i = 0; const auto & project : _projects)
     {
-      if (to_string(project) == _unpaintState->Project)
+      if (to_string(project) == *_unpaintState->Project)
       {
         SelectedProjectIndex(i);
         break;
@@ -111,7 +77,7 @@ namespace winrt::Unpaint::implementation
     //Initialize images
     for (auto i = 0; const auto & image : _images)
     {
-      if (to_string(image) == _unpaintState->Image)
+      if (to_string(image) == *_unpaintState->Image)
       {
         SelectedImageIndex(i);
         break;
@@ -129,12 +95,12 @@ namespace winrt::Unpaint::implementation
 
   int32_t InferenceViewModel::SelectedModeIndex()
   {
-    return static_cast<int32_t>(_unpaintState->InferenceMode);
+    return static_cast<int32_t>(*_unpaintState->InferenceMode);
   }
 
   void InferenceViewModel::SelectedModeIndex(int32_t value)
   {
-    if (static_cast<InferenceMode>(value) == _unpaintState->InferenceMode) return;
+    if (static_cast<InferenceMode>(value) == *_unpaintState->InferenceMode) return;
 
     _unpaintState->InferenceMode = static_cast<InferenceMode>(value);
     _propertyChanged(*this, PropertyChangedEventArgs(L"SelectedModeIndex"));
@@ -218,83 +184,6 @@ namespace winrt::Unpaint::implementation
     return _availableNegativeTokenCount;
   }
 
-  Windows::Foundation::Collections::IObservableVector<ModelViewModel> InferenceViewModel::Models()
-  {
-    return _models;
-  }
-
-  int32_t InferenceViewModel::SelectedModelIndex()
-  {
-    return _selectedModelIndex;
-  }
-
-  void InferenceViewModel::SelectedModelIndex(int32_t value)
-  {
-    if (value == _selectedModelIndex) return;
-
-    _selectedModelIndex = value;
-    if (value != -1) _unpaintOptions->ModelId(to_string(_models.GetAt(value).Id));
-    _propertyChanged(*this, PropertyChangedEventArgs(L"SelectedModelIndex"));
-  }
-
-  Windows::Foundation::Collections::IObservableVector<Windows::Graphics::SizeInt32> InferenceViewModel::Resolutions()
-  {
-    return _resolutions;
-  }
-
-  int32_t InferenceViewModel::SelectedResolutionIndex()
-  {
-    return _selectedResolutionIndex;
-  }
-
-  void InferenceViewModel::SelectedResolutionIndex(int32_t value)
-  {
-    if (value == _selectedResolutionIndex) return;
-
-    _selectedResolutionIndex = value;
-    if (value != -1) _unpaintState->Resolution = _resolutions.GetAt(value);
-    _propertyChanged(*this, PropertyChangedEventArgs(L"SelectedResolutionIndex"));
-  }
-
-  bool InferenceViewModel::IsBatchGenerationEnabled()
-  {
-    return _unpaintState->IsBatchGenerationEnabled;
-  }
-
-  void InferenceViewModel::IsBatchGenerationEnabled(bool value)
-  {
-    if (value == _unpaintState->IsBatchGenerationEnabled) return;
-
-    _unpaintState->IsBatchGenerationEnabled = value;
-    _propertyChanged(*this, PropertyChangedEventArgs(L"IsBatchGenerationEnabled"));
-  }
-
-  uint32_t InferenceViewModel::BatchSize()
-  {
-    return _unpaintState->BatchSize;
-  }
-
-  void InferenceViewModel::BatchSize(uint32_t value)
-  {
-    if (value == _unpaintState->BatchSize) return;
-
-    _unpaintState->BatchSize = value;
-    _propertyChanged(*this, PropertyChangedEventArgs(L"BatchSize"));
-  }
-
-  float InferenceViewModel::GuidanceStrength()
-  {
-    return _unpaintState->GuidanceStrength;
-  }
-
-  void InferenceViewModel::GuidanceStrength(float value)
-  {
-    if (value == _unpaintState->GuidanceStrength) return;
-
-    _unpaintState->GuidanceStrength = value;
-    _propertyChanged(*this, PropertyChangedEventArgs(L"GuidanceStrength"));
-  }
-
   float InferenceViewModel::DenoisingStrength()
   {
     return _unpaintState->DenoisingStrength;
@@ -306,45 +195,6 @@ namespace winrt::Unpaint::implementation
 
     _unpaintState->DenoisingStrength = value;
     _propertyChanged(*this, PropertyChangedEventArgs(L"DenoisingStrength"));
-  }
-
-  uint32_t InferenceViewModel::SamplingSteps()
-  {
-    return _unpaintState->SamplingSteps;
-  }
-
-  void InferenceViewModel::SamplingSteps(uint32_t value)
-  {
-    if (value == _unpaintState->SamplingSteps) return;
-
-    _unpaintState->SamplingSteps = value;
-    _propertyChanged(*this, PropertyChangedEventArgs(L"SamplingSteps"));
-  }
-
-  uint32_t InferenceViewModel::RandomSeed()
-  {
-    return _unpaintState->RandomSeed;
-  }
-
-  void InferenceViewModel::RandomSeed(uint32_t value)
-  {
-    if (value == _unpaintState->RandomSeed) return;
-
-    _unpaintState->RandomSeed = value;
-    _propertyChanged(*this, PropertyChangedEventArgs(L"RandomSeed"));
-  }
-
-  bool InferenceViewModel::IsSeedFrozen()
-  {
-    return _unpaintState->IsSeedFrozen;
-  }
-
-  void InferenceViewModel::IsSeedFrozen(bool value)
-  {
-    if (value == _unpaintState->IsSeedFrozen) return;
-
-    _unpaintState->IsSeedFrozen = value;
-    _propertyChanged(*this, PropertyChangedEventArgs(L"IsSeedFrozen"));
   }
 
   hstring InferenceViewModel::Status()
@@ -520,29 +370,27 @@ namespace winrt::Unpaint::implementation
     auto lifetime = get_strong();
 
     //Build inference task
-    auto resolution = _resolutions.GetAt(_selectedResolutionIndex);
-
     if (!_unpaintState->IsSeedFrozen)
     {
-      RandomSeed(_seedDistribution(_random));
+      _unpaintState->RandomSeed = _seedDistribution(_random);
     }
 
     StableDiffusionInferenceTask task{
       .Mode = _unpaintState->InferenceMode,
-      .PositivePrompt = to_string(_unpaintState->PositivePrompt.empty() ? PositivePromptPlaceholder() : _unpaintState->PositivePrompt),
-      .NegativePrompt = to_string(_unpaintState->NegativePrompt.empty() ? NegativePromptPlaceholder() : _unpaintState->NegativePrompt),
-      .Resolution = { uint32_t(resolution.Width), uint32_t(resolution.Height) },
+      .PositivePrompt = to_string(_unpaintState->PositivePrompt->empty() ? PositivePromptPlaceholder() : *_unpaintState->PositivePrompt),
+      .NegativePrompt = to_string(_unpaintState->NegativePrompt->empty() ? NegativePromptPlaceholder() : *_unpaintState->NegativePrompt),
+      .Resolution = { uint32_t(_unpaintState->Resolution->Width), uint32_t(_unpaintState->Resolution->Height) },
       .GuidanceStrength = _unpaintState->GuidanceStrength,
       .DenoisingStrength = _unpaintState->DenoisingStrength,
       .SamplingSteps = _unpaintState->SamplingSteps,
       .RandomSeed = _unpaintState->RandomSeed,
-      .BatchSize = _unpaintState->IsBatchGenerationEnabled ? _unpaintState->BatchSize : 1,
+      .BatchSize = _unpaintState->IsBatchGenerationEnabled ? *_unpaintState->BatchSize : 1,
       .IsSafeModeEnabled = _unpaintOptions->IsSafeModeEnabled(),
       .IsSafetyCheckerEnabled = _unpaintOptions->IsSafetyCheckerEnabled(),
-      .ModelId = to_string(_models.GetAt(_selectedModelIndex).Id)
+      .ModelId = _unpaintOptions->ModelId()
     };
 
-    if (_unpaintState->InferenceMode == InferenceMode::Modify)
+    if (*_unpaintState->InferenceMode == InferenceMode::Modify)
     {
       if (_selectedImageIndex != -1)
       {
@@ -623,11 +471,6 @@ namespace winrt::Unpaint::implementation
     {
       GenerateImage();
     }
-  }
-
-  void InferenceViewModel::ManageModels()
-  {
-    _navigationService.NavigateToView(xaml_typename<ModelsView>());
   }
 
   void InferenceViewModel::OpenSettings()
@@ -773,11 +616,11 @@ namespace winrt::Unpaint::implementation
   {
     Uri result{ format(L"unpaint://inference/create?model={}&positive_prompt={}&negative_prompt={}&guidance_strength={}&sampling_steps={}&random_seed={}",
       Uri::EscapeComponent(to_hstring(_unpaintOptions->ModelId())),
-      Uri::EscapeComponent(_unpaintState->PositivePrompt),
-      Uri::EscapeComponent(_unpaintState->NegativePrompt),
-      _unpaintState->GuidanceStrength,
-      _unpaintState->SamplingSteps,
-      _unpaintState->RandomSeed)
+      Uri::EscapeComponent(*_unpaintState->PositivePrompt),
+      Uri::EscapeComponent(*_unpaintState->NegativePrompt),
+      *_unpaintState->GuidanceStrength,
+      *_unpaintState->SamplingSteps,
+      *_unpaintState->RandomSeed)
     };
 
     DataPackage dataPackage{};
@@ -882,10 +725,10 @@ namespace winrt::Unpaint::implementation
     //Apply settings
     PositivePrompt(to_hstring(*imageMetadata->PositivePrompt));
     NegativePrompt(to_hstring(*imageMetadata->NegativePrompt));
-    GuidanceStrength(*imageMetadata->GuidanceStrength);
-    DenoisingStrength(*imageMetadata->DenoisingStrength);
-    SamplingSteps(*imageMetadata->SamplingSteps);
-    RandomSeed(*imageMetadata->RandomSeed);
+    _unpaintState->GuidanceStrength = *imageMetadata->GuidanceStrength;
+    _unpaintState->DenoisingStrength = *imageMetadata->DenoisingStrength;
+    _unpaintState->SamplingSteps = *imageMetadata->SamplingSteps;
+    _unpaintState->RandomSeed = *imageMetadata->RandomSeed;
   }
 
   fire_and_forget InferenceViewModel::RefreshOutputImageAsync()
@@ -910,7 +753,7 @@ namespace winrt::Unpaint::implementation
   {
     apartment_context callingContext{};
 
-    auto modelId = to_string(_models.GetAt(_selectedModelIndex).Id);
+    auto modelId = _unpaintOptions->ModelId();
 
     auto lifetime = get_strong();
     co_await resume_background();

@@ -43,4 +43,11 @@ namespace Unpaint
     SettingsView();
     SettingsViewModel ViewModel{ get; };
   }
+
+  [default_interface]
+  runtimeclass InferenceOptionsView : Windows.UI.Xaml.Controls.UserControl
+  {
+    InferenceOptionsView();
+    InferenceOptionsViewModel ViewModel{ get; };
+  }
 }

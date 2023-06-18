@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "UnpaintOptions.h"
 #include "Infrastructure/DependencyContainer.h"
+#include "ModelRepository.h"
 
 using namespace Axodox::Infrastructure;
 using namespace Axodox::Storage;
@@ -19,7 +20,13 @@ namespace winrt::Unpaint
   UnpaintOptions::UnpaintOptions() :
     _settingManager(dependencies.resolve<SettingManager>()),
     _deviceInformation(dependencies.resolve<DeviceInformation>())
-  { }
+  { 
+    auto modelRepository = dependencies.resolve<ModelRepository>();
+    if (ModelId().empty() && !modelRepository->Models().empty())
+    {
+      ModelId(modelRepository->Models().begin()->Id);
+    }
+  }
 
   bool UnpaintOptions::HasShownShowcaseView() const
   {

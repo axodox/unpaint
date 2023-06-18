@@ -33,34 +33,8 @@ namespace winrt::Unpaint::implementation
     fire_and_forget NegativePrompt(hstring const& value);
     int32_t AvailableNegativeTokenCount();
 
-    Windows::Foundation::Collections::IObservableVector<ModelViewModel> Models();
-    int32_t SelectedModelIndex();
-    void SelectedModelIndex(int32_t value);
-
-    Windows::Foundation::Collections::IObservableVector<Windows::Graphics::SizeInt32> Resolutions();
-    int32_t SelectedResolutionIndex();
-    void SelectedResolutionIndex(int32_t value);
-
-    bool IsBatchGenerationEnabled();
-    void IsBatchGenerationEnabled(bool value);
-
-    uint32_t BatchSize();
-    void BatchSize(uint32_t value);
-
-    float GuidanceStrength();
-    void GuidanceStrength(float value);
-
     float DenoisingStrength();
     void DenoisingStrength(float value);
-    
-    uint32_t SamplingSteps();
-    void SamplingSteps(uint32_t value);
-
-    uint32_t RandomSeed();
-    void RandomSeed(uint32_t value);
-
-    bool IsSeedFrozen();
-    void IsSeedFrozen(bool value);
 
     hstring Status();
     void Status(hstring const& value);
@@ -92,7 +66,6 @@ namespace winrt::Unpaint::implementation
     bool HasSafetyCheckFailed();
 
     fire_and_forget GenerateImage();
-    void ManageModels();
     void OpenSettings();
 
     void CopyToClipboard();
@@ -129,13 +102,7 @@ namespace winrt::Unpaint::implementation
     bool _isBusy;
 
     int32_t _availablePositiveTokenCount, _availableNegativeTokenCount;
-    
-    Windows::Foundation::Collections::IObservableVector<ModelViewModel> _models;
-    int32_t _selectedModelIndex;
-
-    Windows::Foundation::Collections::IObservableVector<Windows::Graphics::SizeInt32> _resolutions;
-    int32_t _selectedResolutionIndex;
-   
+       
     hstring _status;
     float _progress;
 
