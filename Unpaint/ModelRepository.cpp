@@ -135,12 +135,7 @@ namespace winrt::Unpaint
     _events.raise(ModelsChanged, this);
 
     //Update selected model if needed
-    if (!GetModel(*_unpaintState->ModelId))
-    {
-      _unpaintState->ModelId = "-";
-    }
-
-    if (_unpaintState->ModelId->empty() && !Models().empty())
+    if (!GetModel(*_unpaintState->ModelId) && !Models().empty())
     {
       _unpaintState->ModelId = Models().begin()->Id;
     }
