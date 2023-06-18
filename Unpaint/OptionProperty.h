@@ -20,7 +20,7 @@ namespace winrt::Unpaint
   public:
     Axodox::Infrastructure::event_publisher<OptionPropertyBase*> ValueChanged;
     
-    OptionProperty(const T value = {}) :
+    explicit OptionProperty(const T value = {}) :
       _value(value),
       ValueChanged(_events)
     { }
@@ -66,12 +66,12 @@ namespace winrt::Unpaint
     }
 
   public:
-    PersistentOptionProperty(const char* name, const T value = {}) :
+    explicit PersistentOptionProperty(const char* name, const T value = {}) :
       OptionProperty<T>(SettingManager()->LoadSettingOr(name, value)),
       _name(name)
     { 
       OptionProperty<T>::ValueChanged(Axodox::Infrastructure::no_revoke, Axodox::Infrastructure::event_handler{ this, &PersistentOptionProperty<T>::OnValueChanged });
-    }    
+    }
 
     using OptionProperty<T>::operator const T&;
     using OptionProperty<T>::operator*;

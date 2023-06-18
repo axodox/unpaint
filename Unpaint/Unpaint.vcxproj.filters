@@ -147,6 +147,9 @@
     <ClCompile Include="PromptEditorViewModel.cpp">
       <Filter>View Models\Components</Filter>
     </ClCompile>
+    <ClCompile Include="ProjectViewModel.cpp">
+      <Filter>View Models\Components</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\Wide310x150Logo.scale-200.png">
@@ -349,6 +352,9 @@
       <Filter>View Models\Components</Filter>
     </ClInclude>
     <ClInclude Include="PromptEditorViewModel.h">
+      <Filter>View Models\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="ProjectViewModel.h">
       <Filter>View Models\Components</Filter>
     </ClInclude>
   </ItemGroup>

@@ -137,11 +137,11 @@
         <StackPanel x:Name="CommandPanel" Grid.Column="1" HorizontalAlignment="Center" Spacing="6" Orientation="Horizontal" Padding="0,3" Opacity="0">
           <!-- Copy image -->
           <Button Content="&#xe8c8;" ToolTipService.ToolTip="Copy image" Style="{StaticResource HeaderButtonStyle}"
-                  Click="{x:Bind ViewModel.CopyToClipboard}" IsEnabled="{x:Bind ViewModel.HasImageSelected, Mode=OneWay}"/>
+                  Click="{x:Bind ViewModel.Project.CopyToClipboard}" IsEnabled="{x:Bind ViewModel.Project.HasImageSelected, Mode=OneWay}"/>
 
           <!-- Save image as -->
           <Button Content="&#xe792;" ToolTipService.ToolTip="Save image as..." Style="{StaticResource HeaderButtonStyle}"
-                  Click="{x:Bind ViewModel.SaveImageAs}" IsEnabled="{x:Bind ViewModel.HasImageSelected, Mode=OneWay}">
+                  Click="{x:Bind ViewModel.Project.SaveImageAs}" IsEnabled="{x:Bind ViewModel.Project.HasImageSelected, Mode=OneWay}">
             <Button.KeyboardAccelerators>
               <KeyboardAccelerator Key="S" Modifiers="Control"/>
             </Button.KeyboardAccelerators>
@@ -149,18 +149,18 @@
         
           <!-- Delete image -->
           <Button Content="&#xe74d;" ToolTipService.ToolTip="Delete image..." Style="{StaticResource HeaderButtonStyle}"
-                  Click="{x:Bind ViewModel.DeleteImage}" IsEnabled="{x:Bind ViewModel.HasImageSelected, Mode=OneWay}">
+                  Click="{x:Bind ViewModel.Project.DeleteImage}" IsEnabled="{x:Bind ViewModel.Project.HasImageSelected, Mode=OneWay}">
             <Button.KeyboardAccelerators>
               <KeyboardAccelerator Key="Delete"/>
             </Button.KeyboardAccelerators>
           </Button>
         
           <!-- Page count -->
-          <TextBlock Text="{x:Bind ViewModel.ImagePosition, Mode=OneWay}" FontFamily="Segoe UI Mono" VerticalAlignment="Center" Margin="12,0" IsHitTestVisible="False" Opacity="0.5"/>
+          <TextBlock Text="{x:Bind ViewModel.Project.ImagePosition, Mode=OneWay}" FontFamily="Segoe UI Mono" VerticalAlignment="Center" Margin="12,0" IsHitTestVisible="False" Opacity="0.5"/>
         
           <!-- Project management -->
           <muxc:SplitButton Content="&#xe838;" Padding="0" ToolTipService.ToolTip="Open project directory..." Style="{StaticResource HeaderSplitButtonStyle}"
-                            Click="{x:Bind ViewModel.ShowImageDirectory}">
+                            Click="{x:Bind ViewModel.Project.OpenProjectDirectory}">
             <muxc:SplitButton.Flyout>
               <Flyout>
                 <Flyout.FlyoutPresenterStyle>
@@ -170,11 +170,11 @@
                 </Flyout.FlyoutPresenterStyle>
 
                 <StackPanel>
-                  <ListView ItemsSource="{x:Bind ViewModel.Projects, Mode=OneWay}"
-                            SelectedIndex="{x:Bind ViewModel.SelectedProjectIndex, Mode=TwoWay}"/>
+                  <ListView ItemsSource="{x:Bind ViewModel.Project.Projects, Mode=OneWay}"
+                            SelectedIndex="{x:Bind ViewModel.Project.SelectedProjectIndex, Mode=TwoWay}"/>
                   <MenuFlyoutSeparator/>
-                  <MenuFlyoutItem Text="Create new project..." Click="{x:Bind ViewModel.CreateNewProject}"/>
-                  <MenuFlyoutItem Text="Delete current project..." Click="{x:Bind ViewModel.DeleteProject}" IsEnabled="{x:Bind ViewModel.CanDeleteProject, Mode=OneWay}"/>
+                  <MenuFlyoutItem Text="Create new project..." Click="{x:Bind ViewModel.Project.CreateNewProject}"/>
+                  <MenuFlyoutItem Text="Delete current project..." Click="{x:Bind ViewModel.Project.DeleteProject}" IsEnabled="{x:Bind ViewModel.Project.CanDeleteProject, Mode=OneWay}"/>
                 </StackPanel>
               </Flyout>
             </muxc:SplitButton.Flyout>
@@ -200,8 +200,8 @@
       
       <!-- Output image -->
       <FlipView x:Name="OutputImagesView" Grid.Column="1" Background="Transparent" AllowDrop="True" DragOver="OnImageDragOver" Drop="OnImageDrop"
-                ItemsSource="{x:Bind ViewModel.Images, Mode=OneWay}"
-                SelectedIndex="{x:Bind ViewModel.SelectedImageIndex, Mode=TwoWay}">
+                ItemsSource="{x:Bind ViewModel.Project.Images, Mode=OneWay}"
+                SelectedIndex="{x:Bind ViewModel.Project.SelectedImageIndex, Mode=TwoWay}">
         <FlipView.ItemTemplate>
           <DataTemplate x:DataType="x:String">
             <Image Grid.Row="1" Stretch="Uniform" Source="{x:Bind Converter={StaticResource StringToImageSourceConverter}}" CanDrag="True" DragStarting="OnOutputImageDragStarting" DropCompleted="OnOutputImageDropCompleted"/>
@@ -209,7 +209,7 @@
         </FlipView.ItemTemplate>
       </FlipView>
 
-      <TextBlock Grid.Column="1" Style="{StaticResource ImagePlaceholderStyle}" Visibility="{x:Bind ViewModel.OutputImage, Converter={StaticResource IsNullConverter}, Mode=OneWay}">
+      <TextBlock Grid.Column="1" Style="{StaticResource ImagePlaceholderStyle}" Visibility="{x:Bind ViewModel.Project.SelectedImage, Converter={StaticResource IsNullConverter}, Mode=OneWay}">
         <Run FontWeight="Bold" FontSize="20">No Output Image</Run>
         <LineBreak/>
         <LineBreak/>
@@ -227,7 +227,7 @@
         </local:MaskEditor>
 
         <Button Margin="6,0,-36,0" Width="30" Height="30" HorizontalAlignment="Right" VerticalAlignment="Center" Content="&#xe76b;" FontFamily="{StaticResource SymbolThemeFontFamily}" Padding="0"
-                Click="{x:Bind ViewModel.UseCurrentImageAsInput}" IsEnabled="{x:Bind ViewModel.HasImageSelected, Mode=OneWay}" ToolTipService.ToolTip="Use current image as input"/>
+                Click="{x:Bind ViewModel.UseCurrentImageAsInput}" IsEnabled="{x:Bind ViewModel.Project.HasImageSelected, Mode=OneWay}" ToolTipService.ToolTip="Use current image as input"/>
       </Grid>
 
       <TextBlock Grid.Column="0" Style="{StaticResource ImagePlaceholderStyle}" Visibility="{x:Bind ViewModel.InputImage, Converter={StaticResource IsNullConverter}, Mode=OneWay}">
@@ -322,7 +322,7 @@
           <Button FontFamily="{StaticResource SymbolThemeFontFamily}" FontSize="20" Content="&#xe71b;" Style="{StaticResource FlatButtonStyle}" ToolTipService.ToolTip="Copy prompt link to clipboard."
                   Click="{x:Bind ViewModel.CopyPromptLink}"/>
           <Button FontFamily="{StaticResource SymbolThemeFontFamily}" FontSize="20" Content="&#xe92f;" Style="{StaticResource FlatButtonStyle}" ToolTipService.ToolTip="Copy generation settings from the current image."
-                  Click="{x:Bind ViewModel.LoadSettingsFromCurrentImage}" IsEnabled="{x:Bind ViewModel.HasImageSelected, Mode=OneWay}"/>
+                  Click="{x:Bind ViewModel.Project.LoadSettingsFromCurrentImage}" IsEnabled="{x:Bind ViewModel.Project.HasImageSelected, Mode=OneWay}"/>
           <ToggleSwitch FontFamily="{StaticResource SymbolThemeFontFamily}" FontSize="20" OnContent="&#xe718;" OffContent="&#xe77a;" VerticalAlignment="Center" Margin="0,-10" Background="Transparent"
                         IsOn="{x:Bind ViewModel.IsSettingsLocked, Mode=TwoWay}" Style="{StaticResource FlatToggleSwitchStyle}" PointerPressed="{x:Bind ToggleSettingsLock}"
                         ToolTipService.ToolTip="Lock custom settings or show the settings used for generating the selected image."/>

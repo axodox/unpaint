@@ -18,23 +18,23 @@ namespace winrt::Unpaint
   public:
 
 #pragma region Transient state
-    OptionProperty<InferenceMode> InferenceMode = InferenceMode::Create;
+    OptionProperty<InferenceMode> InferenceMode{ InferenceMode::Create };
 
     OptionProperty<winrt::Windows::Graphics::SizeInt32> Resolution;
     OptionProperty<std::string> Project;
     OptionProperty<std::string> Image;
 
-    OptionProperty<bool> IsJumpingToLatestImage = true;
-    OptionProperty<bool> IsSettingsLocked = true;
+    OptionProperty<bool> IsJumpingToLatestImage{ true };
+    OptionProperty<bool> IsSettingsLocked{ true };
 
     OptionProperty<std::string> PositivePrompt, NegativePrompt;
 
-    OptionProperty<bool> IsBatchGenerationEnabled = false;
-    OptionProperty<uint32_t> BatchSize = 8;
+    OptionProperty<bool> IsBatchGenerationEnabled{ false };
+    OptionProperty<uint32_t> BatchSize{ 8 };
 
-    OptionProperty<float> GuidanceStrength = 7.f, DenoisingStrength = 0.6f;
-    OptionProperty<uint32_t> SamplingSteps = 15, RandomSeed = 0;
-    OptionProperty<bool> IsSeedFrozen = false;
+    OptionProperty<float> GuidanceStrength{ 7.f }, DenoisingStrength{ 0.6f };
+    OptionProperty<uint32_t> SamplingSteps{ 15 }, RandomSeed{ 0 };
+    OptionProperty<bool> IsSeedFrozen{ false };
 #pragma endregion
 
 #pragma region Persistent state
@@ -48,7 +48,7 @@ namespace winrt::Unpaint
     PersistentOptionProperty<uint32_t> AdapterIndex;
     PersistentOptionProperty<std::string> ModelId;
 #pragma endregion
-    
+
     Axodox::Infrastructure::event_publisher<OptionPropertyBase*> StateChanged;
 
     UnpaintState();

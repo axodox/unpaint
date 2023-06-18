@@ -69,6 +69,8 @@ namespace Unpaint
   {
     InferenceViewModel();
 
+    ProjectViewModel Project{ get; };
+
     Int32 SelectedModeIndex;
 
     Boolean IsSettingsLocked;
@@ -78,21 +80,10 @@ namespace Unpaint
 
     String Status{ get; };
     Single Progress{ get; };
-
-    IObservableVector<String> Images{ get; };
-    Boolean HasImageSelected{ get; };
-    Int32 SelectedImageIndex;
-    String ImagePosition{ get; };
-    
+        
     Windows.Storage.StorageFile InputImage;
     Windows.Graphics.Imaging.BitmapSize InputResolution{ get; };
     Windows.Graphics.Imaging.SoftwareBitmap InputMask;
-
-    Windows.Storage.StorageFile OutputImage{ get; };
-
-    IObservableVector<String> Projects{ get; };
-    Int32 SelectedProjectIndex;
-    Boolean CanDeleteProject{ get; };
 
     Boolean IsAutoGenerationEnabled{ get; };
     Boolean HasSafetyCheckFailed{ get; };
@@ -100,15 +91,7 @@ namespace Unpaint
     void GenerateImage();
     void OpenSettings();
 
-    void CopyToClipboard();
-    void SaveImageAs();
-    void DeleteImage();
-    void ShowImageDirectory();
-    void CreateNewProject();
-    void DeleteProject();
-    void AddImage(Windows.Storage.StorageFile file);
     void UseCurrentImageAsInput();
-    void LoadSettingsFromCurrentImage();
     void CopyPromptLink();
     void OpenUri(Windows.Foundation.Uri uri);
   }
@@ -196,5 +179,32 @@ namespace Unpaint
     String NegativePrompt;
     String NegativePromptPlaceholder{ get; };
     Int32 AvailableNegativeTokenCount{ get; };
+  }
+
+  [default_interface]
+  runtimeclass ProjectViewModel : Windows.UI.Xaml.Data.INotifyPropertyChanged
+  {
+    ProjectViewModel();
+
+    IObservableVector<String> Projects{ get; };
+    Int32 SelectedProjectIndex;
+    Boolean CanDeleteProject{ get; };
+
+    void CreateNewProject();
+    void OpenProjectDirectory();
+    void DeleteProject();
+
+    IObservableVector<String> Images{ get; };
+
+    Int32 SelectedImageIndex;
+    Boolean HasImageSelected{ get; };
+    Windows.Storage.StorageFile SelectedImage{ get; };
+    String ImagePosition{ get; };
+
+    void AddImage(Windows.Storage.StorageFile file);
+    void LoadSettingsFromCurrentImage();
+    void CopyToClipboard();
+    void SaveImageAs();
+    void DeleteImage();    
   }
 }

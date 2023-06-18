@@ -137,6 +137,7 @@
       <SubType>Code</SubType>
     </ClInclude>
     <ClInclude Include="OptionProperty.h" />
+    <ClInclude Include="ProjectViewModel.h" />
     <ClInclude Include="PromptEditorView.h">
       <DependentUpon>PromptEditorView.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -299,6 +300,7 @@
       <DependentUpon>MaskEditor.xaml</DependentUpon>
       <SubType>Code</SubType>
     </ClCompile>
+    <ClCompile Include="ProjectViewModel.cpp" />
     <ClCompile Include="PromptEditorView.cpp">
       <DependentUpon>PromptEditorView.xaml</DependentUpon>
       <SubType>Code</SubType>
