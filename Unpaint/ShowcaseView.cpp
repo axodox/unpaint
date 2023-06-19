@@ -2,7 +2,7 @@
 #include "ShowcaseView.h"
 #include "ShowcaseView.g.cpp"
 #include "Infrastructure/DependencyContainer.h"
-#include "UnpaintOptions.h"
+#include "UnpaintState.h"
 
 using namespace Axodox::Infrastructure;
 using namespace winrt;
@@ -12,7 +12,7 @@ namespace winrt::Unpaint::implementation
 {
   ShowcaseView::ShowcaseView()
   {
-    dependencies.resolve<UnpaintOptions>()->HasShownShowcaseView(true);
+    dependencies.resolve<UnpaintState>()->HasShownShowcaseView = true;
   }
 
   ShowcaseViewModel ShowcaseView::ViewModel()

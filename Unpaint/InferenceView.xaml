@@ -10,7 +10,6 @@
   mc:Ignorable="d">
 
   <Page.Resources>
-    <local:SizeToStringConverter x:Key="SizeToStringConverter"/>
     <local:IsNanToBooleanConverter x:Key="IsNanToBooleanConverter"/>
     <local:NanToZeroConverter x:Key="NanToZeroConverter"/>
     <local:StringToImageSourceConverter x:Key="StringToImageSourceConverter"/>
@@ -80,14 +79,6 @@
       <Setter Property="TextWrapping" Value="WrapWholeWords"/>
       <Setter Property="Margin" Value="24"/>
     </Style>
-    
-    <Style x:Key="AvailableTokenCountStyle" TargetType="TextBlock">
-      <Setter Property="HorizontalAlignment" Value="Right"/>
-      <Setter Property="VerticalAlignment" Value="Top"/>
-      <Setter Property="Margin" Value="6,7"/>
-      <Setter Property="Opacity" Value="0.5"/>
-      <Setter Property="FontFamily" Value="Segoe UI Mono"/>
-    </Style>
   </Page.Resources>
   
   <Grid Grid.RowSpacing="6">    
@@ -146,11 +137,11 @@
         <StackPanel x:Name="CommandPanel" Grid.Column="1" HorizontalAlignment="Center" Spacing="6" Orientation="Horizontal" Padding="0,3" Opacity="0">
           <!-- Copy image -->
           <Button Content="&#xe8c8;" ToolTipService.ToolTip="Copy image" Style="{StaticResource HeaderButtonStyle}"
-                  Click="{x:Bind ViewModel.CopyToClipboard}" IsEnabled="{x:Bind ViewModel.HasImageSelected, Mode=OneWay}"/>
+                  Click="{x:Bind ViewModel.Project.CopyToClipboard}" IsEnabled="{x:Bind ViewModel.Project.HasImageSelected, Mode=OneWay}"/>
 
           <!-- Save image as -->
           <Button Content="&#xe792;" ToolTipService.ToolTip="Save image as..." Style="{StaticResource HeaderButtonStyle}"
-                  Click="{x:Bind ViewModel.SaveImageAs}" IsEnabled="{x:Bind ViewModel.HasImageSelected, Mode=OneWay}">
+                  Click="{x:Bind ViewModel.Project.SaveImageAs}" IsEnabled="{x:Bind ViewModel.Project.HasImageSelected, Mode=OneWay}">
             <Button.KeyboardAccelerators>
               <KeyboardAccelerator Key="S" Modifiers="Control"/>
             </Button.KeyboardAccelerators>
@@ -158,18 +149,18 @@
         
           <!-- Delete image -->
           <Button Content="&#xe74d;" ToolTipService.ToolTip="Delete image..." Style="{StaticResource HeaderButtonStyle}"
-                  Click="{x:Bind ViewModel.DeleteImage}" IsEnabled="{x:Bind ViewModel.HasImageSelected, Mode=OneWay}">
+                  Click="{x:Bind ViewModel.Project.DeleteImage}" IsEnabled="{x:Bind ViewModel.Project.HasImageSelected, Mode=OneWay}">
             <Button.KeyboardAccelerators>
               <KeyboardAccelerator Key="Delete"/>
             </Button.KeyboardAccelerators>
           </Button>
         
           <!-- Page count -->
-          <TextBlock Text="{x:Bind ViewModel.ImagePosition, Mode=OneWay}" FontFamily="Segoe UI Mono" VerticalAlignment="Center" Margin="12,0" IsHitTestVisible="False" Opacity="0.5"/>
+          <TextBlock Text="{x:Bind ViewModel.Project.ImagePosition, Mode=OneWay}" FontFamily="Segoe UI Mono" VerticalAlignment="Center" Margin="12,0" IsHitTestVisible="False" Opacity="0.5"/>
         
           <!-- Project management -->
           <muxc:SplitButton Content="&#xe838;" Padding="0" ToolTipService.ToolTip="Open project directory..." Style="{StaticResource HeaderSplitButtonStyle}"
-                            Click="{x:Bind ViewModel.ShowImageDirectory}">
+                            Click="{x:Bind ViewModel.Project.OpenProjectDirectory}">
             <muxc:SplitButton.Flyout>
               <Flyout>
                 <Flyout.FlyoutPresenterStyle>
@@ -179,11 +170,11 @@
                 </Flyout.FlyoutPresenterStyle>
 
                 <StackPanel>
-                  <ListView ItemsSource="{x:Bind ViewModel.Projects, Mode=OneWay}"
-                            SelectedIndex="{x:Bind ViewModel.SelectedProjectIndex, Mode=TwoWay}"/>
+                  <ListView ItemsSource="{x:Bind ViewModel.Project.Projects, Mode=OneWay}"
+                            SelectedIndex="{x:Bind ViewModel.Project.SelectedProjectIndex, Mode=TwoWay}"/>
                   <MenuFlyoutSeparator/>
-                  <MenuFlyoutItem Text="Create new project..." Click="{x:Bind ViewModel.CreateNewProject}"/>
-                  <MenuFlyoutItem Text="Delete current project..." Click="{x:Bind ViewModel.DeleteProject}" IsEnabled="{x:Bind ViewModel.CanDeleteProject, Mode=OneWay}"/>
+                  <MenuFlyoutItem Text="Create new project..." Click="{x:Bind ViewModel.Project.CreateNewProject}"/>
+                  <MenuFlyoutItem Text="Delete current project..." Click="{x:Bind ViewModel.Project.DeleteProject}" IsEnabled="{x:Bind ViewModel.Project.CanDeleteProject, Mode=OneWay}"/>
                 </StackPanel>
               </Flyout>
             </muxc:SplitButton.Flyout>
@@ -209,8 +200,8 @@
       
       <!-- Output image -->
       <FlipView x:Name="OutputImagesView" Grid.Column="1" Background="Transparent" AllowDrop="True" DragOver="OnImageDragOver" Drop="OnImageDrop"
-                ItemsSource="{x:Bind ViewModel.Images, Mode=OneWay}"
-                SelectedIndex="{x:Bind ViewModel.SelectedImageIndex, Mode=TwoWay}">
+                ItemsSource="{x:Bind ViewModel.Project.Images, Mode=OneWay}"
+                SelectedIndex="{x:Bind ViewModel.Project.SelectedImageIndex, Mode=TwoWay}">
         <FlipView.ItemTemplate>
           <DataTemplate x:DataType="x:String">
             <Image Grid.Row="1" Stretch="Uniform" Source="{x:Bind Converter={StaticResource StringToImageSourceConverter}}" CanDrag="True" DragStarting="OnOutputImageDragStarting" DropCompleted="OnOutputImageDropCompleted"/>
@@ -218,7 +209,7 @@
         </FlipView.ItemTemplate>
       </FlipView>
 
-      <TextBlock Grid.Column="1" Style="{StaticResource ImagePlaceholderStyle}" Visibility="{x:Bind ViewModel.OutputImage, Converter={StaticResource IsNullConverter}, Mode=OneWay}">
+      <TextBlock Grid.Column="1" Style="{StaticResource ImagePlaceholderStyle}" Visibility="{x:Bind ViewModel.Project.SelectedImage, Converter={StaticResource IsNullConverter}, Mode=OneWay}">
         <Run FontWeight="Bold" FontSize="20">No Output Image</Run>
         <LineBreak/>
         <LineBreak/>
@@ -236,7 +227,7 @@
         </local:MaskEditor>
 
         <Button Margin="6,0,-36,0" Width="30" Height="30" HorizontalAlignment="Right" VerticalAlignment="Center" Content="&#xe76b;" FontFamily="{StaticResource SymbolThemeFontFamily}" Padding="0"
-                Click="{x:Bind ViewModel.UseCurrentImageAsInput}" IsEnabled="{x:Bind ViewModel.HasImageSelected, Mode=OneWay}" ToolTipService.ToolTip="Use current image as input"/>
+                Click="{x:Bind ViewModel.UseCurrentImageAsInput}" IsEnabled="{x:Bind ViewModel.Project.HasImageSelected, Mode=OneWay}" ToolTipService.ToolTip="Use current image as input"/>
       </Grid>
 
       <TextBlock Grid.Column="0" Style="{StaticResource ImagePlaceholderStyle}" Visibility="{x:Bind ViewModel.InputImage, Converter={StaticResource IsNullConverter}, Mode=OneWay}">
@@ -331,7 +322,7 @@
           <Button FontFamily="{StaticResource SymbolThemeFontFamily}" FontSize="20" Content="&#xe71b;" Style="{StaticResource FlatButtonStyle}" ToolTipService.ToolTip="Copy prompt link to clipboard."
                   Click="{x:Bind ViewModel.CopyPromptLink}"/>
           <Button FontFamily="{StaticResource SymbolThemeFontFamily}" FontSize="20" Content="&#xe92f;" Style="{StaticResource FlatButtonStyle}" ToolTipService.ToolTip="Copy generation settings from the current image."
-                  Click="{x:Bind ViewModel.LoadSettingsFromCurrentImage}" IsEnabled="{x:Bind ViewModel.HasImageSelected, Mode=OneWay}"/>
+                  Click="{x:Bind ViewModel.Project.LoadSettingsFromCurrentImage}" IsEnabled="{x:Bind ViewModel.Project.HasImageSelected, Mode=OneWay}"/>
           <ToggleSwitch FontFamily="{StaticResource SymbolThemeFontFamily}" FontSize="20" OnContent="&#xe718;" OffContent="&#xe77a;" VerticalAlignment="Center" Margin="0,-10" Background="Transparent"
                         IsOn="{x:Bind ViewModel.IsSettingsLocked, Mode=TwoWay}" Style="{StaticResource FlatToggleSwitchStyle}" PointerPressed="{x:Bind ToggleSettingsLock}"
                         ToolTipService.ToolTip="Lock custom settings or show the settings used for generating the selected image."/>
@@ -343,7 +334,7 @@
       </Grid>      
 
       <!-- Bottom section -->
-      <Grid RowSpacing="6" ColumnSpacing="6" Padding="6" Grid.Row="1"
+      <Grid ColumnSpacing="6" Padding="6" Grid.Row="1"
             Background="{ThemeResource LayerFillColorAltBrush}">
         <Grid.ColumnDefinitions>
           <ColumnDefinition Width="Auto"/>
@@ -351,143 +342,20 @@
           <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
 
-        <Grid.RowDefinitions>
-          <RowDefinition Height="Auto"/>
-          <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
-
         <!-- Inference settings -->
-        <Button Grid.Column="0" Grid.RowSpan="2" FontFamily="{StaticResource SymbolThemeFontFamily}" FontSize="24" Content="&#xe9e9;" ToolTipService.ToolTip="Inference Options" VerticalAlignment="Stretch">
+        <Button Grid.Column="0" FontFamily="{StaticResource SymbolThemeFontFamily}" FontSize="24" Content="&#xe9e9;" ToolTipService.ToolTip="Inference Options" VerticalAlignment="Stretch">
           <Button.Flyout>
             <Flyout>
-              <Grid ColumnSpacing="12" RowSpacing="6">
-                <Grid.Resources>
-                  <Style x:Key="SettingTextBlockStyle" TargetType="TextBlock">
-                    <Setter Property="VerticalAlignment" Value="Center"/>
-                    <Setter Property="HorizontalAlignment" Value="Right"/>
-                    <Setter Property="Grid.Column" Value="0"/>
-                  </Style>
-                </Grid.Resources>
-
-                <Grid.RowDefinitions>
-                  <RowDefinition Height="Auto"/>
-                  <RowDefinition Height="Auto"/>
-                  <RowDefinition Height="Auto"/>
-                  <RowDefinition Height="Auto"/>
-                  <RowDefinition Height="Auto"/>
-                  <RowDefinition Height="Auto"/>
-                  <RowDefinition Height="Auto"/>
-                </Grid.RowDefinitions>
-
-                <Grid.ColumnDefinitions>
-                  <ColumnDefinition Width="Auto"/>
-                  <ColumnDefinition Width="160"/>
-                </Grid.ColumnDefinitions>
-
-                <!-- Headers -->
-                <TextBlock Grid.ColumnSpan="2" Text="Inference Options" TextAlignment="Center" Margin="0,0,0,6" Style="{StaticResource SubtitleTextBlockStyle}"/>
-
-                <!-- Model -->
-                <TextBlock Grid.Row="1" Text="Model" Style="{StaticResource SettingTextBlockStyle}" ToolTipService.ToolTip="Selects the model used for image generation. Different models will generate different images for the same input."/>
-                <Grid Grid.Row="1" Grid.Column="1" ColumnSpacing="6">
-                  <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                  </Grid.ColumnDefinitions>
-
-                  <ComboBox ItemsSource="{x:Bind ViewModel.Models, Mode=OneWay}"
-                            SelectedIndex="{x:Bind ViewModel.SelectedModelIndex, Mode=TwoWay}">
-                    <ComboBox.ItemTemplate>
-                      <DataTemplate x:DataType="local:ModelViewModel">
-                        <TextBlock Text="{x:Bind Name}"/>
-                      </DataTemplate>
-                    </ComboBox.ItemTemplate>
-                  </ComboBox>
-                  <Button Grid.Column="1" FontFamily="{StaticResource SymbolThemeFontFamily}" Content="&#xe8f1;" ToolTipService.ToolTip="Manage models" VerticalAlignment="Stretch"
-                          Click="{x:Bind ViewModel.ManageModels}"/>
-                </Grid>
-
-
-                <!-- Resolution -->
-                <TextBlock Grid.Row="2" Text="Resolution" Style="{StaticResource SettingTextBlockStyle}" ToolTipService.ToolTip="Controls the size of the output image. Using higher resolutions will increase memory usage and reduce image generation speed."/>
-                <ComboBox Grid.Row="2" Grid.Column="1" HorizontalAlignment="Stretch"
-                          ItemsSource="{x:Bind ViewModel.Resolutions, Mode=OneWay}"
-                          SelectedIndex="{x:Bind ViewModel.SelectedResolutionIndex, Mode=TwoWay}">
-                  <ComboBox.ItemTemplate>
-                    <DataTemplate x:DataType="graphics:SizeInt32">
-                      <TextBlock Text="{x:Bind Converter={StaticResource SizeToStringConverter}}"/>
-                    </DataTemplate>
-                  </ComboBox.ItemTemplate>
-                </ComboBox>
-                
-                <!-- Batch size -->
-                <CheckBox Grid.Row="3" Content="Batching" VerticalAlignment="Center" HorizontalAlignment="Right" FlowDirection="RightToLeft"
-                          IsChecked="{x:Bind ViewModel.IsBatchGenerationEnabled, Mode=TwoWay}">
-                  <ToolTipService.ToolTip>
-                    <TextBlock Text="Generate multiple images in one run: this can increase per image efficiency significantly, however generation will take longer and have increased video memory usage. The efficiency improvement diminishes at higher values." TextWrapping="WrapWholeWords" FlowDirection="LeftToRight"/>
-                  </ToolTipService.ToolTip>
-                </CheckBox>
-                <muxc:NumberBox Grid.Row="3" Grid.Column="1" Minimum="1" Maximum="128" SmallChange="1" SpinButtonPlacementMode="Inline"
-                                IsEnabled="{x:Bind ViewModel.IsBatchGenerationEnabled, Mode=OneWay}"
-                                Value="{x:Bind ViewModel.BatchSize, Mode=TwoWay}"/>
-
-                <!-- Guidance scale -->
-                <TextBlock Grid.Row="4" Text="Guidance strength" Style="{StaticResource SettingTextBlockStyle}" ToolTipService.ToolTip="Controls the strength of human input when forming the output. Low values can result in more creative results, while higher values will conform to the input more strictly. Selecting values too high or low degrade the quality of the output."/>
-                <Slider Grid.Row="4" Grid.Column="1" Minimum="0" Maximum="20" SmallChange="0.1" LargeChange="1" StepFrequency="0.1"
-                        Value="{x:Bind ViewModel.GuidanceStrength, Mode=TwoWay}"/>
-
-                <!-- Sampling steps -->
-                <TextBlock Grid.Row="5" Text="Sampling steps" Style="{StaticResource SettingTextBlockStyle}" ToolTipService.ToolTip="Reducing this value speeds up image generation time, however it also degrades image quality."/>
-                <muxc:NumberBox Grid.Row="5" Grid.Column="1" Minimum="5" Maximum="100" SmallChange="1" SpinButtonPlacementMode="Inline"
-                                Value="{x:Bind ViewModel.SamplingSteps, Mode=TwoWay}"/>
-
-                <!-- Random seed -->
-                <TextBlock Grid.Row="6" Text="Random seed" Style="{StaticResource SettingTextBlockStyle}" ToolTipService.ToolTip="Affects random numbers used in the image generation process. Using the same seed number with the same settings will result in the same image being generated. Useful for testing how different settings affect the output image."/>
-                <Grid Grid.Row="6" Grid.Column="1" ColumnSpacing="6">
-                  <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                  </Grid.ColumnDefinitions>
-
-                  <muxc:NumberBox Value="{x:Bind ViewModel.RandomSeed, Mode=TwoWay}"/>
-                  <ToggleButton Grid.Column="1" FontFamily="{StaticResource SymbolThemeFontFamily}" Content="&#xe72e;" ToolTipService.ToolTip="Freeze seed" VerticalAlignment="Stretch"
-                                IsChecked="{x:Bind ViewModel.IsSeedFrozen, Mode=TwoWay}"/>
-                </Grid>
-              </Grid>
+              <local:InferenceOptionsView/>
             </Flyout>
           </Button.Flyout>
         </Button>
 
-        <!-- Positive prompt -->
-        <TextBox Grid.Column="1" Grid.Row="0" TextWrapping="Wrap" Padding="36,4,25,0"
-                 PlaceholderText="{x:Bind ViewModel.PositivePromptPlaceholder}"
-                 Text="{x:Bind ViewModel.PositivePrompt, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
-          <ToolTipService.ToolTip>
-            <StackPanel>
-              <TextBlock Text="Positive prompt" FontWeight="Bold"/>
-              <TextBlock Text="Describe what you would like to see on the image. You can control the attention (like this:1.2). You may also restrict a part of the prompt to certain samples, like this: [at the beginning &lt; 0.2], [0.8 &lt; at the end] or [0.2 &lt; in the middle &lt; 0.8]." TextWrapping="WrapWholeWords"/>
-            </StackPanel>
-          </ToolTipService.ToolTip>
-        </TextBox>
-        <TextBlock Grid.Column="1" Grid.Row="0" Text="{x:Bind ViewModel.AvailablePositiveTokenCount, Mode=OneWay}" Style="{StaticResource AvailableTokenCountStyle}"/>
-        <FontIcon Grid.Column="1" Grid.Row="0" FontFamily="{StaticResource SymbolThemeFontFamily}" FontSize="20" Glyph="&#xe948;" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,6,0,0"/>
-
-        <!-- Negative prompt -->
-        <TextBox Grid.Column="1" Grid.Row="1" TextWrapping="Wrap" Padding="36,4,25,0"
-                 PlaceholderText="{x:Bind ViewModel.NegativePromptPlaceholder}"
-                 Text="{x:Bind ViewModel.NegativePrompt, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
-          <ToolTipService.ToolTip>
-            <StackPanel>
-              <TextBlock Text="Negative prompt" FontWeight="Bold"/>
-              <TextBlock Text="Describe what you would not like to see on the image. You can control the attention (like this:1.2). You may also restrict a part of the prompt to certain samples, like this: [at the beginning &lt; 0.2], [0.8 &lt; at the end] or [0.2 &lt; in the middle &lt; 0.8]." TextWrapping="WrapWholeWords"/>
-            </StackPanel>
-          </ToolTipService.ToolTip>
-        </TextBox>
-        <TextBlock Grid.Column="1" Grid.Row="1" Text="{x:Bind ViewModel.AvailableNegativeTokenCount, Mode=OneWay}" Style="{StaticResource AvailableTokenCountStyle}"/>
-        <FontIcon Grid.Column="1" Grid.Row="1" FontFamily="{StaticResource SymbolThemeFontFamily}" FontSize="20" Glyph="&#xe949;" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,6,0,0"/>
+        <!-- Prompt editor -->
+        <local:PromptEditorView Grid.Column="1"/>
 
         <!-- Execute -->
-        <Button Grid.Column="2" Grid.RowSpan="2" VerticalAlignment="Stretch" Click="{x:Bind ViewModel.GenerateImage}">
+        <Button Grid.Column="2" VerticalAlignment="Stretch" Click="{x:Bind ViewModel.GenerateImage}">
           <ToolTipService.ToolTip>
             <StackPanel>
               <TextBlock Text="Generate image" FontWeight="Bold"/>

@@ -21,10 +21,13 @@ using namespace std;
 
 namespace winrt::Unpaint
 {
+  const char* StableDiffusionInferenceTask::PositivePromptPlaceholder = "an empty canvas standing in a painter's workshop";
+  const char* StableDiffusionInferenceTask::NegativePromptPlaceholder = "blurry, render";
+
   const char* const StableDiffusionModelExecutor::_safetyFilter = "nsfw, nudity, porn, sex, child, girl, boy, minor, teen, ";
 
   StableDiffusionModelExecutor::StableDiffusionModelExecutor() :
-    _unpaintOptions(dependencies.resolve<UnpaintOptions>()),
+    _unpaintState(dependencies.resolve<UnpaintState>()),
     _modelRepository(dependencies.resolve<ModelRepository>()),
     _stepCount(0),
     _isSafeModeEnabled(true)
@@ -32,13 +35,20 @@ namespace winrt::Unpaint
 
   int32_t StableDiffusionModelExecutor::ValidatePrompt(std::string_view modelId, std::string prompt, bool isSafeModeEnabled)
   {
-    lock_guard lock(_mutex);
-    EnsureEnvironment(modelId);
-    if (!_textEmbedder) _textEmbedder = make_unique<TextEmbedder>(*_onnxEnvironment, app_folder(), GetModelFile("text_encoder\\model.onnx"));
+    try
+    {
+      lock_guard lock(_mutex);
+      EnsureEnvironment(modelId);
+      if (!_textEmbedder) _textEmbedder = make_unique<TextEmbedder>(*_onnxEnvironment, app_folder(), GetModelFile("text_encoder\\model.onnx"));
 
-    if (isSafeModeEnabled) prompt = _safetyFilter + prompt;
+      if (isSafeModeEnabled) prompt = _safetyFilter + prompt;
 
-    return _textEmbedder->ValidatePrompt(prompt);
+      return _textEmbedder->ValidatePrompt(prompt);
+    }
+    catch (...)
+    {
+      return -1;
+    }
   }
 
   std::vector<Axodox::Graphics::TextureData> StableDiffusionModelExecutor::TryRunInference(const StableDiffusionInferenceTask& task, Axodox::Threading::async_operation& operation)
@@ -109,13 +119,13 @@ namespace winrt::Unpaint
 
   void StableDiffusionModelExecutor::EnsureEnvironment(std::string_view modelId)
   {
-    if (!_onnxEnvironment || _onnxEnvironment->DeviceId != int32_t(_unpaintOptions->AdapterIndex()) || _modelId != modelId)
+    if (!_onnxEnvironment || _onnxEnvironment->DeviceId != int32_t(*_unpaintState->AdapterIndex) || _modelId != modelId)
     {
       _textEmbedder.reset();
       _denoiser.reset();
 
       _onnxEnvironment = make_unique<OnnxEnvironment>(_modelRepository->Root() / modelId);
-      _onnxEnvironment->DeviceId = _unpaintOptions->AdapterIndex();
+      _onnxEnvironment->DeviceId = *_unpaintState->AdapterIndex;
       _modelId = modelId;
       _modelFiles = _modelRepository->GetModelFiles(modelId);
 
@@ -268,7 +278,7 @@ namespace winrt::Unpaint
     async.update_state("Running denoiser...");
     auto result = _denoiser->RunInference(options, &async);
 
-    if (!_unpaintOptions->IsDenoiserPinned()) _denoiser.reset();
+    if (!*_unpaintState->IsDenoiserPinned) _denoiser.reset();
 
     return result;
   }

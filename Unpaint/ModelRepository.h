@@ -3,6 +3,7 @@
 #include "Json/JsonSerializer.h"
 #include "Threading/AsyncOperation.h"
 #include "winrt/Unpaint.h"
+#include "UnpaintState.h"
 
 namespace winrt::Unpaint
 {
@@ -31,6 +32,8 @@ namespace winrt::Unpaint
 
   class ModelRepository
   {
+    Axodox::Infrastructure::event_owner _events;
+
   public:
     ModelRepository();
 
@@ -47,9 +50,12 @@ namespace winrt::Unpaint
     Windows::Foundation::IAsyncOperation<Windows::Storage::StorageFolder> GetModelFolderAsync(std::string_view modelId) const;
     std::unordered_map<std::string, Windows::Storage::StorageFile> GetModelFiles(std::string_view modelId) const;
 
+    Axodox::Infrastructure::event_publisher<ModelRepository*> ModelsChanged;
+
   private:
-    mutable std::mutex _mutex;
+    mutable std::recursive_mutex _mutex;
     std::filesystem::path _root;
     std::set<ModelInfo> _models;
+    std::shared_ptr<UnpaintState> _unpaintState;
   };
 }

@@ -38,16 +38,20 @@ namespace Unpaint
 
     IObservableVector<ModelViewModel> InstalledModels{ get; };
     Boolean AreInstalledModelsEmpty{ get; };
-    void OpenInstalledModelWebsite();
-    void RemoveModelAsync();
-    void OpenModelDirectory();
-
+        
     Int32 SelectedInstalledModel;
     Boolean IsInstalledModelSelected{ get; };
     Boolean IsModelWebsiteAvailable{ get; };
 
+    void OpenModelDirectory();
+    void OpenInstalledModelWebsite();
+    void CopyLinkToClipboard();
+    void RemoveModelAsync();
+
     Boolean CanContinue{ get; };
     void Continue();
+
+    void OpenUri(Windows.Foundation.Uri uri);
   }
 
   [default_interface]
@@ -69,68 +73,29 @@ namespace Unpaint
   {
     InferenceViewModel();
 
+    ProjectViewModel Project{ get; };
+
     Int32 SelectedModeIndex;
 
     Boolean IsSettingsLocked;
     Boolean IsJumpingToLatestImage;
-
-    String PositivePrompt;
-    String PositivePromptPlaceholder{ get; };
-    Int32 AvailablePositiveTokenCount{ get; };
-
-    String NegativePrompt;
-    String NegativePromptPlaceholder{ get; };
-    Int32 AvailableNegativeTokenCount{ get; };
-
-    IObservableVector<ModelViewModel> Models{ get; };
-    Int32 SelectedModelIndex;
-
-    IObservableVector<Windows.Graphics.SizeInt32> Resolutions{ get; };
-    Int32 SelectedResolutionIndex;
-
-    Boolean IsBatchGenerationEnabled;
-    UInt32 BatchSize;
-
-    Single GuidanceStrength;
+        
     Single DenoisingStrength;
-    UInt32 SamplingSteps;
-    UInt32 RandomSeed;
-    Boolean IsSeedFrozen;
 
     String Status{ get; };
     Single Progress{ get; };
-
-    IObservableVector<String> Images{ get; };
-    Boolean HasImageSelected{ get; };
-    Int32 SelectedImageIndex;
-    String ImagePosition{ get; };
-    
+        
     Windows.Storage.StorageFile InputImage;
     Windows.Graphics.Imaging.BitmapSize InputResolution{ get; };
     Windows.Graphics.Imaging.SoftwareBitmap InputMask;
-
-    Windows.Storage.StorageFile OutputImage{ get; };
-
-    IObservableVector<String> Projects{ get; };
-    Int32 SelectedProjectIndex;
-    Boolean CanDeleteProject{ get; };
 
     Boolean IsAutoGenerationEnabled{ get; };
     Boolean HasSafetyCheckFailed{ get; };
 
     void GenerateImage();
-    void ManageModels();
     void OpenSettings();
 
-    void CopyToClipboard();
-    void SaveImageAs();
-    void DeleteImage();
-    void ShowImageDirectory();
-    void CreateNewProject();
-    void DeleteProject();
-    void AddImage(Windows.Storage.StorageFile file);
     void UseCurrentImageAsInput();
-    void LoadSettingsFromCurrentImage();
     void CopyPromptLink();
     void OpenUri(Windows.Foundation.Uri uri);
   }
@@ -182,5 +147,68 @@ namespace Unpaint
     Windows.Storage.StorageFolder Result{ get; };
 
     void BrowseModelAsync();
+  }
+
+  [default_interface]
+  runtimeclass InferenceOptionsViewModel : Windows.UI.Xaml.Data.INotifyPropertyChanged
+  {
+    InferenceOptionsViewModel();
+
+    IObservableVector<ModelViewModel> Models{ get; };
+    Int32 SelectedModelIndex;
+
+    IObservableVector<Windows.Graphics.SizeInt32> Resolutions{ get; };
+    Int32 SelectedResolutionIndex;
+
+    Boolean IsBatchGenerationEnabled;
+    UInt32 BatchSize;
+
+    Single GuidanceStrength;
+    UInt32 SamplingSteps;
+    UInt32 RandomSeed;
+    Boolean IsSeedFrozen;
+
+    void ManageModels();
+  }
+
+  [default_interface]
+  runtimeclass PromptEditorViewModel : Windows.UI.Xaml.Data.INotifyPropertyChanged
+  {
+    PromptEditorViewModel();
+
+    String PositivePrompt;
+    String PositivePromptPlaceholder{ get; };
+    Int32 AvailablePositiveTokenCount{ get; };
+
+    String NegativePrompt;
+    String NegativePromptPlaceholder{ get; };
+    Int32 AvailableNegativeTokenCount{ get; };
+  }
+
+  [default_interface]
+  runtimeclass ProjectViewModel : Windows.UI.Xaml.Data.INotifyPropertyChanged
+  {
+    ProjectViewModel();
+
+    IObservableVector<String> Projects{ get; };
+    Int32 SelectedProjectIndex;
+    Boolean CanDeleteProject{ get; };
+
+    void CreateNewProject();
+    void OpenProjectDirectory();
+    void DeleteProject();
+
+    IObservableVector<String> Images{ get; };
+
+    Int32 SelectedImageIndex;
+    Boolean HasImageSelected{ get; };
+    Windows.Storage.StorageFile SelectedImage{ get; };
+    String ImagePosition{ get; };
+
+    void AddImage(Windows.Storage.StorageFile file);
+    void LoadSettingsFromCurrentImage();
+    void CopyToClipboard();
+    void SaveImageAs();
+    void DeleteImage();    
   }
 }

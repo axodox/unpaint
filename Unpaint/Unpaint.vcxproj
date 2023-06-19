@@ -126,11 +126,23 @@
       <SubType>Code</SubType>
     </ClInclude>
     <ClInclude Include="ImportLocalModelViewModel.h" />
+    <ClInclude Include="InferenceOptionsView.h">
+      <DependentUpon>InferenceOptionsView.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </ClInclude>
+    <ClInclude Include="InferenceOptionsViewModel.h" />
     <ClInclude Include="IsNullConverter.h" />
     <ClInclude Include="MaskEditor.h">
       <DependentUpon>MaskEditor.xaml</DependentUpon>
       <SubType>Code</SubType>
     </ClInclude>
+    <ClInclude Include="OptionProperty.h" />
+    <ClInclude Include="ProjectViewModel.h" />
+    <ClInclude Include="PromptEditorView.h">
+      <DependentUpon>PromptEditorView.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </ClInclude>
+    <ClInclude Include="PromptEditorViewModel.h" />
     <ClInclude Include="SettingControl.h">
       <DependentUpon>SettingControl.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -172,7 +184,6 @@
       <DependentUpon>TitleBarHost.xaml</DependentUpon>
       <SubType>Code</SubType>
     </ClInclude>
-    <ClInclude Include="UnpaintOptions.h" />
     <ClInclude Include="UnpaintState.h" />
     <ClInclude Include="WelcomeView.h">
       <DependentUpon>WelcomeView.xaml</DependentUpon>
@@ -195,6 +206,9 @@
     <Page Include="ImportLocalModelDialog.xaml">
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="InferenceOptionsView.xaml">
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="InferenceView.xaml">
       <SubType>Designer</SubType>
     </Page>
@@ -202,6 +216,9 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="ModelsView.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="PromptEditorView.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Include="SettingControl.xaml">
@@ -267,6 +284,11 @@
       <SubType>Code</SubType>
     </ClCompile>
     <ClCompile Include="ImportLocalModelViewModel.cpp" />
+    <ClCompile Include="InferenceOptionsView.cpp">
+      <DependentUpon>InferenceOptionsView.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </ClCompile>
+    <ClCompile Include="InferenceOptionsViewModel.cpp" />
     <ClCompile Include="InferenceView.cpp">
       <DependentUpon>InferenceView.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -278,6 +300,12 @@
       <DependentUpon>MaskEditor.xaml</DependentUpon>
       <SubType>Code</SubType>
     </ClCompile>
+    <ClCompile Include="ProjectViewModel.cpp" />
+    <ClCompile Include="PromptEditorView.cpp">
+      <DependentUpon>PromptEditorView.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </ClCompile>
+    <ClCompile Include="PromptEditorViewModel.cpp" />
     <ClCompile Include="SettingControl.cpp">
       <DependentUpon>SettingControl.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -315,7 +343,7 @@
       <DependentUpon>TitleBarHost.xaml</DependentUpon>
       <SubType>Code</SubType>
     </ClCompile>
-    <ClCompile Include="UnpaintOptions.cpp" />
+    <ClCompile Include="UnpaintState.cpp" />
     <ClCompile Include="WelcomeView.cpp">
       <DependentUpon>WelcomeView.xaml</DependentUpon>
       <SubType>Code</SubType>

@@ -64,7 +64,7 @@ namespace winrt::Unpaint::implementation
     const auto& viewModel = _viewModel;
     if (_isInputPaneVisible && !viewModel.InputImage())
     {
-      viewModel.InputImage(viewModel.OutputImage());
+      viewModel.InputImage(viewModel.Project().SelectedImage());
     }
     else
     {
@@ -74,7 +74,7 @@ namespace winrt::Unpaint::implementation
 
   void InferenceView::OnOutputImageDragStarting(Windows::UI::Xaml::UIElement const& /*sender*/, Windows::UI::Xaml::DragStartingEventArgs const& eventArgs)
   {
-    auto outputImage = _viewModel.OutputImage();
+    auto outputImage = _viewModel.Project().SelectedImage();
     if (!outputImage) return;
 
     eventArgs.AllowedOperations(DataPackageOperation::Copy);
@@ -109,7 +109,7 @@ namespace winrt::Unpaint::implementation
 
       if (isOutput)
       {
-        _viewModel.AddImage(file);
+        _viewModel.Project().AddImage(file);
       }
       else
       {
@@ -120,33 +120,37 @@ namespace winrt::Unpaint::implementation
 
   void InferenceView::OnFirstImageInvoked(Windows::UI::Xaml::Input::KeyboardAccelerator const& /*sender*/, Windows::UI::Xaml::Input::KeyboardAcceleratorInvokedEventArgs const& /*args*/)
   {
-    if (_viewModel.Images().Size() > 0)
+    const auto& project = _viewModel.Project();
+    if (project.Images().Size() > 0)
     {
-      _viewModel.SelectedImageIndex(0);
+      project.SelectedImageIndex(0);
     }
   }
 
   void InferenceView::OnPreviousImageInvoked(Windows::UI::Xaml::Input::KeyboardAccelerator const& /*sender*/, Windows::UI::Xaml::Input::KeyboardAcceleratorInvokedEventArgs const& /*args*/)
   {
-    auto currentIndex = _viewModel.SelectedImageIndex();
+    const auto& project = _viewModel.Project();
+    auto currentIndex = project.SelectedImageIndex();
     if (currentIndex > 0)
     {
-      _viewModel.SelectedImageIndex(currentIndex - 1);
+      project.SelectedImageIndex(currentIndex - 1);
     }
   }
 
   void InferenceView::OnNextImageInvoked(Windows::UI::Xaml::Input::KeyboardAccelerator const& /*sender*/, Windows::UI::Xaml::Input::KeyboardAcceleratorInvokedEventArgs const& /*args*/)
   {
-    auto currentIndex = _viewModel.SelectedImageIndex();
-    if (currentIndex + 1 < int32_t(_viewModel.Images().Size()))
+    const auto& project = _viewModel.Project();
+    auto currentIndex = project.SelectedImageIndex();
+    if (currentIndex + 1 < int32_t(project.Images().Size()))
     {
-      _viewModel.SelectedImageIndex(currentIndex + 1);
+      project.SelectedImageIndex(currentIndex + 1);
     }
   }
 
   void InferenceView::OnLastImageInvoked(Windows::UI::Xaml::Input::KeyboardAccelerator const& /*sender*/, Windows::UI::Xaml::Input::KeyboardAcceleratorInvokedEventArgs const& /*args*/)
   {
-    _viewModel.SelectedImageIndex(int32_t(_viewModel.Images().Size()) - 1);
+    const auto& project = _viewModel.Project();
+    project.SelectedImageIndex(int32_t(project.Images().Size()) - 1);
   }
 
   event_token InferenceView::PropertyChanged(Windows::UI::Xaml::Data::PropertyChangedEventHandler const& value)

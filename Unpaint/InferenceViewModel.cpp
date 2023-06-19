@@ -25,7 +25,6 @@ using namespace winrt::Windows::Foundation;
 using namespace winrt::Windows::Graphics;
 using namespace winrt::Windows::Graphics::Imaging;
 using namespace winrt::Windows::Storage;
-using namespace winrt::Windows::Storage::Pickers;
 using namespace winrt::Windows::Storage::Streams;
 using namespace winrt::Windows::System;
 using namespace winrt::Windows::UI::Xaml::Controls;
@@ -38,103 +37,35 @@ namespace winrt::Unpaint::implementation
 
   InferenceViewModel::InferenceViewModel() :
     _unpaintState(dependencies.resolve<UnpaintState>()),
-    _unpaintOptions(dependencies.resolve<UnpaintOptions>()),
     _modelRepository(dependencies.resolve<ModelRepository>()),
     _modelExecutor(dependencies.resolve<StableDiffusionModelExecutor>()),
     _imageRepository(dependencies.resolve<ImageRepository>()),
     _navigationService(dependencies.resolve<INavigationService>()),
     _deviceInformation(dependencies.resolve<DeviceInformation>()),
     _isBusy(false),
-    _availablePositiveTokenCount(int32_t(TextTokenizer::MaxTokenCount)),
-    _availableNegativeTokenCount(int32_t(TextTokenizer::MaxTokenCount)),
-    _models(single_threaded_observable_vector<ModelViewModel>()),
-    _resolutions(single_threaded_observable_vector<SizeInt32>()),
-    _selectedResolutionIndex(1),
-    _selectedModelIndex(0),
-    _selectedImageIndex(-1),
     _random(uint32_t(time(nullptr))),
     _status(L""),
     _progress(0),
-    _images(single_threaded_observable_vector<hstring>()),
-    _projects(single_threaded_observable_vector<hstring>()),
-    _outputImage(nullptr),
     _inputImage(nullptr),
     _inputMask(nullptr),
     _inputResolution({ 0, 0 }),
     _isAutoGenerationEnabled(false),
-    _safetyStrikes(0),
-    _imagesChangedSubscription(_imageRepository->ImagesChanged(event_handler{ this, &InferenceViewModel::OnImagesChanged }))
+    _safetyStrikes(0)
+  { }
+
+  ProjectViewModel InferenceViewModel::Project()
   {
-    //Initialize models
-    auto modelId = _unpaintOptions->ModelId();
-    for (auto i = 0; auto & model : _modelRepository->Models())
-    {
-      if (model.Id == modelId) _selectedModelIndex = i;
-      _models.Append(model);
-
-      i++;
-    }
-
-    //Initialize resolutions
-    if (_unpaintState->Resolution == SizeInt32{0, 0})
-    {
-      _unpaintState->Resolution = _deviceInformation->IsDeviceXbox() ? SizeInt32{ 512, 512 } : SizeInt32{ 768, 768 };
-    }
-
-    _resolutions.Append(SizeInt32{ 1024, 1024 });
-    _resolutions.Append(SizeInt32{ 768, 768 });
-    _resolutions.Append(SizeInt32{ 512, 512 });
-    for (auto i = 0; auto resolution : _resolutions)
-    {
-      if (resolution == _unpaintState->Resolution)
-      {
-        SelectedResolutionIndex(i);
-        break;
-      }
-
-      i++;
-    }
-
-    //Initialize projects
-    _imageRepository->Refresh();
-    for (auto i = 0; const auto & project : _projects)
-    {
-      if (to_string(project) == _unpaintState->Project)
-      {
-        SelectedProjectIndex(i);
-        break;
-      }
-
-      i++;
-    }
-
-    //Initialize images
-    for (auto i = 0; const auto & image : _images)
-    {
-      if (to_string(image) == _unpaintState->Image)
-      {
-        SelectedImageIndex(i);
-        break;
-      }
-
-      i++;
-    }
-
-    if (_selectedImageIndex == -1) SelectedImageIndex(int32_t(_images.Size()) - 1);
-
-    //Update prompts
-    UpdatePositivePromptAsync();
-    UpdateNegativePromptAsync();
+    return _project;
   }
 
   int32_t InferenceViewModel::SelectedModeIndex()
   {
-    return static_cast<int32_t>(_unpaintState->InferenceMode);
+    return static_cast<int32_t>(*_unpaintState->InferenceMode);
   }
 
   void InferenceViewModel::SelectedModeIndex(int32_t value)
   {
-    if (static_cast<InferenceMode>(value) == _unpaintState->InferenceMode) return;
+    if (static_cast<InferenceMode>(value) == *_unpaintState->InferenceMode) return;
 
     _unpaintState->InferenceMode = static_cast<InferenceMode>(value);
     _propertyChanged(*this, PropertyChangedEventArgs(L"SelectedModeIndex"));
@@ -152,7 +83,7 @@ namespace winrt::Unpaint::implementation
     _unpaintState->IsSettingsLocked = value;
     _propertyChanged(*this, PropertyChangedEventArgs(L"IsSettingsLocked"));
 
-    LoadImageMetadataAsync();
+    if(!value) _project.LoadSettingsFromCurrentImage();
   }
 
   bool InferenceViewModel::IsJumpingToLatestImage()
@@ -167,134 +98,7 @@ namespace winrt::Unpaint::implementation
     _unpaintState->IsJumpingToLatestImage = value;
     _propertyChanged(*this, PropertyChangedEventArgs(L"IsJumpingToLatestImage"));
   }
-
-  hstring InferenceViewModel::PositivePromptPlaceholder()
-  {
-    return L"an empty canvas standing in a painter's workshop";
-  }
-
-  hstring InferenceViewModel::PositivePrompt()
-  {
-    return _unpaintState->PositivePrompt;
-  }
-
-  fire_and_forget InferenceViewModel::PositivePrompt(hstring const& value)
-  {
-    if (value == _unpaintState->PositivePrompt) co_return;
-
-    _unpaintState->PositivePrompt = value;
-    _propertyChanged(*this, PropertyChangedEventArgs(L"PositivePrompt"));
-
-    UpdatePositivePromptAsync();
-  }
-
-  int32_t InferenceViewModel::AvailablePositiveTokenCount()
-  {
-    return _availablePositiveTokenCount;
-  }
-
-  hstring InferenceViewModel::NegativePromptPlaceholder()
-  {
-    return L"blurry, render";
-  }
-
-  hstring InferenceViewModel::NegativePrompt()
-  {
-    return _unpaintState->NegativePrompt;
-  }
-
-  fire_and_forget InferenceViewModel::NegativePrompt(hstring const& value)
-  {
-    if (value == _unpaintState->NegativePrompt) co_return;
-
-    _unpaintState->NegativePrompt = value;
-    _propertyChanged(*this, PropertyChangedEventArgs(L"NegativePrompt"));
-
-    UpdateNegativePromptAsync();
-  }
-
-  int32_t InferenceViewModel::AvailableNegativeTokenCount()
-  {
-    return _availableNegativeTokenCount;
-  }
-
-  Windows::Foundation::Collections::IObservableVector<ModelViewModel> InferenceViewModel::Models()
-  {
-    return _models;
-  }
-
-  int32_t InferenceViewModel::SelectedModelIndex()
-  {
-    return _selectedModelIndex;
-  }
-
-  void InferenceViewModel::SelectedModelIndex(int32_t value)
-  {
-    if (value == _selectedModelIndex) return;
-
-    _selectedModelIndex = value;
-    if (value != -1) _unpaintOptions->ModelId(to_string(_models.GetAt(value).Id));
-    _propertyChanged(*this, PropertyChangedEventArgs(L"SelectedModelIndex"));
-  }
-
-  Windows::Foundation::Collections::IObservableVector<Windows::Graphics::SizeInt32> InferenceViewModel::Resolutions()
-  {
-    return _resolutions;
-  }
-
-  int32_t InferenceViewModel::SelectedResolutionIndex()
-  {
-    return _selectedResolutionIndex;
-  }
-
-  void InferenceViewModel::SelectedResolutionIndex(int32_t value)
-  {
-    if (value == _selectedResolutionIndex) return;
-
-    _selectedResolutionIndex = value;
-    if (value != -1) _unpaintState->Resolution = _resolutions.GetAt(value);
-    _propertyChanged(*this, PropertyChangedEventArgs(L"SelectedResolutionIndex"));
-  }
-
-  bool InferenceViewModel::IsBatchGenerationEnabled()
-  {
-    return _unpaintState->IsBatchGenerationEnabled;
-  }
-
-  void InferenceViewModel::IsBatchGenerationEnabled(bool value)
-  {
-    if (value == _unpaintState->IsBatchGenerationEnabled) return;
-
-    _unpaintState->IsBatchGenerationEnabled = value;
-    _propertyChanged(*this, PropertyChangedEventArgs(L"IsBatchGenerationEnabled"));
-  }
-
-  uint32_t InferenceViewModel::BatchSize()
-  {
-    return _unpaintState->BatchSize;
-  }
-
-  void InferenceViewModel::BatchSize(uint32_t value)
-  {
-    if (value == _unpaintState->BatchSize) return;
-
-    _unpaintState->BatchSize = value;
-    _propertyChanged(*this, PropertyChangedEventArgs(L"BatchSize"));
-  }
-
-  float InferenceViewModel::GuidanceStrength()
-  {
-    return _unpaintState->GuidanceStrength;
-  }
-
-  void InferenceViewModel::GuidanceStrength(float value)
-  {
-    if (value == _unpaintState->GuidanceStrength) return;
-
-    _unpaintState->GuidanceStrength = value;
-    _propertyChanged(*this, PropertyChangedEventArgs(L"GuidanceStrength"));
-  }
-
+    
   float InferenceViewModel::DenoisingStrength()
   {
     return _unpaintState->DenoisingStrength;
@@ -306,45 +110,6 @@ namespace winrt::Unpaint::implementation
 
     _unpaintState->DenoisingStrength = value;
     _propertyChanged(*this, PropertyChangedEventArgs(L"DenoisingStrength"));
-  }
-
-  uint32_t InferenceViewModel::SamplingSteps()
-  {
-    return _unpaintState->SamplingSteps;
-  }
-
-  void InferenceViewModel::SamplingSteps(uint32_t value)
-  {
-    if (value == _unpaintState->SamplingSteps) return;
-
-    _unpaintState->SamplingSteps = value;
-    _propertyChanged(*this, PropertyChangedEventArgs(L"SamplingSteps"));
-  }
-
-  uint32_t InferenceViewModel::RandomSeed()
-  {
-    return _unpaintState->RandomSeed;
-  }
-
-  void InferenceViewModel::RandomSeed(uint32_t value)
-  {
-    if (value == _unpaintState->RandomSeed) return;
-
-    _unpaintState->RandomSeed = value;
-    _propertyChanged(*this, PropertyChangedEventArgs(L"RandomSeed"));
-  }
-
-  bool InferenceViewModel::IsSeedFrozen()
-  {
-    return _unpaintState->IsSeedFrozen;
-  }
-
-  void InferenceViewModel::IsSeedFrozen(bool value)
-  {
-    if (value == _unpaintState->IsSeedFrozen) return;
-
-    _unpaintState->IsSeedFrozen = value;
-    _propertyChanged(*this, PropertyChangedEventArgs(L"IsSeedFrozen"));
   }
 
   hstring InferenceViewModel::Status()
@@ -371,41 +136,6 @@ namespace winrt::Unpaint::implementation
 
     _progress = value;
     _propertyChanged(*this, PropertyChangedEventArgs(L"Progress"));
-  }
-
-  Windows::Foundation::Collections::IObservableVector<hstring> InferenceViewModel::Images()
-  {
-    return _images;
-  }
-
-  bool InferenceViewModel::HasImageSelected()
-  {
-    return _selectedImageIndex != -1;
-  }
-
-  int32_t InferenceViewModel::SelectedImageIndex()
-  {
-    return _selectedImageIndex;
-  }
-
-  void InferenceViewModel::SelectedImageIndex(int32_t value)
-  {
-    //if (value == _selectedImageIndex) return;
-
-    _selectedImageIndex = value;
-    _propertyChanged(*this, PropertyChangedEventArgs(L"SelectedImageIndex"));
-    _propertyChanged(*this, PropertyChangedEventArgs(L"ImagePosition"));
-    _propertyChanged(*this, PropertyChangedEventArgs(L"HasImageSelected"));
-
-    if (value != -1) _unpaintState->Image = to_string(_images.GetAt(value));
-
-    LoadImageMetadataAsync();
-    RefreshOutputImageAsync();
-  }
-
-  hstring InferenceViewModel::ImagePosition()
-  {
-    return std::format(L"{} / {}", _selectedImageIndex + 1, _images.Size()).c_str();
   }
 
   Windows::Storage::StorageFile InferenceViewModel::InputImage()
@@ -459,42 +189,6 @@ namespace winrt::Unpaint::implementation
     _propertyChanged(*this, PropertyChangedEventArgs(L"InputMask"));
   }
 
-  Windows::Storage::StorageFile InferenceViewModel::OutputImage()
-  {
-    return _outputImage;
-  }
-
-  Windows::Foundation::Collections::IObservableVector<hstring> InferenceViewModel::Projects()
-  {
-    return _projects;
-  }
-
-  int32_t InferenceViewModel::SelectedProjectIndex()
-  {
-    return _selectedProjectIndex;
-  }
-
-  void InferenceViewModel::SelectedProjectIndex(int32_t value)
-  {
-    if (value == _selectedProjectIndex) return;
-
-    _selectedProjectIndex = value;
-    _propertyChanged(*this, PropertyChangedEventArgs(L"SelectedProjectIndex"));
-    _propertyChanged(*this, PropertyChangedEventArgs(L"CanDeleteProject"));
-
-    if (_selectedProjectIndex == -1) return;
-
-    auto projectName = to_string(_projects.GetAt(value));
-    _unpaintState->Project = projectName;
-    _imageRepository->ProjectName(projectName);
-    SelectedImageIndex(int32_t(_images.Size()) - 1);
-  }
-
-  bool InferenceViewModel::CanDeleteProject()
-  {
-    return _selectedProjectIndex != -1 && _projects.GetAt(_selectedProjectIndex) != L"scratch";
-  }
-
   bool InferenceViewModel::IsAutoGenerationEnabled()
   {
     return _isAutoGenerationEnabled;
@@ -520,33 +214,31 @@ namespace winrt::Unpaint::implementation
     auto lifetime = get_strong();
 
     //Build inference task
-    auto resolution = _resolutions.GetAt(_selectedResolutionIndex);
-
     if (!_unpaintState->IsSeedFrozen)
     {
-      RandomSeed(_seedDistribution(_random));
+      _unpaintState->RandomSeed = _seedDistribution(_random);
     }
 
     StableDiffusionInferenceTask task{
       .Mode = _unpaintState->InferenceMode,
-      .PositivePrompt = to_string(_unpaintState->PositivePrompt.empty() ? PositivePromptPlaceholder() : _unpaintState->PositivePrompt),
-      .NegativePrompt = to_string(_unpaintState->NegativePrompt.empty() ? NegativePromptPlaceholder() : _unpaintState->NegativePrompt),
-      .Resolution = { uint32_t(resolution.Width), uint32_t(resolution.Height) },
+      .PositivePrompt = _unpaintState->PositivePrompt->empty() ? StableDiffusionInferenceTask::PositivePromptPlaceholder : *_unpaintState->PositivePrompt,
+      .NegativePrompt = _unpaintState->NegativePrompt->empty() ? StableDiffusionInferenceTask::NegativePromptPlaceholder : *_unpaintState->NegativePrompt,
+      .Resolution = { uint32_t(_unpaintState->Resolution->Width), uint32_t(_unpaintState->Resolution->Height) },
       .GuidanceStrength = _unpaintState->GuidanceStrength,
       .DenoisingStrength = _unpaintState->DenoisingStrength,
       .SamplingSteps = _unpaintState->SamplingSteps,
       .RandomSeed = _unpaintState->RandomSeed,
-      .BatchSize = _unpaintState->IsBatchGenerationEnabled ? _unpaintState->BatchSize : 1,
-      .IsSafeModeEnabled = _unpaintOptions->IsSafeModeEnabled(),
-      .IsSafetyCheckerEnabled = _unpaintOptions->IsSafetyCheckerEnabled(),
-      .ModelId = to_string(_models.GetAt(_selectedModelIndex).Id)
+      .BatchSize = _unpaintState->IsBatchGenerationEnabled ? *_unpaintState->BatchSize : 1,
+      .IsSafeModeEnabled = _unpaintState->IsSafeModeEnabled,
+      .IsSafetyCheckerEnabled = _unpaintState->IsSafetyCheckerEnabled,
+      .ModelId = _unpaintState->ModelId
     };
 
-    if (_unpaintState->InferenceMode == InferenceMode::Modify)
+    if (*_unpaintState->InferenceMode == InferenceMode::Modify)
     {
-      if (_selectedImageIndex != -1)
+      if (_project.HasImageSelected())
       {
-        task.InputImage = _inputImage ? _inputImage.Path().c_str() : _imageRepository->GetPath(to_string(_images.GetAt(_selectedImageIndex))).c_str();
+        task.InputImage = _inputImage ? _inputImage.Path().c_str() : _project.SelectedImage().Path().c_str();
         task.InputMask = TextureData::FromSoftwareBitmap(_inputMask);
       }
       else
@@ -597,7 +289,7 @@ namespace winrt::Unpaint::implementation
         co_await _imageRepository->AddImageAsync(result, index, task.ToMetadata());
       }
 
-      if (_unpaintState->IsJumpingToLatestImage) SelectedImageIndex(int32_t(_images.Size()) - 1);
+      if (_unpaintState->IsJumpingToLatestImage) _project.SelectedImageIndex(-1);
     }
 
     //Safety check
@@ -625,159 +317,25 @@ namespace winrt::Unpaint::implementation
     }
   }
 
-  void InferenceViewModel::ManageModels()
-  {
-    _navigationService.NavigateToView(xaml_typename<ModelsView>());
-  }
-
   void InferenceViewModel::OpenSettings()
   {
     _navigationService.NavigateToView(xaml_typename<SettingsView>());
   }
 
-  void InferenceViewModel::CopyToClipboard()
-  {
-    DataPackage dataPackage{};
-    dataPackage.SetStorageItems({ OutputImage() });
-    Clipboard::SetContent(dataPackage);
-  }
-
-  fire_and_forget InferenceViewModel::SaveImageAs()
-  {
-    auto lifetime = get_strong();
-    if (!HasImageSelected()) co_return;
-
-    auto imageId = to_string(_images.GetAt(_selectedImageIndex));
-    auto imagePath = _imageRepository->GetPath(imageId);
-    auto buffer = try_read_file(imagePath);
-    if (buffer.empty()) co_return;
-
-    FileSavePicker fileSavePicker{};
-    fileSavePicker.SuggestedFileName(imagePath.filename().c_str());
-    fileSavePicker.SuggestedStartLocation(PickerLocationId::PicturesLibrary);
-    fileSavePicker.FileTypeChoices().Insert(L"PNG image", single_threaded_vector<hstring>({ L".png" }));
-    auto targetFile = co_await fileSavePicker.PickSaveFileAsync();
-    if (!targetFile) co_return;
-
-    co_await FileIO::WriteBytesAsync(targetFile, buffer);
-  }
-
-  fire_and_forget InferenceViewModel::DeleteImage()
-  {
-    auto lifetime = get_strong();
-    if (!HasImageSelected()) co_return;
-
-    ContentDialog confirmationDialog{};
-    confirmationDialog.Title(box_value(L"Deleting image"));
-    confirmationDialog.Content(box_value(L"Are you sure to remove this image?"));
-    confirmationDialog.PrimaryButtonText(L"Yes");
-    confirmationDialog.SecondaryButtonText(L"No");
-    confirmationDialog.DefaultButton(ContentDialogButton::Secondary);
-    auto dialogResult = co_await confirmationDialog.ShowAsync();
-
-    if (dialogResult != ContentDialogResult::Primary) co_return;
-
-    auto imageId = to_string(_images.GetAt(_selectedImageIndex));
-    _imageRepository->RemoveImage(imageId);
-  }
-
-  fire_and_forget InferenceViewModel::ShowImageDirectory()
-  {
-    auto lifetime = get_strong();
-    auto path = _imageRepository->ImageRoot();
-    auto imageFolder = co_await StorageFolder::GetFolderFromPathAsync(path.c_str());
-    co_await Launcher::LaunchFolderAsync(imageFolder);
-  }
-
-  fire_and_forget InferenceViewModel::CreateNewProject()
-  {
-    auto lifetime = get_strong();
-
-    ContentDialog newProjectDialog{};
-    newProjectDialog.Title(box_value(L"Create new project"));
-
-    TextBox projectNameBox{};
-    projectNameBox.PlaceholderText(L"Project name");
-
-    newProjectDialog.Content(projectNameBox);
-    newProjectDialog.PrimaryButtonText(L"OK");
-    newProjectDialog.SecondaryButtonText(L"Cancel");
-    newProjectDialog.DefaultButton(ContentDialogButton::Primary);
-    auto dialogResult = co_await newProjectDialog.ShowAsync();
-
-    auto projectName = to_string(projectNameBox.Text());
-    if (dialogResult != ContentDialogResult::Primary || projectName.empty()) co_return;
-
-    _imageRepository->ProjectName(projectName);
-  }
-
-  fire_and_forget InferenceViewModel::DeleteProject()
-  {
-    auto lifetime = get_strong();
-
-    auto it = ranges::find_if(_imageRepository->Projects(), [=](const std::string& item) { return item != _imageRepository->ProjectName(); });
-    if (it == _imageRepository->Projects().end()) co_return;
-
-    ContentDialog confirmationDialog{};
-    confirmationDialog.Title(box_value(L"Deleting project"));
-    confirmationDialog.Content(box_value(to_hstring(std::format("Are you sure to remove project {}?", _imageRepository->ProjectName()))));
-    confirmationDialog.PrimaryButtonText(L"Yes");
-    confirmationDialog.SecondaryButtonText(L"No");
-    confirmationDialog.DefaultButton(ContentDialogButton::Secondary);
-    auto dialogResult = co_await confirmationDialog.ShowAsync();
-
-    if (dialogResult != ContentDialogResult::Primary) co_return;
-
-    error_code ec;
-    filesystem::remove_all(_imageRepository->ImageRoot(), ec);
-    _imageRepository->ProjectName(*it);
-  }
-
-  fire_and_forget InferenceViewModel::AddImage(Windows::Storage::StorageFile file)
-  {
-    auto lifetime = get_strong();
-    apartment_context context{};
-
-    co_await resume_background();
-
-    TextureData texture;
-    try
-    {
-      auto buffer = read_file(file);
-      texture = TextureData::FromBuffer(buffer);
-    }
-    catch (...)
-    {
-    }
-
-    co_await context;
-
-    if (texture)
-    {
-      co_await _imageRepository->AddImageAsync(texture, nullopt, ImageMetadata{});
-      SelectedImageIndex(int32_t(_images.Size()) - 1);
-    }
-  }
-
   void InferenceViewModel::UseCurrentImageAsInput()
   {
-    InputImage(OutputImage());
-  }
-
-  void InferenceViewModel::LoadSettingsFromCurrentImage()
-  {
-    LoadImageMetadataAsync(true);
+    InputImage(_project.SelectedImage());
   }
 
   void InferenceViewModel::CopyPromptLink()
   {
     Uri result{ format(L"unpaint://inference/create?model={}&positive_prompt={}&negative_prompt={}&guidance_strength={}&sampling_steps={}&random_seed={}",
-      Uri::EscapeComponent(to_hstring(_unpaintOptions->ModelId())),
-      Uri::EscapeComponent(_unpaintState->PositivePrompt),
-      Uri::EscapeComponent(_unpaintState->NegativePrompt),
-      _unpaintState->GuidanceStrength,
-      _unpaintState->SamplingSteps,
-      _unpaintState->RandomSeed)
+      Uri::EscapeComponent(to_hstring(*_unpaintState->ModelId)),
+      Uri::EscapeComponent(to_hstring(*_unpaintState->PositivePrompt)),
+      Uri::EscapeComponent(to_hstring(*_unpaintState->NegativePrompt)),
+      *_unpaintState->GuidanceStrength,
+      *_unpaintState->SamplingSteps,
+      *_unpaintState->RandomSeed)
     };
 
     DataPackage dataPackage{};
@@ -787,18 +345,20 @@ namespace winrt::Unpaint::implementation
 
   void InferenceViewModel::OpenUri(Windows::Foundation::Uri const& uri)
   {
+    if(uri.Path() != L"/create") return;
+
     auto query = uri.QueryParsed();
     for (const auto& item : query)
     {
       if (item.Name() == L"positive_prompt")
       {
-        _unpaintState->PositivePrompt = item.Value();
+        _unpaintState->PositivePrompt = to_string(item.Value());
         _propertyChanged(*this, PropertyChangedEventArgs(L"PositivePrompt"));
       }
 
       if (item.Name() == L"negative_prompt")
       {
-        _unpaintState->NegativePrompt = item.Value();
+        _unpaintState->NegativePrompt = to_string(item.Value());
         _propertyChanged(*this, PropertyChangedEventArgs(L"NegativePrompt"));
       }
 
@@ -824,115 +384,13 @@ namespace winrt::Unpaint::implementation
     GenerateImage();
   }
 
-  event_token InferenceViewModel::PropertyChanged(PropertyChangedEventHandler const& value)
+  event_token InferenceViewModel::PropertyChanged(PropertyChangedEventHandler const& handler)
   {
-    return _propertyChanged.add(value);
+    return _propertyChanged.add(handler);
   }
 
   void InferenceViewModel::PropertyChanged(event_token const& token)
   {
     _propertyChanged.remove(token);
-  }
-
-  void InferenceViewModel::OnImagesChanged(ImageRepository* sender)
-  {
-    update_observable_collection(sender->Images(), _images, StringMapper{});
-    _propertyChanged(*this, PropertyChangedEventArgs(L"ImagePosition"));
-
-    update_observable_collection(sender->Projects(), _projects, StringMapper{});
-
-    auto it = ranges::find(sender->Projects(), sender->ProjectName());
-    if (it != sender->Projects().end())
-    {
-      _selectedProjectIndex = int32_t(distance(sender->Projects().begin(), it));
-      _propertyChanged(*this, PropertyChangedEventArgs(L"SelectedProjectIndex"));
-    }
-  }
-
-  fire_and_forget InferenceViewModel::LoadImageMetadataAsync(bool force)
-  {
-    if (_selectedImageIndex == -1 || (!force && _unpaintState->IsSettingsLocked)) co_return;
-
-    //Capture context
-    apartment_context callerContext;
-    auto lifetime = get_strong();
-
-    //Locate image path
-    auto imageId = to_string(_images.GetAt(_selectedImageIndex));
-    auto imagePath = _imageRepository->GetPath(imageId);
-
-    //Switch to background thread
-    co_await resume_background();
-
-    //Try read file into memory
-    auto imageBuffer = try_read_file(imagePath);
-    if (imageBuffer.empty()) co_return;
-
-    //Try decode image and extract metadata string
-    string metadataString;
-    if (!TextureData::FromBuffer(imageBuffer, TextureImageFormat::Rgba8, &metadataString)) co_return;
-
-    //Try parse metadata
-    auto imageMetadata = try_parse_json<ImageMetadata>(metadataString);
-    if (!imageMetadata) co_return;
-
-    //Return to UI thread
-    co_await callerContext;
-
-    //Apply settings
-    PositivePrompt(to_hstring(*imageMetadata->PositivePrompt));
-    NegativePrompt(to_hstring(*imageMetadata->NegativePrompt));
-    GuidanceStrength(*imageMetadata->GuidanceStrength);
-    DenoisingStrength(*imageMetadata->DenoisingStrength);
-    SamplingSteps(*imageMetadata->SamplingSteps);
-    RandomSeed(*imageMetadata->RandomSeed);
-  }
-
-  fire_and_forget InferenceViewModel::RefreshOutputImageAsync()
-  {
-    auto lifetime = get_strong();
-    StorageFile outputImage{ nullptr };
-
-    if (_selectedImageIndex != -1)
-    {
-      auto imagePath = _imageRepository->GetPath(to_string(_images.GetAt(_selectedImageIndex)));
-      if (!imagePath.empty() && filesystem::exists(imagePath))
-      {
-        outputImage = co_await StorageFile::GetFileFromPathAsync(imagePath.c_str());
-      }
-    }
-
-    _outputImage = outputImage;
-    _propertyChanged(*this, PropertyChangedEventArgs(L"OutputImage"));
-  }
-
-  Windows::Foundation::IAsyncOperation<int32_t> InferenceViewModel::ValidatePromptAsync(hstring prompt, bool isSafeModeEnabled)
-  {
-    apartment_context callingContext{};
-
-    auto modelId = to_string(_models.GetAt(_selectedModelIndex).Id);
-
-    auto lifetime = get_strong();
-    co_await resume_background();
-
-    auto result = _modelExecutor->ValidatePrompt(modelId, to_string(prompt), isSafeModeEnabled);
-
-    co_await callingContext;
-
-    co_return result;
-  }
-
-  fire_and_forget InferenceViewModel::UpdatePositivePromptAsync()
-  {
-    auto lifetime = get_strong();
-    _availablePositiveTokenCount = co_await ValidatePromptAsync(PositivePrompt(), false);
-    _propertyChanged(*this, PropertyChangedEventArgs(L"AvailablePositiveTokenCount"));
-  }
-
-  fire_and_forget InferenceViewModel::UpdateNegativePromptAsync()
-  {
-    auto lifetime = get_strong();
-    _availableNegativeTokenCount = co_await ValidatePromptAsync(NegativePrompt(), _unpaintOptions->IsSafeModeEnabled());
-    _propertyChanged(*this, PropertyChangedEventArgs(L"AvailableNegativeTokenCount"));
   }
 }

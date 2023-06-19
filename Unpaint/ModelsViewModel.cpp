@@ -9,6 +9,7 @@ using namespace Axodox::Infrastructure;
 using namespace Axodox::Web;
 using namespace std;
 using namespace winrt;
+using namespace winrt::Windows::ApplicationModel::DataTransfer;
 using namespace winrt::Windows::Foundation;
 using namespace winrt::Windows::Storage;
 using namespace winrt::Windows::System;
@@ -26,7 +27,7 @@ namespace winrt::Unpaint::implementation
   {
     UpdateInstalledModels();
   }
-    
+
   fire_and_forget ModelsViewModel::ImportModelFromHuggingFaceAsync()
   {
     ImportHuggingFaceModelDialog dialog{};
@@ -57,33 +58,6 @@ namespace winrt::Unpaint::implementation
   bool ModelsViewModel::AreInstalledModelsEmpty()
   {
     return _installedModels.Size() == 0;
-  }
-
-  fire_and_forget ModelsViewModel::RemoveModelAsync()
-  {
-    auto modelId = to_string(_installedModels.GetAt(_selectedInstalledModel).Id);
-
-    ContentDialog confirmationDialog{};
-    confirmationDialog.Title(box_value(L"Uninstalling model"));
-    confirmationDialog.Content(box_value(to_wstring(format("Would you like to remove model {}?", modelId))));
-    confirmationDialog.PrimaryButtonText(L"Yes");
-    confirmationDialog.SecondaryButtonText(L"No");
-
-    auto lifetime = get_strong();
-    auto result = co_await confirmationDialog.ShowAsync();
-
-    if (result == ContentDialogResult::Primary)
-    {
-      _modelRepository->UninstallModel(modelId);
-
-      UpdateInstalledModels();
-    }
-  }
-
-  void ModelsViewModel::OpenInstalledModelWebsite()
-  {
-    auto uri = _installedModels.GetAt(_selectedInstalledModel).Uri;
-    Launcher::LaunchUriAsync(Uri(uri));
   }
 
   int32_t ModelsViewModel::SelectedInstalledModel()
@@ -122,6 +96,44 @@ namespace winrt::Unpaint::implementation
     co_await Launcher::LaunchFolderAsync(modelFolder);
   }
 
+  void ModelsViewModel::OpenInstalledModelWebsite()
+  {
+    auto uri = _installedModels.GetAt(_selectedInstalledModel).Uri;
+    Launcher::LaunchUriAsync(Uri(uri));
+  }
+
+  void ModelsViewModel::CopyLinkToClipboard()
+  {
+    auto modelId = _installedModels.GetAt(_selectedInstalledModel).Id;
+
+    Uri result{ format(L"unpaint://models/install?id={}", Uri::EscapeComponent(modelId)) };
+
+    DataPackage dataPackage{};
+    dataPackage.SetText(result.ToString());
+    Clipboard::SetContent(dataPackage);
+  }
+
+  fire_and_forget ModelsViewModel::RemoveModelAsync()
+  {
+    auto modelId = to_string(_installedModels.GetAt(_selectedInstalledModel).Id);
+
+    ContentDialog confirmationDialog{};
+    confirmationDialog.Title(box_value(L"Uninstalling model"));
+    confirmationDialog.Content(box_value(to_wstring(format("Would you like to remove model {}?", modelId))));
+    confirmationDialog.PrimaryButtonText(L"Yes");
+    confirmationDialog.SecondaryButtonText(L"No");
+
+    auto lifetime = get_strong();
+    auto result = co_await confirmationDialog.ShowAsync();
+
+    if (result == ContentDialogResult::Primary)
+    {
+      _modelRepository->UninstallModel(modelId);
+
+      UpdateInstalledModels();
+    }
+  }
+
   bool ModelsViewModel::CanContinue()
   {
     return !AreInstalledModelsEmpty();
@@ -130,6 +142,35 @@ namespace winrt::Unpaint::implementation
   void ModelsViewModel::Continue()
   {
     _navigationService.NavigateToView(xaml_typename<InferenceView>());
+  }
+
+  fire_and_forget ModelsViewModel::OpenUri(Windows::Foundation::Uri const& uri)
+  {
+    if (uri.Path() != L"/install") co_return;
+
+    hstring modelId;
+    auto query = uri.QueryParsed();
+    for (const auto& item : query)
+    {
+      if (item.Name() == L"id")
+      {
+        modelId = item.Value();
+      }
+    }
+
+    if (modelId.empty()) co_return; 
+    
+    ContentDialog confirmationDialog{};
+    confirmationDialog.Title(box_value(L"Installing model"));
+    confirmationDialog.Content(box_value(format(L"Would you like to import model {}?", modelId)));
+    confirmationDialog.PrimaryButtonText(L"Yes");
+    confirmationDialog.SecondaryButtonText(L"No");
+    confirmationDialog.DefaultButton(ContentDialogButton::Primary);
+
+    auto confirmationResult = co_await confirmationDialog.ShowAsync();
+    if (ContentDialogResult::Primary != confirmationResult) co_return;
+    
+    DownloadHuggingFaceModelAsync(modelId);
   }
 
   event_token ModelsViewModel::PropertyChanged(PropertyChangedEventHandler const& value)
@@ -141,7 +182,7 @@ namespace winrt::Unpaint::implementation
   {
     _propertyChanged.remove(token);
   }
-  
+
   void ModelsViewModel::UpdateInstalledModels()
   {
     _modelRepository->Refresh();
@@ -158,11 +199,24 @@ namespace winrt::Unpaint::implementation
 
   fire_and_forget ModelsViewModel::DownloadHuggingFaceModelAsync(hstring const& modelId)
   {
-    DownloadModelDialog dialog{ modelId };
+    if (!_modelRepository->GetModel(to_string(modelId)))
+    {
+      DownloadModelDialog dialog{ modelId };
 
-    auto lifetime = get_strong();
-    co_await dialog.ShowAsync();
+      auto lifetime = get_strong();
+      co_await dialog.ShowAsync();
 
-    UpdateInstalledModels();
+      UpdateInstalledModels();
+    }
+    else
+    {
+      ContentDialog messageDialog{};
+      messageDialog.Title(box_value(L"Importing model"));
+      messageDialog.Content(box_value(L"The selected model is already installed."));
+      messageDialog.PrimaryButtonText(L"OK");
+      messageDialog.DefaultButton(ContentDialogButton::Primary);
+
+      co_await messageDialog.ShowAsync();
+    }
   }
 }

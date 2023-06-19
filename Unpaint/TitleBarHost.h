@@ -22,9 +22,11 @@ namespace winrt::Unpaint::implementation
     bool _isPointerOverTitleBar = false;
     event<Windows::Foundation::EventHandler<bool>> _isPointerOverTitleBarChanged;
     event<Windows::UI::Xaml::Data::PropertyChangedEventHandler> _propertyChanged;
+    
     Windows::ApplicationModel::Core::CoreApplicationViewTitleBar::LayoutMetricsChanged_revoker _titleBarLayoutMetricsChangedRevoker;
     Windows::UI::Core::CoreWindow::PointerMoved_revoker _pointerMovedRevoker;
     Windows::UI::Core::CoreWindow::PointerExited_revoker _pointerExitedRevoker;
+    Windows::UI::Xaml::Window::Activated_revoker _windowActivatedRevoker;
 
     double _titleBarLeftPadding = 0;
     double _titleBarRightPadding = 0;
