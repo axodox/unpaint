@@ -87,7 +87,7 @@ namespace winrt::Unpaint
 
       //Prepare outputs
       auto decodedImage = DecodeVAE(latentImage, async);
-      auto outputs = decodedImage.ToTextureData();
+      auto outputs = decodedImage.ToTextureData(ColorNormalization::LinearPlusMinusOne);
       if (task.InputMask && (sourceRect || targetRect))
       {
         if (!targetRect) targetRect = Rect::FromSize(targetTexture.Size());
@@ -172,7 +172,7 @@ namespace winrt::Unpaint
       imageTexture = imageTexture.UniformResize(task.Resolution.x, task.Resolution.y, &sourceRect);
     }
 
-    return Tensor::FromTextureData(imageTexture);
+    return Tensor::FromTextureData(imageTexture, ColorNormalization::LinearPlusMinusOne);
   }
 
   Axodox::MachineLearning::Tensor StableDiffusionModelExecutor::LoadMask(const StableDiffusionInferenceTask& task, Axodox::Graphics::Rect& sourceRect, Axodox::Graphics::Rect& targetRect, Axodox::Threading::async_operation_source& async)
@@ -201,7 +201,7 @@ namespace winrt::Unpaint
 
     maskTexture = maskTexture.Resize(maskTexture.Width / 8, maskTexture.Height / 8);
 
-    return Tensor::FromTextureData(maskTexture);
+    return Tensor::FromTextureData(maskTexture, ColorNormalization::LinearZeroToOne);
   }
 
   Axodox::MachineLearning::Tensor StableDiffusionModelExecutor::EncodeVAE(const Axodox::MachineLearning::Tensor& colorImage, Axodox::Threading::async_operation_source& async)
