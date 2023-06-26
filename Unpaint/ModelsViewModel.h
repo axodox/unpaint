@@ -28,6 +28,7 @@ namespace winrt::Unpaint::implementation
     void Continue();
 
     fire_and_forget OpenUri(Windows::Foundation::Uri const& uri);
+    fire_and_forget OpenControlNetSettingsAsync();
 
     event_token PropertyChanged(Windows::UI::Xaml::Data::PropertyChangedEventHandler const& value);
     void PropertyChanged(event_token const& token);

@@ -108,6 +108,12 @@
     <ClInclude Include="BooleanInverter.h" />
     <ClInclude Include="BooleanSwitchConverter.h" />
     <ClInclude Include="BooleanToGridLengthConverter.h" />
+    <ClInclude Include="ControlNetModelsDialog.h">
+      <DependentUpon>ControlNetModelsDialog.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </ClInclude>
+    <ClInclude Include="ControlNetModelsViewModel.h" />
+    <ClInclude Include="ControlNetRepository.h" />
     <ClInclude Include="DeviceInformation.h" />
     <ClInclude Include="DownloadModelDialog.h">
       <DependentUpon>DownloadModelDialog.xaml</DependentUpon>
@@ -197,6 +203,9 @@
     <Page Include="CommonResources.xaml">
       <DeploymentContent>true</DeploymentContent>
     </Page>
+    <Page Include="ControlNetModelsDialog.xaml">
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="DownloadModelDialog.xaml">
       <SubType>Designer</SubType>
     </Page>
@@ -244,6 +253,22 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\checkerboard.png" />
+    <Image Include="Assets\controlnet\canny_input.png" />
+    <Image Include="Assets\controlnet\canny_output.png" />
+    <Image Include="Assets\controlnet\depth_input.png" />
+    <Image Include="Assets\controlnet\depth_output.png" />
+    <Image Include="Assets\controlnet\hed_input.png" />
+    <Image Include="Assets\controlnet\hed_output.png" />
+    <Image Include="Assets\controlnet\mlsd_input.png" />
+    <Image Include="Assets\controlnet\mlsd_output.png" />
+    <Image Include="Assets\controlnet\normal_input.png" />
+    <Image Include="Assets\controlnet\normal_output.png" />
+    <Image Include="Assets\controlnet\openpose_input.png" />
+    <Image Include="Assets\controlnet\openpose_output.png" />
+    <Image Include="Assets\controlnet\scribble_input.png" />
+    <Image Include="Assets\controlnet\scribble_output.png" />
+    <Image Include="Assets\controlnet\seg_input.png" />
+    <Image Include="Assets\controlnet\seg_output.png" />
     <Image Include="Assets\LockScreenLogo.scale-200.png" />
     <Image Include="Assets\SplashScreen.scale-200.png" />
     <Image Include="Assets\Square150x150Logo.scale-200.png" />
@@ -265,6 +290,12 @@
     <ClCompile Include="BooleanInverter.cpp" />
     <ClCompile Include="BooleanSwitchConverter.cpp" />
     <ClCompile Include="BooleanToGridLengthConverter.cpp" />
+    <ClCompile Include="ControlNetModelsDialog.cpp">
+      <DependentUpon>ControlNetModelsDialog.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </ClCompile>
+    <ClCompile Include="ControlNetModelsViewModel.cpp" />
+    <ClCompile Include="ControlNetRepository.cpp" />
     <ClCompile Include="DeviceInformation.cpp" />
     <ClCompile Include="DownloadModelDialog.cpp">
       <DependentUpon>DownloadModelDialog.xaml</DependentUpon>

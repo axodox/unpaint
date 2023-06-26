@@ -7,10 +7,6 @@ using namespace winrt::Windows::UI::Xaml;
 
 namespace winrt::Unpaint::implementation
 {
-  DownloadModelDialog::DownloadModelDialog(hstring const& modelId) :
-    _viewModel(modelId)
-  { }
-
   DownloadModelViewModel DownloadModelDialog::ViewModel()
   {
     return _viewModel;

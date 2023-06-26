@@ -11,11 +11,6 @@ using namespace winrt::Windows::UI::Xaml::Data;
 
 namespace winrt::Unpaint::implementation
 {
-  DownloadModelViewModel::DownloadModelViewModel(hstring const& modelId)
-  {
-    DownloadModelAsync(modelId);
-  }
-
   double DownloadModelViewModel::Progress()
   {
     return _progress;
@@ -51,7 +46,7 @@ namespace winrt::Unpaint::implementation
     _propertyChanged.remove(token);
   }
 
-  fire_and_forget DownloadModelViewModel::DownloadModelAsync(hstring modelId)
+  fire_and_forget DownloadModelViewModel::DownloadStableDiffusionModelAsync(hstring modelId)
   {
     //Switch to background thread
     auto lifetime = get_strong();

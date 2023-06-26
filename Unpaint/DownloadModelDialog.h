@@ -5,8 +5,6 @@ namespace winrt::Unpaint::implementation
 {
   struct DownloadModelDialog : DownloadModelDialogT<DownloadModelDialog>
   {
-    DownloadModelDialog(hstring const& modelId);
-
     DownloadModelViewModel ViewModel();
 
   private:

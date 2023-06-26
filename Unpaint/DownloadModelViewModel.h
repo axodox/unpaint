@@ -6,8 +6,6 @@ namespace winrt::Unpaint::implementation
 {
   struct DownloadModelViewModel : DownloadModelViewModelT<DownloadModelViewModel>
   {
-    DownloadModelViewModel(hstring const& modelId);
-
     double Progress();
     hstring StatusMessage();
 
@@ -15,6 +13,8 @@ namespace winrt::Unpaint::implementation
     bool IsFinished();
 
     void Cancel();
+
+    fire_and_forget DownloadStableDiffusionModelAsync(hstring modelId);
 
     event_token PropertyChanged(Windows::UI::Xaml::Data::PropertyChangedEventHandler const& value);
     void PropertyChanged(event_token const& token);
@@ -28,7 +28,6 @@ namespace winrt::Unpaint::implementation
     hstring _statusMessage;
     Axodox::Threading::async_operation_state _state = {};
 
-    fire_and_forget DownloadModelAsync(hstring modelId);
     fire_and_forget OnDownloadStateChanged(Axodox::Threading::async_operation_info state);
 
   };

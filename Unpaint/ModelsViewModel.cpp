@@ -173,6 +173,13 @@ namespace winrt::Unpaint::implementation
     DownloadHuggingFaceModelAsync(modelId);
   }
 
+  fire_and_forget ModelsViewModel::OpenControlNetSettingsAsync()
+  {
+    ControlNetModelsDialog controlnetDialog{};
+
+    co_await controlnetDialog.ShowAsync();
+  }
+
   event_token ModelsViewModel::PropertyChanged(PropertyChangedEventHandler const& value)
   {
     return _propertyChanged.add(value);
@@ -201,7 +208,8 @@ namespace winrt::Unpaint::implementation
   {
     if (!_modelRepository->GetModel(to_string(modelId)))
     {
-      DownloadModelDialog dialog{ modelId };
+      DownloadModelDialog dialog{};
+      dialog.ViewModel().DownloadStableDiffusionModelAsync(modelId);
 
       auto lifetime = get_strong();
       co_await dialog.ShowAsync();

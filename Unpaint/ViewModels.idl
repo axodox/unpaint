@@ -52,12 +52,15 @@ namespace Unpaint
     void Continue();
 
     void OpenUri(Windows.Foundation.Uri uri);
+    void OpenControlNetSettingsAsync();
   }
 
   [default_interface]
   runtimeclass DownloadModelViewModel : Windows.UI.Xaml.Data.INotifyPropertyChanged
   {
-    DownloadModelViewModel(String modelId);
+    DownloadModelViewModel();
+
+    void DownloadStableDiffusionModelAsync(String modelId);
 
     Double Progress{ get; };
     String StatusMessage{ get; };
@@ -210,5 +213,27 @@ namespace Unpaint
     void CopyToClipboard();
     void SaveImageAs();
     void DeleteImage();    
+  }
+
+  struct ControlNetModeViewModel
+  {
+    String Id;
+    String Name;
+    String Description;
+    String ExampleInput;
+    String ExampleOutput;
+  };
+
+  [default_interface]
+  runtimeclass ControlNetModelsViewModel : Windows.UI.Xaml.Data.INotifyPropertyChanged
+  {
+    ControlNetModelsViewModel();
+
+    IObservableVector<ControlNetModeViewModel> Modes{ get; };
+
+    IVector<String> SelectedModes;
+
+    Boolean IsSelected(String modeId);
+    void IsSelected(String modeId, Boolean value);
   }
 }
