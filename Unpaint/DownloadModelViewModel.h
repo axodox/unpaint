@@ -15,6 +15,7 @@ namespace winrt::Unpaint::implementation
     void Cancel();
 
     fire_and_forget DownloadStableDiffusionModelAsync(hstring modelId);
+    fire_and_forget EnsureControlNetModelsAsync(Windows::Foundation::Collections::IVector<hstring> const& modeIds);
 
     event_token PropertyChanged(Windows::UI::Xaml::Data::PropertyChangedEventHandler const& value);
     void PropertyChanged(event_token const& token);

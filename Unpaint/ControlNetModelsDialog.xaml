@@ -8,8 +8,9 @@
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
   mc:Ignorable="d"
   Title="Configure ControlNet models"
-  PrimaryButtonText="Cancel"  
-  SecondaryButtonText="Apply">
+  PrimaryButtonText="Apply"
+  DefaultButton="Primary"
+  CloseButtonText="Cancel">
   <ContentDialog.Resources>
     <Style TargetType="local:ControlNetModelsDialog" BasedOn="{StaticResource DefaultContentDialogStyle}"/>
   </ContentDialog.Resources>

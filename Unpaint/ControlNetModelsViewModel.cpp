@@ -3,6 +3,7 @@
 #include "ControlNetModelsViewModel.g.cpp"
 #include "ControlNetRepository.h"
 
+using namespace Axodox::Infrastructure;
 using namespace std;
 using namespace winrt;
 
@@ -14,6 +15,12 @@ namespace winrt::Unpaint::implementation
     for (const auto& mode : ControlNetRepository::Modes())
     {
       _modes.Append(mode);
+    }
+
+    auto repository = dependencies.resolve<ControlNetRepository>();
+    for (const auto& mode : repository->InstalledModes())
+    {
+      _selectedModes.emplace(to_hstring(mode));
     }
   }
 

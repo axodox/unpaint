@@ -61,6 +61,7 @@ namespace Unpaint
     DownloadModelViewModel();
 
     void DownloadStableDiffusionModelAsync(String modelId);
+    void EnsureControlNetModelsAsync(IVector<String> modeIds);
 
     Double Progress{ get; };
     String StatusMessage{ get; };

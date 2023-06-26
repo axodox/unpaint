@@ -160,6 +160,8 @@ namespace winrt::Unpaint::implementation
 
     if (modelId.empty()) co_return; 
     
+    auto lifetime = get_strong();
+
     ContentDialog confirmationDialog{};
     confirmationDialog.Title(box_value(L"Installing model"));
     confirmationDialog.Content(box_value(format(L"Would you like to import model {}?", modelId)));
@@ -175,9 +177,17 @@ namespace winrt::Unpaint::implementation
 
   fire_and_forget ModelsViewModel::OpenControlNetSettingsAsync()
   {
+    auto lifetime = get_strong();
+
     ControlNetModelsDialog controlnetDialog{};
 
-    co_await controlnetDialog.ShowAsync();
+    auto result = co_await controlnetDialog.ShowAsync();
+    if (result != ContentDialogResult::Primary) co_return;
+
+    DownloadModelDialog downloadDialog{};
+    downloadDialog.ViewModel().EnsureControlNetModelsAsync(controlnetDialog.ViewModel().SelectedModes());
+
+    co_await downloadDialog.ShowAsync();
   }
 
   event_token ModelsViewModel::PropertyChanged(PropertyChangedEventHandler const& value)
@@ -206,12 +216,13 @@ namespace winrt::Unpaint::implementation
 
   fire_and_forget ModelsViewModel::DownloadHuggingFaceModelAsync(hstring const& modelId)
   {
+    auto lifetime = get_strong();
+
     if (!_modelRepository->GetModel(to_string(modelId)))
     {
       DownloadModelDialog dialog{};
       dialog.ViewModel().DownloadStableDiffusionModelAsync(modelId);
 
-      auto lifetime = get_strong();
       co_await dialog.ShowAsync();
 
       UpdateInstalledModels();
