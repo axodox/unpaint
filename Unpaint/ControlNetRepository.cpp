@@ -84,6 +84,11 @@ namespace winrt::Unpaint
     Refresh();
   }
 
+  const std::filesystem::path& ControlNetRepository::Root() const
+  {
+    return _root;
+  }
+
   const std::vector<std::string>& ControlNetRepository::InstalledModes() const
   {
     return _installedModes;

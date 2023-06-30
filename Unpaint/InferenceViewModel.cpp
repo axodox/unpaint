@@ -231,7 +231,7 @@ namespace winrt::Unpaint::implementation
       .BatchSize = _unpaintState->IsBatchGenerationEnabled ? *_unpaintState->BatchSize : 1,
       .IsSafeModeEnabled = _unpaintState->IsSafeModeEnabled,
       .IsSafetyCheckerEnabled = _unpaintState->IsSafetyCheckerEnabled,
-      .ModelId = _unpaintState->ModelId
+      .ModelId = _unpaintState->ModelId      
     };
 
     if (*_unpaintState->InferenceMode == InferenceMode::Modify)
@@ -245,6 +245,8 @@ namespace winrt::Unpaint::implementation
       {
         task.Mode = InferenceMode::Create;
       }
+
+      task.ControlNetMode = _unpaintState->ControlNetMode;
     }
 
     //Run inference

@@ -33,7 +33,7 @@ namespace winrt::Unpaint::implementation
     winrt::Windows::Storage::StorageFile SelectedImage();
     hstring ImagePosition();
 
-    fire_and_forget AddImage(winrt::Windows::Storage::StorageFile const& file);
+    fire_and_forget AddImage(winrt::Windows::Storage::StorageFile file);
     fire_and_forget LoadSettingsFromCurrentImage();
     void CopyToClipboard();
     fire_and_forget SaveImageAs();

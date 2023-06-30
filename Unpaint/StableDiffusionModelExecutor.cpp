@@ -29,6 +29,7 @@ namespace winrt::Unpaint
   StableDiffusionModelExecutor::StableDiffusionModelExecutor() :
     _unpaintState(dependencies.resolve<UnpaintState>()),
     _modelRepository(dependencies.resolve<ModelRepository>()),
+    _controlnetRepository(dependencies.resolve<ControlNetRepository>()),
     _stepCount(0),
     _isSafeModeEnabled(true)
   { }
@@ -77,8 +78,16 @@ namespace winrt::Unpaint
       {
         inputs.InputMask = LoadMask(task, sourceRect, targetRect, async);
 
-        auto imageTensor = LoadImage(task, targetTexture, sourceRect, targetRect, async);
-        inputs.InputImage = EncodeVAE(imageTensor, async);        
+        auto imageTexture = LoadImage(task, targetTexture, sourceRect, targetRect, async);
+        if (task.ControlNetMode.empty() || task.InputMask)
+        {
+          inputs.InputImage = EncodeVAE(Tensor::FromTextureData(imageTexture, ColorNormalization::LinearPlusMinusOne), async);
+        }
+
+        if (!task.ControlNetMode.empty())
+        {
+          inputs.ConditionImage = Tensor::FromTextureData(imageTexture, ColorNormalization::LinearZeroToOne);
+        }
       }
 
       //Run diffusion
@@ -154,7 +163,7 @@ namespace winrt::Unpaint
     return result;
   }
 
-  Axodox::MachineLearning::Tensor StableDiffusionModelExecutor::LoadImage(const StableDiffusionInferenceTask& task, Axodox::Graphics::TextureData& sourceTexture, Axodox::Graphics::Rect& sourceRect, Axodox::Graphics::Rect& targetRect, Axodox::Threading::async_operation_source& async)
+  Axodox::Graphics::TextureData StableDiffusionModelExecutor::LoadImage(const StableDiffusionInferenceTask& task, Axodox::Graphics::TextureData& sourceTexture, Axodox::Graphics::Rect& sourceRect, Axodox::Graphics::Rect& targetRect, Axodox::Threading::async_operation_source& async)
   {
     async.update_state(NAN, "Loading input image...");
     auto imageBuffer = try_read_file(task.InputImage);
@@ -172,7 +181,7 @@ namespace winrt::Unpaint
       imageTexture = imageTexture.UniformResize(task.Resolution.x, task.Resolution.y, &sourceRect);
     }
 
-    return Tensor::FromTextureData(imageTexture, ColorNormalization::LinearPlusMinusOne);
+    return imageTexture;
   }
 
   Axodox::MachineLearning::Tensor StableDiffusionModelExecutor::LoadMask(const StableDiffusionInferenceTask& task, Axodox::Graphics::Rect& sourceRect, Axodox::Graphics::Rect& targetRect, Axodox::Threading::async_operation_source& async)
@@ -260,9 +269,21 @@ namespace winrt::Unpaint
   Axodox::MachineLearning::Tensor StableDiffusionModelExecutor::RunStableDiffusion(const StableDiffusionInferenceTask& task, const StableDiffusionInputs& inputs, Axodox::Threading::async_operation_source& async)
   {
     async.update_state(NAN, "Loading denoiser...");
-    if (!_denoiser) _denoiser = make_unique<StableDiffusionInferer>(*_onnxEnvironment, GetModelFile("unet\\model.onnx"));
+    auto denoiserType = inputs.ConditionImage ? ImageDiffusionInfererKind::ControlNet : ImageDiffusionInfererKind::StableDiffusion;
+    if (!_denoiser || _denoiser->Type() != denoiserType)
+    {
+      switch (denoiserType)
+      {
+      case ImageDiffusionInfererKind::StableDiffusion:
+        _denoiser = make_unique<StableDiffusionInferer>(*_onnxEnvironment, GetModelFile("unet\\model.onnx"));
+        break;
+      case ImageDiffusionInfererKind::ControlNet:
+        _denoiser = make_unique<ControlNetInferer>(*_onnxEnvironment, _controlnetRepository->Root(), GetModelFile("controlnet\\model.onnx"));
+        break;
+      }
+    }
 
-    StableDiffusionOptions options{
+    StableDiffusionOptions stableDiffusionOptions{
       .StepCount = task.SamplingSteps,
       .BatchSize = task.BatchSize,
       .Width = task.Resolution.x,
@@ -276,7 +297,21 @@ namespace winrt::Unpaint
     };
 
     async.update_state("Running denoiser...");
-    auto result = _denoiser->RunInference(options, &async);
+
+    Tensor result;
+    if (task.ControlNetMode.empty())
+    {
+      result = static_cast<StableDiffusionInferer*>(_denoiser.get())->RunInference(stableDiffusionOptions, &async);
+    }
+    else
+    {
+      ControlNetOptions controlNetOptions{ stableDiffusionOptions };
+      controlNetOptions.ConditionInput = inputs.ConditionImage;
+      controlNetOptions.ConditionType = task.ControlNetMode;
+      swap(controlNetOptions.ConditioningScale, controlNetOptions.DenoisingStrength);      
+
+      result = static_cast<ControlNetInferer*>(_denoiser.get())->RunInference(controlNetOptions, &async);
+    }
 
     if (!*_unpaintState->IsDenoiserPinned) _denoiser.reset();
 

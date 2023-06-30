@@ -7,6 +7,7 @@
 #include "MachineLearning/StableDiffustionInferer.h"
 #include "MachineLearning/TextEmbedder.h"
 #include "ModelRepository.h"
+#include "ControlNetRepository.h"
 #include "UnpaintState.h"
 #include "ImageMetadata.h"
 
@@ -34,6 +35,8 @@ namespace winrt::Unpaint
     std::filesystem::path InputImage;
     Axodox::Graphics::TextureData InputMask;
 
+    std::string ControlNetMode;
+
     ImageMetadata ToMetadata() const;
   };
 
@@ -42,6 +45,7 @@ namespace winrt::Unpaint
     struct StableDiffusionInputs
     {
       Axodox::MachineLearning::Tensor InputImage;
+      Axodox::MachineLearning::Tensor ConditionImage;
       Axodox::MachineLearning::Tensor InputMask;
       Axodox::MachineLearning::ScheduledTensor TextEmbeddings;
     };
@@ -65,10 +69,11 @@ namespace winrt::Unpaint
     static const char* const _safetyFilter;
     std::shared_ptr<UnpaintState> _unpaintState;
     std::shared_ptr<ModelRepository> _modelRepository;
+    std::shared_ptr<ControlNetRepository> _controlnetRepository;
 
     std::unique_ptr<Axodox::MachineLearning::OnnxEnvironment> _onnxEnvironment;
     std::unique_ptr<Axodox::MachineLearning::TextEmbedder> _textEmbedder;
-    std::unique_ptr<Axodox::MachineLearning::StableDiffusionInferer> _denoiser;
+    std::unique_ptr<Axodox::MachineLearning::ImageDiffusionInferer> _denoiser;
     std::mutex _mutex;
 
     std::string _modelId;
@@ -84,7 +89,7 @@ namespace winrt::Unpaint
     void EnsureEnvironment(std::string_view modelId);
     ModelFile GetModelFile(const std::string& fileId) const;
 
-    Axodox::MachineLearning::Tensor LoadImage(const StableDiffusionInferenceTask& task, Axodox::Graphics::TextureData& sourceTexture, Axodox::Graphics::Rect& sourceRect, Axodox::Graphics::Rect& targetRect, Axodox::Threading::async_operation_source& async);
+    Axodox::Graphics::TextureData LoadImage(const StableDiffusionInferenceTask& task, Axodox::Graphics::TextureData& sourceTexture, Axodox::Graphics::Rect& sourceRect, Axodox::Graphics::Rect& targetRect, Axodox::Threading::async_operation_source& async);
     Axodox::MachineLearning::Tensor LoadMask(const StableDiffusionInferenceTask& task, Axodox::Graphics::Rect& sourceRect, Axodox::Graphics::Rect& targetRect, Axodox::Threading::async_operation_source& async);
     Axodox::MachineLearning::Tensor EncodeVAE(const Axodox::MachineLearning::Tensor& colorImage, Axodox::Threading::async_operation_source& async);
     Axodox::MachineLearning::ScheduledTensor CreateTextEmbeddings(const StableDiffusionInferenceTask& task, Axodox::Threading::async_operation_source& async);

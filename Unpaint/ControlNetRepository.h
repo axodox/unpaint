@@ -11,6 +11,7 @@ namespace winrt::Unpaint
 
     ControlNetRepository();
 
+    const std::filesystem::path& Root() const;
     const std::vector<std::string>& InstalledModes() const;
 
     bool TryEnsureModes(const std::vector<std::string>& modes, Axodox::Threading::async_operation& operation);

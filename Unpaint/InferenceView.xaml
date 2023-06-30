@@ -209,7 +209,7 @@
         </FlipView.ItemTemplate>
       </FlipView>
 
-      <TextBlock Grid.Column="1" Style="{StaticResource ImagePlaceholderStyle}" Visibility="{x:Bind ViewModel.Project.SelectedImage, Converter={StaticResource IsNullConverter}, Mode=OneWay}">
+      <TextBlock Grid.Column="1" Style="{StaticResource ImagePlaceholderStyle}" Visibility="{x:Bind ViewModel.Project.SelectedImage, Converter={StaticResource IsNullConverter}, Mode=OneWay}" IsHitTestVisible="False">
         <Run FontWeight="Bold" FontSize="20">No Output Image</Run>
         <LineBreak/>
         <LineBreak/>
@@ -230,7 +230,7 @@
                 Click="{x:Bind ViewModel.UseCurrentImageAsInput}" IsEnabled="{x:Bind ViewModel.Project.HasImageSelected, Mode=OneWay}" ToolTipService.ToolTip="Use current image as input"/>
       </Grid>
 
-      <TextBlock Grid.Column="0" Style="{StaticResource ImagePlaceholderStyle}" Visibility="{x:Bind ViewModel.InputImage, Converter={StaticResource IsNullConverter}, Mode=OneWay}">
+      <TextBlock Grid.Column="0" Style="{StaticResource ImagePlaceholderStyle}" Visibility="{x:Bind ViewModel.InputImage, Converter={StaticResource IsNullConverter}, Mode=OneWay}" IsHitTestVisible="False">
         <Run FontWeight="Bold" FontSize="20">No Input Image</Run>
         <LineBreak/>
         <LineBreak/>
