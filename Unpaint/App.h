@@ -26,6 +26,7 @@ namespace winrt::Unpaint::implementation
     void OnSuspending(IInspectable const&, Windows::ApplicationModel::SuspendingEventArgs const&);
     void OnNavigationFailed(IInspectable const&, Windows::UI::Xaml::Navigation::NavigationFailedEventArgs const&);
 
+    void OpenUri(Windows::Foundation::Uri const& uri);
     void NavigateToView(Windows::UI::Xaml::Interop::TypeName viewType);
 
     bool IsPointerOverTitleBar();

@@ -113,6 +113,11 @@
       <SubType>Code</SubType>
     </ClInclude>
     <ClInclude Include="ControlNetModelsViewModel.h" />
+    <ClInclude Include="ControlNetOptionsView.h">
+      <DependentUpon>ControlNetOptionsView.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </ClInclude>
+    <ClInclude Include="ControlNetOptionsViewModel.h" />
     <ClInclude Include="ControlNetRepository.h" />
     <ClInclude Include="DeviceInformation.h" />
     <ClInclude Include="DownloadModelDialog.h">
@@ -206,6 +211,9 @@
     <Page Include="ControlNetModelsDialog.xaml">
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="ControlNetOptionsView.xaml">
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="DownloadModelDialog.xaml">
       <SubType>Designer</SubType>
     </Page>
@@ -295,6 +303,11 @@
       <SubType>Code</SubType>
     </ClCompile>
     <ClCompile Include="ControlNetModelsViewModel.cpp" />
+    <ClCompile Include="ControlNetOptionsView.cpp">
+      <DependentUpon>ControlNetOptionsView.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </ClCompile>
+    <ClCompile Include="ControlNetOptionsViewModel.cpp" />
     <ClCompile Include="ControlNetRepository.cpp" />
     <ClCompile Include="DeviceInformation.cpp" />
     <ClCompile Include="DownloadModelDialog.cpp">

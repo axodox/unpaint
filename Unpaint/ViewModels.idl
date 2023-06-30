@@ -3,6 +3,7 @@ namespace Unpaint
   interface INavigationService
   {
     void NavigateToView(Windows.UI.Xaml.Interop.TypeName viewType);
+    void OpenUri(Windows.Foundation.Uri uri);
 
     Boolean IsPointerOverTitleBar{ get; };
     event Windows.Foundation.EventHandler<Boolean> IsPointerOverTitleBarChanged;
@@ -220,6 +221,7 @@ namespace Unpaint
   {
     String Id;
     String Name;
+    String ShortName;
     String Description;
     String ExampleInput;
     String ExampleOutput;
@@ -236,5 +238,19 @@ namespace Unpaint
 
     Boolean IsSelected(String modeId);
     void IsSelected(String modeId, Boolean value);
+  }
+
+  [default_interface]
+  runtimeclass ControlNetOptionsViewModel : Windows.UI.Xaml.Data.INotifyPropertyChanged
+  {
+    ControlNetOptionsViewModel();
+
+    Boolean IsAvailable{ get; };
+    IObservableVector<ControlNetModeViewModel> Modes{ get; };
+
+    Boolean IsEnabled;
+    Int32 SelectedModeIndex;
+
+    void InstallModes();
   }
 }

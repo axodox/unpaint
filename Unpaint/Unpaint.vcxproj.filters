@@ -46,6 +46,9 @@
     <Page Include="ControlNetModelsDialog.xaml">
       <Filter>Dialogs</Filter>
     </Page>
+    <Page Include="ControlNetOptionsView.xaml">
+      <Filter>Views\Components</Filter>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Midl Include="Views.idl">
@@ -158,6 +161,9 @@
     </ClCompile>
     <ClCompile Include="ControlNetRepository.cpp">
       <Filter>Models</Filter>
+    </ClCompile>
+    <ClCompile Include="ControlNetOptionsViewModel.cpp">
+      <Filter>View Models\Components</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -422,6 +428,9 @@
     </ClInclude>
     <ClInclude Include="ControlNetRepository.h">
       <Filter>Models</Filter>
+    </ClInclude>
+    <ClInclude Include="ControlNetOptionsViewModel.h">
+      <Filter>View Models\Components</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

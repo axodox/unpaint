@@ -146,6 +146,7 @@ namespace winrt::Unpaint::implementation
 
   fire_and_forget ModelsViewModel::OpenUri(Windows::Foundation::Uri const& uri)
   {
+    if (uri.Path() == L"/controlnet") OpenControlNetSettingsAsync();
     if (uri.Path() != L"/install") co_return;
 
     hstring modelId;

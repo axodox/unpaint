@@ -1,0 +1,52 @@
+﻿<UserControl
+    x:Class="Unpaint.ControlNetOptionsView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Unpaint"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+  <UserControl.Resources>
+    <local:BooleanInverter x:Key="BooleanInverter"/>
+  </UserControl.Resources>
+  
+  <StackPanel Spacing="6">
+    <Grid>
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="*"/>
+        <ColumnDefinition Width="Auto"/>
+      </Grid.ColumnDefinitions>
+      
+      <TextBlock Text="ControlNet" Style="{StaticResource SubtitleTextBlockStyle}" VerticalAlignment="Center"/>
+      <ToggleSwitch Grid.Column="1" IsOn="{x:Bind ViewModel.IsEnabled, Mode=TwoWay}" FlowDirection="RightToLeft" VerticalAlignment="Center"/>
+    </Grid>
+    <Grid>
+      <GridView ItemsSource="{x:Bind ViewModel.Modes}" SelectionMode="Single" Margin="0,0,0,-12"
+                SelectedIndex="{x:Bind ViewModel.SelectedModeIndex, Mode=TwoWay}"
+                IsEnabled="{x:Bind ViewModel.IsEnabled, Mode=OneWay}">
+        <GridView.ItemsPanel>
+          <ItemsPanelTemplate>
+            <ItemsWrapGrid MaximumRowsOrColumns="3" Orientation="Horizontal"/>
+          </ItemsPanelTemplate>
+        </GridView.ItemsPanel>
+        <GridView.ItemTemplate>
+          <DataTemplate x:DataType="local:ControlNetModeViewModel">
+            <Grid>
+              <Image Source="{x:Bind ExampleInput}" Width="96" Height="96" Stretch="UniformToFill"/>
+              <Border HorizontalAlignment="Center" VerticalAlignment="Center"
+                      Background="{ThemeResource LayerFillColorDefaultBrush}"
+                      BorderBrush="{ThemeResource ControlElevationBorderBrush}"
+                      CornerRadius="6" BorderThickness="1" Padding="6">
+                <TextBlock Text="{x:Bind ShortName}"/>
+              </Border>
+            </Grid>
+          </DataTemplate>
+        </GridView.ItemTemplate>
+      </GridView>
+      <TextBlock Visibility="{x:Bind ViewModel.IsAvailable, Converter={StaticResource BooleanInverter}, Mode=OneWay}" 
+                 Margin="24" HorizontalAlignment="Center" VerticalAlignment="Center" TextWrapping="Wrap" TextAlignment="Center">
+        You need to install ControlNet models<LineBreak/> from the <Hyperlink Click="{x:Bind ViewModel.InstallModes}">Model Library</Hyperlink>.
+      </TextBlock>
+    </Grid>    
+  </StackPanel>
+</UserControl>

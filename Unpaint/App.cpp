@@ -69,20 +69,7 @@ void App::Activate(Windows::ApplicationModel::Activation::IActivatedEventArgs ev
   auto protocolActivatedEventArgs = eventArgs.try_as<ProtocolActivatedEventArgs>();
   if (protocolActivatedEventArgs)
   {
-    if (protocolActivatedEventArgs.Uri().Host() == L"inference")
-    {
-      NavigateToView(xaml_typename<Unpaint::InferenceView>());
-
-      auto inferenceView = _frame.Content().try_as<Unpaint::InferenceView>();
-      if (inferenceView) inferenceView.ViewModel().OpenUri(protocolActivatedEventArgs.Uri());
-    }
-    else if (protocolActivatedEventArgs.Uri().Host() == L"models")
-    {
-      NavigateToView(xaml_typename<Unpaint::ModelsView>());
-
-      auto inferenceView = _frame.Content().try_as<Unpaint::ModelsView>();
-      if (inferenceView) inferenceView.ViewModel().OpenUri(protocolActivatedEventArgs.Uri());
-    }
+    OpenUri(protocolActivatedEventArgs.Uri());
   }
 
   auto coreWindow = CoreWindow::GetForCurrentThread();
@@ -143,6 +130,24 @@ void App::OnSuspending([[maybe_unused]] IInspectable const& sender, [[maybe_unus
 void App::OnNavigationFailed(IInspectable const&, NavigationFailedEventArgs const& e)
 {
   throw hresult_error(E_FAIL, hstring(L"Failed to load Page ") + e.SourcePageType().Name);
+}
+
+void winrt::Unpaint::implementation::App::OpenUri(Windows::Foundation::Uri const& uri)
+{
+  if (uri.Host() == L"inference")
+  {
+    NavigateToView(xaml_typename<Unpaint::InferenceView>());
+
+    auto inferenceView = _frame.Content().try_as<Unpaint::InferenceView>();
+    if (inferenceView) inferenceView.ViewModel().OpenUri(uri);
+  }
+  else if (uri.Host() == L"models")
+  {
+    NavigateToView(xaml_typename<Unpaint::ModelsView>());
+
+    auto inferenceView = _frame.Content().try_as<Unpaint::ModelsView>();
+    if (inferenceView) inferenceView.ViewModel().OpenUri(uri);
+  }
 }
 
 void App::NavigateToView(Windows::UI::Xaml::Interop::TypeName viewType)

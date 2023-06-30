@@ -35,6 +35,9 @@ namespace winrt::Unpaint
     OptionProperty<float> GuidanceStrength{ 7.f }, DenoisingStrength{ 0.6f };
     OptionProperty<uint32_t> SamplingSteps{ 15 }, RandomSeed{ 0 };
     OptionProperty<bool> IsSeedFrozen{ false };
+
+    OptionProperty<bool> IsControlNetEnabled;
+    OptionProperty<std::string> ControlNetMode;
 #pragma endregion
 
 #pragma region Persistent state

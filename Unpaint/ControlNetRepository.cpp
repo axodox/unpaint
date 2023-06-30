@@ -16,48 +16,56 @@ namespace winrt::Unpaint
     results.push_back(ControlNetModeViewModel{
       .Id = L"canny",
       .Name = L"Canny edges",
+      .ShortName = L"Canny",
       .Description = L"Generates images based on a monochrome image with white edges on a black background."
       });
 
     results.push_back(ControlNetModeViewModel{
       .Id = L"depth",
       .Name = L"Depth image",
+      .ShortName = L"Depth",
       .Description = L"Generates images based on a grayscale image with black representing deep areas and white representing shallow areas."
       });
 
     results.push_back(ControlNetModeViewModel{
       .Id = L"hed",
       .Name = L"HED edges",
+      .ShortName = L"HED",
       .Description = L"Generates images based on a monochrome image with white soft edges on a black background (Holistically-Nested Edge Detection)."
       });
 
     results.push_back(ControlNetModeViewModel{
       .Id = L"mlsd",
       .Name = L"MLSD edges",
+      .ShortName = L"MLSD",
       .Description = L"Generates images based on a monochrome image composed only of white straight lines on a black background (Mobile Line Segment Detection)."
       });
 
     results.push_back(ControlNetModeViewModel{
       .Id = L"normal",
       .Name = L"Normal map",
+      .ShortName = L"Normal",
       .Description = L"Generates images based on a normal map."
       });
 
     results.push_back(ControlNetModeViewModel{
       .Id = L"openpose",
       .Name = L"OpenPose",
+      .ShortName = L"Pose",
       .Description = L"Generates images based on an OpenPose bone image."
       });
 
     results.push_back(ControlNetModeViewModel{
       .Id = L"scribble",
       .Name = L"Scribble",
+      .ShortName = L"Scribble",
       .Description = L"Generates images based on a hand-drawn monochrome image with white outlines on a black background."
       });
 
     results.push_back(ControlNetModeViewModel{
       .Id = L"seg",
       .Name = L"Segmentation",
+      .ShortName = L"Seg",
       .Description = L"Generates images based on an ADE20K segmentation protocol image."
       });
 
