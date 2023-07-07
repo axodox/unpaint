@@ -46,6 +46,7 @@ namespace winrt::Unpaint
     auto result = huggingFaceClient->TryDownloadModel(
       modelId,
       HuggingFaceModelDetails::StableDiffusionOnnxFileset,
+      HuggingFaceModelDetails::StableDiffusionOnnxOptionals,
       _root / modelId,
       operation);
 

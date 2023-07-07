@@ -110,7 +110,7 @@ namespace winrt::Unpaint
 
     //Install new modes
     HuggingFaceClient huggingFaceClient{};
-    auto result = huggingFaceClient.TryDownloadModel(_controlnetRepository, filesToInstall, _root.parent_path(), operation);
+    auto result = huggingFaceClient.TryDownloadModel(_controlnetRepository, filesToInstall, {}, _root.parent_path(), operation);
 
     //Remove old modes
     for (auto& mode : modesToRemove)

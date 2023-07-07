@@ -299,7 +299,7 @@ namespace winrt::Unpaint
     async.update_state("Running denoiser...");
 
     Tensor result;
-    if (task.ControlNetMode.empty())
+    if (_denoiser->Type() == ImageDiffusionInfererKind::StableDiffusion)
     {
       result = static_cast<StableDiffusionInferer*>(_denoiser.get())->RunInference(stableDiffusionOptions, &async);
     }
