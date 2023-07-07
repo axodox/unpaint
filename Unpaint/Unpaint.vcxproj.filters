@@ -165,6 +165,9 @@
     <ClCompile Include="ControlNetOptionsViewModel.cpp">
       <Filter>View Models\Components</Filter>
     </ClCompile>
+    <ClCompile Include="FeatureExtractionExecutor.cpp">
+      <Filter>Models</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\Wide310x150Logo.scale-200.png">
@@ -431,6 +434,9 @@
     </ClInclude>
     <ClInclude Include="ControlNetOptionsViewModel.h">
       <Filter>View Models\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="FeatureExtractionExecutor.h">
+      <Filter>Models</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

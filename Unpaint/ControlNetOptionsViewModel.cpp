@@ -19,7 +19,7 @@ namespace winrt::Unpaint::implementation
     auto repository = dependencies.resolve<ControlNetRepository>();
 
     set<hstring> installedModes;
-    for (auto i = 0; auto& id : repository->InstalledModes())
+    for (auto i = 0; auto & id : repository->InstalledModes())
     {
       if (id == *_unpaintState->ControlNetMode) _selectedModeIndex = i;
 
@@ -29,7 +29,12 @@ namespace winrt::Unpaint::implementation
 
     for (const auto& mode : ControlNetRepository::Modes())
     {
-      if(installedModes.contains(mode.Id)) _modes.Append(mode);
+      if (installedModes.contains(mode.Id)) _modes.Append(mode);
+    }
+
+    for (auto& annotator : repository->InstalledAnnotators())
+    {
+      _installedAnnotators.emplace(to_hstring(annotator));
     }
   }
 
@@ -63,12 +68,41 @@ namespace winrt::Unpaint::implementation
   {
     _selectedModeIndex = value;
 
-    if(value != -1) _unpaintState->ControlNetMode = to_string(_modes.GetAt(value).Id);
+    if (value != -1) _unpaintState->ControlNetMode = to_string(_modes.GetAt(value).Id);
+    if (IsAnnotatorAvailable()) _unpaintState->IsAnnotatorEnabled = false;
+
+    _propertyChanged(*this, PropertyChangedEventArgs(L"IsAnnotatorAvailable"));
+    _propertyChanged(*this, PropertyChangedEventArgs(L"IsAnnotatorEnabled"));
+  }
+
+  float ControlNetOptionsViewModel::ConditioningScale()
+  {
+    return _unpaintState->ConditioningScale;
+  }
+
+  void ControlNetOptionsViewModel::ConditioningScale(float value)
+  {
+    _unpaintState->ConditioningScale = value;
   }
 
   void ControlNetOptionsViewModel::InstallModes()
   {
     _navigationService.OpenUri(Uri(L"unpaint://models/controlnet"));
+  }
+
+  bool ControlNetOptionsViewModel::IsAnnotatorAvailable()
+  {
+    return _selectedModeIndex != -1 ? _installedAnnotators.contains(_modes.GetAt(_selectedModeIndex).Id) : false;
+  }
+
+  bool ControlNetOptionsViewModel::IsAnnotatorEnabled()
+  {
+    return _unpaintState->IsAnnotatorEnabled;
+  }
+
+  void ControlNetOptionsViewModel::IsAnnotatorEnabled(bool value)
+  {
+    _unpaintState->IsAnnotatorEnabled = value;
   }
 
   event_token ControlNetOptionsViewModel::PropertyChanged(Windows::UI::Xaml::Data::PropertyChangedEventHandler const& handler)

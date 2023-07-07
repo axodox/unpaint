@@ -32,10 +32,12 @@ namespace winrt::Unpaint
     bool IsSafetyCheckerEnabled;
 
     std::string ModelId;
-    std::filesystem::path InputImage;
+    Axodox::Graphics::TextureData InputImage;
     Axodox::Graphics::TextureData InputMask;
+    Axodox::Graphics::TextureData InputCondition;
 
     std::string ControlNetMode;
+    float ConditioningScale;
 
     ImageMetadata ToMetadata() const;
   };
@@ -89,7 +91,7 @@ namespace winrt::Unpaint
     void EnsureEnvironment(std::string_view modelId);
     ModelFile GetModelFile(const std::string& fileId) const;
 
-    Axodox::Graphics::TextureData LoadImage(const StableDiffusionInferenceTask& task, Axodox::Graphics::TextureData& sourceTexture, Axodox::Graphics::Rect& sourceRect, Axodox::Graphics::Rect& targetRect, Axodox::Threading::async_operation_source& async);
+    std::pair<Axodox::Graphics::TextureData, Axodox::Graphics::TextureData> LoadImage(const StableDiffusionInferenceTask& task, Axodox::Graphics::Rect& sourceRect, Axodox::Graphics::Rect& targetRect, Axodox::Threading::async_operation_source& async);
     Axodox::MachineLearning::Tensor LoadMask(const StableDiffusionInferenceTask& task, Axodox::Graphics::Rect& sourceRect, Axodox::Graphics::Rect& targetRect, Axodox::Threading::async_operation_source& async);
     Axodox::MachineLearning::Tensor EncodeVAE(const Axodox::MachineLearning::Tensor& colorImage, Axodox::Threading::async_operation_source& async);
     Axodox::MachineLearning::ScheduledTensor CreateTextEmbeddings(const StableDiffusionInferenceTask& task, Axodox::Threading::async_operation_source& async);

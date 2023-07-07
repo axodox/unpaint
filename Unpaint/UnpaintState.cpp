@@ -37,6 +37,8 @@ namespace winrt::Unpaint
     IsSeedFrozen.ValueChanged(no_revoke, event_handler{ this, &UnpaintState::OnStateChanged });
     IsControlNetEnabled.ValueChanged(no_revoke, event_handler{ this, &UnpaintState::OnStateChanged });
     ControlNetMode.ValueChanged(no_revoke, event_handler{ this, &UnpaintState::OnStateChanged });
+    IsAnnotatorEnabled.ValueChanged(no_revoke, event_handler{ this, &UnpaintState::OnStateChanged });
+    ConditioningScale.ValueChanged(no_revoke, event_handler{ this, &UnpaintState::OnStateChanged });
 
     HasShownShowcaseView.ValueChanged(no_revoke, event_handler{ this, &UnpaintState::OnStateChanged });
     HasShownWelcomeView.ValueChanged(no_revoke, event_handler{ this, &UnpaintState::OnStateChanged });

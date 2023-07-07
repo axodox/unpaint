@@ -9,6 +9,12 @@ namespace winrt::Unpaint
 {
   const char* const ControlNetRepository::_controlnetRepository = "axodoxian/controlnet_onnx";
 
+  const std::unordered_map<std::string, std::vector<std::string>> ControlNetRepository::_annotators = {
+    { "canny", { "canny.onnx" } },
+    { "depth", { "depth.onnx" } },
+    { "hed", { "hed.onnx" } }
+  };
+
   std::vector<ControlNetModeViewModel> ControlNetRepository::Modes()
   {
     vector<ControlNetModeViewModel> results;
@@ -79,19 +85,25 @@ namespace winrt::Unpaint
   }
 
   ControlNetRepository::ControlNetRepository() :
-    _root((ApplicationData::Current().LocalCacheFolder().Path() + L"\\controlnet").c_str())
+    _controlnetRoot((ApplicationData::Current().LocalCacheFolder().Path() + L"\\controlnet").c_str()),
+    _annotatorRoot((ApplicationData::Current().LocalCacheFolder().Path() + L"\\annotators").c_str())
   {
     Refresh();
   }
 
   const std::filesystem::path& ControlNetRepository::Root() const
   {
-    return _root;
+    return _controlnetRoot;
   }
 
   const std::vector<std::string>& ControlNetRepository::InstalledModes() const
   {
     return _installedModes;
+  }
+
+  const std::vector<std::string>& ControlNetRepository::InstalledAnnotators() const
+  {
+    return _installedAnnotators;
   }
 
   bool ControlNetRepository::TryEnsureModes(const std::vector<std::string>& modes, Axodox::Threading::async_operation& operation)
@@ -105,18 +117,36 @@ namespace winrt::Unpaint
       if (!modesToRemove.erase(mode))
       {
         filesToInstall.emplace(format("controlnet/{}.onnx", mode));
+
+        auto annotatorIt = _annotators.find(mode);
+        if (annotatorIt != _annotators.end())
+        {
+          for (auto& annotator : annotatorIt->second)
+          {
+            filesToInstall.emplace("annotators/" + annotator);
+          }
+        }
       }
     }
 
     //Install new modes
     HuggingFaceClient huggingFaceClient{};
-    auto result = huggingFaceClient.TryDownloadModel(_controlnetRepository, filesToInstall, {}, _root.parent_path(), operation);
+    auto result = huggingFaceClient.TryDownloadModel(_controlnetRepository, filesToInstall, {}, _controlnetRoot.parent_path(), operation);
 
     //Remove old modes
     for (auto& mode : modesToRemove)
     {
       error_code ec;
-      filesystem::remove(_root / format("{}.onnx", mode), ec);
+      filesystem::remove(_controlnetRoot / format("{}.onnx", mode), ec);
+
+      auto annotatorIt = _annotators.find(mode);
+      if (annotatorIt != _annotators.end())
+      {
+        for (auto& annotator : annotatorIt->second)
+        {
+          filesystem::remove(_annotatorRoot / annotator, ec);
+        }
+      }
     }
 
     Refresh();
@@ -126,14 +156,41 @@ namespace winrt::Unpaint
 
   void ControlNetRepository::Refresh()
   {
+    //Detect controlnet modes
     vector<string> installedModes;
-    for (auto& file : filesystem::directory_iterator{ _root })
+    for (auto& file : filesystem::directory_iterator{ _controlnetRoot })
     {
       if (file.path().extension() != ".onnx") continue;
 
       installedModes.push_back(file.path().stem().string());
     }
 
+    //Detect annotators
+    error_code ec;
+    vector<string> installedAnnotators;
+    for (auto& mode : installedModes)
+    {
+      bool isInstalled = false;
+
+      auto annotatorIt = _annotators.find(mode);
+      if (annotatorIt != _annotators.end())
+      {
+        isInstalled = true;
+        for (auto& annotator : annotatorIt->second)
+        {
+          if (!filesystem::exists(_annotatorRoot / annotator, ec))
+          {
+            isInstalled = false;
+            break;
+          }
+        }
+      }
+
+      if (isInstalled) installedAnnotators.push_back(mode);
+    }
+
+    //Update state
     _installedModes = installedModes;
+    _installedAnnotators = installedAnnotators;
   }
 }

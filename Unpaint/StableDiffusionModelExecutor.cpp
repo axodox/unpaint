@@ -74,19 +74,20 @@ namespace winrt::Unpaint
       TextureData targetTexture;
       auto sourceRect = Rect::Empty;
       auto targetRect = Rect::Empty;
-      if (!task.InputImage.empty())
+      if (task.InputImage)
       {
         inputs.InputMask = LoadMask(task, sourceRect, targetRect, async);
 
-        auto imageTexture = LoadImage(task, targetTexture, sourceRect, targetRect, async);
-        if (task.ControlNetMode.empty() || task.InputMask)
+        auto [imageTexture, conditionTexture] = LoadImage(task, sourceRect, targetRect, async);
+        if (task.InputImage)
         {
+          targetTexture = TextureData{ task.InputImage };
           inputs.InputImage = EncodeVAE(Tensor::FromTextureData(imageTexture, ColorNormalization::LinearPlusMinusOne), async);
         }
 
-        if (!task.ControlNetMode.empty())
+        if (task.InputCondition)
         {
-          inputs.ConditionImage = Tensor::FromTextureData(imageTexture, ColorNormalization::LinearZeroToOne);
+          inputs.ConditionImage = Tensor::FromTextureData(conditionTexture, ColorNormalization::LinearZeroToOne);
         }
       }
 
@@ -163,25 +164,25 @@ namespace winrt::Unpaint
     return result;
   }
 
-  Axodox::Graphics::TextureData StableDiffusionModelExecutor::LoadImage(const StableDiffusionInferenceTask& task, Axodox::Graphics::TextureData& sourceTexture, Axodox::Graphics::Rect& sourceRect, Axodox::Graphics::Rect& targetRect, Axodox::Threading::async_operation_source& async)
+  std::pair<Axodox::Graphics::TextureData, Axodox::Graphics::TextureData> StableDiffusionModelExecutor::LoadImage(const StableDiffusionInferenceTask& task, Axodox::Graphics::Rect& sourceRect, Axodox::Graphics::Rect& targetRect, Axodox::Threading::async_operation_source& async)
   {
     async.update_state(NAN, "Loading input image...");
-    auto imageBuffer = try_read_file(task.InputImage);
-
-    sourceTexture = TextureData::FromBuffer(imageBuffer);
-    auto imageTexture{ sourceTexture };
+    auto imageTexture{ task.InputImage };
+    auto conditionTexture{ task.InputCondition };
 
     if (targetRect)
     {
       imageTexture = imageTexture.GetTexture(targetRect);
+      conditionTexture = conditionTexture.GetTexture(targetRect);
     }
     
     if (imageTexture.Width != task.Resolution.x || imageTexture.Height != task.Resolution.y)
     {
       imageTexture = imageTexture.UniformResize(task.Resolution.x, task.Resolution.y, &sourceRect);
+      conditionTexture = conditionTexture.UniformResize(task.Resolution.x, task.Resolution.y, &sourceRect);
     }
 
-    return imageTexture;
+    return { move(imageTexture), move(conditionTexture) };
   }
 
   Axodox::MachineLearning::Tensor StableDiffusionModelExecutor::LoadMask(const StableDiffusionInferenceTask& task, Axodox::Graphics::Rect& sourceRect, Axodox::Graphics::Rect& targetRect, Axodox::Threading::async_operation_source& async)
@@ -308,7 +309,7 @@ namespace winrt::Unpaint
       ControlNetOptions controlNetOptions{ stableDiffusionOptions };
       controlNetOptions.ConditionInput = inputs.ConditionImage;
       controlNetOptions.ConditionType = task.ControlNetMode;
-      swap(controlNetOptions.ConditioningScale, controlNetOptions.DenoisingStrength);      
+      controlNetOptions.ConditioningScale = task.ConditioningScale;
 
       result = static_cast<ControlNetInferer*>(_denoiser.get())->RunInference(controlNetOptions, &async);
     }

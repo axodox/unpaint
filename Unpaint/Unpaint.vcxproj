@@ -126,6 +126,7 @@
     </ClInclude>
     <ClInclude Include="DownloadModelViewModel.h" />
     <ClInclude Include="EqualsConverter.h" />
+    <ClInclude Include="FeatureExtractionExecutor.h" />
     <ClInclude Include="ImageMetadata.h" />
     <ClInclude Include="ImportHuggingFaceModelDialog.h">
       <DependentUpon>ImportHuggingFaceModelDialog.xaml</DependentUpon>
@@ -316,6 +317,7 @@
     </ClCompile>
     <ClCompile Include="DownloadModelViewModel.cpp" />
     <ClCompile Include="EqualsConverter.cpp" />
+    <ClCompile Include="FeatureExtractionExecutor.cpp" />
     <ClCompile Include="ImageMetadata.cpp" />
     <ClCompile Include="ImageRepository.cpp" />
     <ClCompile Include="ImportHuggingFaceModelDialog.cpp">

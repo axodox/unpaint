@@ -38,6 +38,8 @@ namespace winrt::Unpaint
 
     OptionProperty<bool> IsControlNetEnabled;
     OptionProperty<std::string> ControlNetMode;
+    OptionProperty<bool> IsAnnotatorEnabled;
+    OptionProperty<float> ConditioningScale{ 0.5f };
 #pragma endregion
 
 #pragma region Persistent state

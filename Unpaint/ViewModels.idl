@@ -251,6 +251,11 @@ namespace Unpaint
     Boolean IsEnabled;
     Int32 SelectedModeIndex;
 
+    Single ConditioningScale;
+
+    Boolean IsAnnotatorAvailable{ get; };
+    Boolean IsAnnotatorEnabled;
+
     void InstallModes();
   }
 }

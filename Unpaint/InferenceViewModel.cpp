@@ -39,6 +39,7 @@ namespace winrt::Unpaint::implementation
     _unpaintState(dependencies.resolve<UnpaintState>()),
     _modelRepository(dependencies.resolve<ModelRepository>()),
     _modelExecutor(dependencies.resolve<StableDiffusionModelExecutor>()),
+    _featureExtractor(dependencies.resolve<FeatureExtractionExecutor>()),
     _imageRepository(dependencies.resolve<ImageRepository>()),
     _navigationService(dependencies.resolve<INavigationService>()),
     _deviceInformation(dependencies.resolve<DeviceInformation>()),
@@ -234,11 +235,15 @@ namespace winrt::Unpaint::implementation
       .ModelId = _unpaintState->ModelId      
     };
 
+    filesystem::path inputPath;
     if (*_unpaintState->InferenceMode == InferenceMode::Modify)
     {
-      if (_project.HasImageSelected())
+      if (_inputImage) inputPath = _inputImage.Path().c_str();
+      else if (_project.HasImageSelected()) inputPath = _project.SelectedImage().Path().c_str();
+      
+      if (!inputPath.empty())
       {
-        task.InputImage = _inputImage ? _inputImage.Path().c_str() : _project.SelectedImage().Path().c_str();
+        task.InputImage = TextureData::FromBuffer(try_read_file(inputPath));
         task.InputMask = TextureData::FromSoftwareBitmap(_inputMask);
       }
       else
@@ -247,6 +252,7 @@ namespace winrt::Unpaint::implementation
       }
 
       task.ControlNetMode = _unpaintState->ControlNetMode;
+      task.ConditioningScale = _unpaintState->ConditioningScale;
     }
 
     //Run inference
@@ -263,6 +269,23 @@ namespace winrt::Unpaint::implementation
       Status(status);
       });
 
+    //Feature extraction
+    if (*_unpaintState->InferenceMode == InferenceMode::Modify && !task.ControlNetMode.empty() && task.InputImage)
+    {
+      auto annotatorMode = FeatureExtractionExecutor::ParseExtractionMode(task.ControlNetMode);
+      if (*_unpaintState->IsAnnotatorEnabled && annotatorMode != FeatureExtractionMode::Unknown)
+      {
+        task.InputCondition = _featureExtractor->ExtractFeatures(task.InputImage, annotatorMode, asyncOperation);
+        if (!task.InputMask) task.InputImage = {};
+      }
+      else
+      {
+        task.InputCondition = TextureData(task.InputImage);
+        task.InputImage = {};
+      }
+    }
+
+    //Stable Diffusion inference
     auto results = _modelExecutor->TryRunInference(task, asyncOperation);
 
     //Update UI

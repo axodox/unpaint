@@ -10,7 +10,7 @@
     <local:BooleanInverter x:Key="BooleanInverter"/>
   </UserControl.Resources>
   
-  <StackPanel Spacing="6">
+  <StackPanel>
     <Grid>
       <Grid.ColumnDefinitions>
         <ColumnDefinition Width="*"/>
@@ -22,7 +22,7 @@
     </Grid>
     <Grid>
       <GridView ItemsSource="{x:Bind ViewModel.Modes}" SelectionMode="Single" Margin="0,0,0,-12"
-                SelectedIndex="{x:Bind ViewModel.SelectedModeIndex, Mode=TwoWay}"
+                SelectedIndex="{x:Bind ViewModel.SelectedModeIndex, Mode=TwoWay}" HorizontalAlignment="Center"
                 IsEnabled="{x:Bind ViewModel.IsEnabled, Mode=OneWay}">
         <GridView.ItemsPanel>
           <ItemsPanelTemplate>
@@ -47,6 +47,31 @@
                  Margin="24" HorizontalAlignment="Center" VerticalAlignment="Center" TextWrapping="Wrap" TextAlignment="Center">
         You need to install ControlNet models<LineBreak/> from the <Hyperlink Click="{x:Bind ViewModel.InstallModes}">Model Library</Hyperlink>.
       </TextBlock>
-    </Grid>    
+    </Grid>
+
+    <Grid>
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="*"/>
+        <ColumnDefinition Width="Auto"/>
+      </Grid.ColumnDefinitions>
+
+      <TextBlock Text="Auto-convert input image" VerticalAlignment="Center"/>
+      <ToggleSwitch Grid.Column="1" FlowDirection="RightToLeft" VerticalAlignment="Center" 
+                    IsEnabled="{x:Bind ViewModel.IsAnnotatorAvailable, Mode=OneWay}"
+                    IsOn="{x:Bind ViewModel.IsAnnotatorEnabled, Mode=TwoWay}"/>
+    </Grid>
+
+    <Grid ColumnSpacing="12">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="Auto"/>
+        <ColumnDefinition Width="*"/>
+      </Grid.ColumnDefinitions>
+
+      <TextBlock Text="Conditioning scale" VerticalAlignment="Center"/>
+      <Slider Grid.Column="1" VerticalAlignment="Center" 
+              Minimum="0" Maximum="1" SmallChange="0.1" LargeChange="1" StepFrequency="0.1"
+              IsEnabled="{x:Bind ViewModel.IsAnnotatorAvailable, Mode=OneWay}"
+              Value="{x:Bind ViewModel.ConditioningScale, Mode=TwoWay}"/>
+    </Grid>
   </StackPanel>
 </UserControl>

@@ -2,6 +2,7 @@
 #include "InferenceViewModel.g.h"
 #include "ModelRepository.h"
 #include "StableDiffusionModelExecutor.h"
+#include "FeatureExtractionExecutor.h"
 #include "ImageRepository.h"
 #include "UnpaintState.h"
 #include "Infrastructure/Events.h"
@@ -60,6 +61,7 @@ namespace winrt::Unpaint::implementation
     std::shared_ptr<UnpaintState> _unpaintState;
     std::shared_ptr<ModelRepository> _modelRepository;
     std::shared_ptr<StableDiffusionModelExecutor> _modelExecutor;
+    std::shared_ptr<FeatureExtractionExecutor> _featureExtractor;
     std::shared_ptr<ImageRepository> _imageRepository;
     std::shared_ptr<DeviceInformation> _deviceInformation;
 
