@@ -223,7 +223,10 @@
         <local:MaskEditor x:Name="InputMaskEditor"
                           MaskResolution="{x:Bind ViewModel.InputResolution, Mode=OneWay}"
                           MaskImage="{x:Bind ViewModel.InputMask, Mode=TwoWay}">
-          <Image Source="{x:Bind ViewModel.InputImage, Converter={StaticResource StorageFileToImageSourceConverter}, Mode=OneWay}"/>
+          <Grid>
+            <Image Source="{x:Bind ViewModel.InputImage, Converter={StaticResource StorageFileToImageSourceConverter}, Mode=OneWay}"/>
+            <Image Source="{x:Bind ViewModel.FeatureMask, Mode=OneWay}"/>
+          </Grid>
         </local:MaskEditor>
 
         <Button Margin="6,0,-36,0" Width="30" Height="30" HorizontalAlignment="Right" VerticalAlignment="Center" Content="&#xe76b;" FontFamily="{StaticResource SymbolThemeFontFamily}" Padding="0"

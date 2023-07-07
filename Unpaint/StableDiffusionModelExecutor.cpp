@@ -74,12 +74,12 @@ namespace winrt::Unpaint
       TextureData targetTexture;
       auto sourceRect = Rect::Empty;
       auto targetRect = Rect::Empty;
-      if (task.InputImage)
+      if (task.InputImage || task.InputCondition)
       {
         inputs.InputMask = LoadMask(task, sourceRect, targetRect, async);
 
         auto [imageTexture, conditionTexture] = LoadImage(task, sourceRect, targetRect, async);
-        if (task.InputImage)
+        if (task.InputImage && task.DenoisingStrength < 1.f)
         {
           targetTexture = TextureData{ task.InputImage };
           inputs.InputImage = EncodeVAE(Tensor::FromTextureData(imageTexture, ColorNormalization::LinearPlusMinusOne), async);
@@ -179,6 +179,10 @@ namespace winrt::Unpaint
     if (imageTexture.Width != task.Resolution.x || imageTexture.Height != task.Resolution.y)
     {
       imageTexture = imageTexture.UniformResize(task.Resolution.x, task.Resolution.y, &sourceRect);
+    }
+
+    if (conditionTexture.Width != task.Resolution.x || conditionTexture.Height != task.Resolution.y)
+    {
       conditionTexture = conditionTexture.UniformResize(task.Resolution.x, task.Resolution.y, &sourceRect);
     }
 

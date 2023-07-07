@@ -49,6 +49,7 @@ namespace winrt::Unpaint::implementation
     _progress(0),
     _inputImage(nullptr),
     _inputMask(nullptr),
+    _featureMask(nullptr),
     _inputResolution({ 0, 0 }),
     _isAutoGenerationEnabled(false),
     _safetyStrikes(0)
@@ -166,6 +167,9 @@ namespace winrt::Unpaint::implementation
     _inputImage = value;
     _propertyChanged(*this, PropertyChangedEventArgs(L"InputImage"));
 
+    _featureMask = nullptr;
+    _propertyChanged(*this, PropertyChangedEventArgs(L"FeatureMask"));
+
     //Update resolution
     auto image = TextureData::FromBuffer(try_read_file(value ? value.Path().c_str() : L""));
     _inputResolution = image ? BitmapSize{ image.Width, image.Height } : BitmapSize{ 0, 0 };
@@ -188,6 +192,11 @@ namespace winrt::Unpaint::implementation
 
     _inputMask = value;
     _propertyChanged(*this, PropertyChangedEventArgs(L"InputMask"));
+  }
+
+  Windows::UI::Xaml::Media::ImageSource InferenceViewModel::FeatureMask()
+  {
+    return _featureMask;
   }
 
   bool InferenceViewModel::IsAutoGenerationEnabled()
@@ -275,15 +284,32 @@ namespace winrt::Unpaint::implementation
       auto annotatorMode = FeatureExtractionExecutor::ParseExtractionMode(task.ControlNetMode);
       if (*_unpaintState->IsAnnotatorEnabled && annotatorMode != FeatureExtractionMode::Unknown)
       {
-        task.InputCondition = _featureExtractor->ExtractFeatures(task.InputImage, annotatorMode, asyncOperation);
-        if (!task.InputMask) task.InputImage = {};
+        task.InputCondition = _featureExtractor->ExtractFeatures(task.InputImage, annotatorMode, asyncOperation).ToFormat(DXGI_FORMAT_B8G8R8A8_UNORM_SRGB);
       }
       else
       {
         task.InputCondition = TextureData(task.InputImage);
-        task.InputImage = {};
       }
     }
+
+    //Update UI
+    co_await callerContext;
+    
+    if (task.InputCondition)
+    {
+      auto featureBitmap = task.InputCondition.ToSoftwareBitmap();
+
+      SoftwareBitmapSource featureBitmapSource;
+      co_await featureBitmapSource.SetBitmapAsync(featureBitmap);
+      _featureMask = featureBitmapSource;
+      _propertyChanged(*this, PropertyChangedEventArgs(L"FeatureMask"));
+    }
+    else
+    {
+      _featureMask = nullptr;
+    }
+
+    co_await resume_background();
 
     //Stable Diffusion inference
     auto results = _modelExecutor->TryRunInference(task, asyncOperation);

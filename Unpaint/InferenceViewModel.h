@@ -41,6 +41,8 @@ namespace winrt::Unpaint::implementation
     Windows::Graphics::Imaging::SoftwareBitmap InputMask();
     void InputMask(Windows::Graphics::Imaging::SoftwareBitmap const& value);
 
+    Windows::UI::Xaml::Media::ImageSource FeatureMask();
+
     bool IsAutoGenerationEnabled();
     bool HasSafetyCheckFailed();
 
@@ -80,6 +82,7 @@ namespace winrt::Unpaint::implementation
     Windows::Storage::StorageFile _inputImage;
     Windows::Graphics::Imaging::BitmapSize _inputResolution;
     Windows::Graphics::Imaging::SoftwareBitmap _inputMask;
+    Windows::UI::Xaml::Media::ImageSource _featureMask;
 
     bool _isAutoGenerationEnabled;
     bool _hasSafetyCheckFailed;

@@ -93,6 +93,7 @@ namespace Unpaint
     Windows.Storage.StorageFile InputImage;
     Windows.Graphics.Imaging.BitmapSize InputResolution{ get; };
     Windows.Graphics.Imaging.SoftwareBitmap InputMask;
+    Windows.UI.Xaml.Media.ImageSource FeatureMask{ get; };
 
     Boolean IsAutoGenerationEnabled{ get; };
     Boolean HasSafetyCheckFailed{ get; };
