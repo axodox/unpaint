@@ -84,6 +84,5 @@ namespace winrt::Unpaint
   {
     _featureExtractor.reset();
     _environment.reset();
-    _mode = FeatureExtractionMode::Unknown;
   }
 }

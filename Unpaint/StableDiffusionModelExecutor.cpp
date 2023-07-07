@@ -112,6 +112,13 @@ namespace winrt::Unpaint
           output = TextureData::AlphaBlend(targetTexture, output, task.InputMask);
         }
       }
+      else if (sourceRect)
+      {
+        for (auto& output : outputs)
+        {
+          output = output.GetTexture(sourceRect);
+        }
+      }
 
       //Safety check
       if (task.IsSafetyCheckerEnabled) RunSafetyCheck(outputs, async);
