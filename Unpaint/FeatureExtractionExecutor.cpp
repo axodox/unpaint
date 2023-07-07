@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "FeatureExtractionExecutor.h"
 
+using namespace Axodox::Graphics;
 using namespace Axodox::Infrastructure;
 using namespace Axodox::MachineLearning;
 using namespace Axodox::Threading;
@@ -9,22 +10,35 @@ using namespace winrt::Windows::Storage;
 
 namespace winrt::Unpaint
 {
-  Axodox::Graphics::TextureData FeatureExtractionExecutor::ExtractFeatures(const Axodox::Graphics::TextureData& sourceImage, FeatureExtractionMode mode, Axodox::Threading::async_operation& operation)
+  FeatureExtractionExecutor::FeatureExtractionExecutor() :
+    _unpaintState(dependencies.resolve<UnpaintState>())
+  { }
+
+  Axodox::Graphics::TextureData FeatureExtractionExecutor::ExtractFeatures(const Axodox::Graphics::TextureData& input, FeatureExtractionMode mode, Axodox::Threading::async_operation& operation)
   {
     async_operation_source async;
     operation.set_source(async);
-
-    try
+   
+    if (input != _input || mode != _mode || !_output)
     {
-      EnsureExtractor(mode, async);
+      try
+      {
+        _input = TextureData{ input };
 
-      async.update_state("Extracting features...");
-      return _featureExtractor->ExtractFeatures(sourceImage);
+        EnsureExtractor(mode, async);
+
+        async.update_state("Extracting features...");
+        _output = _featureExtractor->ExtractFeatures(input);
+      }
+      catch (...)
+      {
+        _output = {};
+      }
+
+      if (!_unpaintState->IsFeatureExtractorPinned) ReleaseExtractor();
     }
-    catch (...)
-    {
-      return {};
-    }
+
+    return TextureData{ _output };
   }
 
   FeatureExtractionMode FeatureExtractionExecutor::ParseExtractionMode(std::string_view text)
@@ -64,5 +78,12 @@ namespace winrt::Unpaint
     default:
       throw logic_error("Feature extraction mode not implemented!");
     }
+  }
+
+  void FeatureExtractionExecutor::ReleaseExtractor()
+  {
+    _featureExtractor.reset();
+    _environment.reset();
+    _mode = FeatureExtractionMode::Unknown;
   }
 }

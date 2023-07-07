@@ -50,6 +50,7 @@ namespace winrt::Unpaint
     PersistentOptionProperty<bool> IsSafetyCheckerEnabled;
 
     PersistentOptionProperty<bool> IsDenoiserPinned;
+    PersistentOptionProperty<bool> IsFeatureExtractorPinned;
     PersistentOptionProperty<uint32_t> AdapterIndex;
     PersistentOptionProperty<std::string> ModelId;
 #pragma endregion

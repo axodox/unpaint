@@ -69,7 +69,7 @@ namespace winrt::Unpaint::implementation
     _selectedModeIndex = value;
 
     if (value != -1) _unpaintState->ControlNetMode = to_string(_modes.GetAt(value).Id);
-    if (IsAnnotatorAvailable()) _unpaintState->IsAnnotatorEnabled = false;
+    if (!IsAnnotatorAvailable()) _unpaintState->IsAnnotatorEnabled = false;
 
     _propertyChanged(*this, PropertyChangedEventArgs(L"IsAnnotatorAvailable"));
     _propertyChanged(*this, PropertyChangedEventArgs(L"IsAnnotatorEnabled"));

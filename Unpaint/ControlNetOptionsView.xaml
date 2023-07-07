@@ -70,7 +70,7 @@
       <TextBlock Text="Conditioning scale" VerticalAlignment="Center"/>
       <Slider Grid.Column="1" VerticalAlignment="Center" 
               Minimum="0" Maximum="1" SmallChange="0.1" LargeChange="1" StepFrequency="0.1"
-              IsEnabled="{x:Bind ViewModel.IsAnnotatorAvailable, Mode=OneWay}"
+              IsEnabled="{x:Bind ViewModel.IsEnabled, Mode=OneWay}"
               Value="{x:Bind ViewModel.ConditioningScale, Mode=TwoWay}"/>
     </Grid>
   </StackPanel>

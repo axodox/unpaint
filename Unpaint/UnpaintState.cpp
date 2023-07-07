@@ -13,6 +13,7 @@ namespace winrt::Unpaint
     IsSafeModeEnabled("Inference.IsSafeModeEnabled", true),
     IsSafetyCheckerEnabled("Inference.IsSafetyCheckerEnabled", true),
     IsDenoiserPinned("Inference.IsDenoiserPinned", !_deviceInformation->IsDeviceXbox()),
+    IsFeatureExtractorPinned("Inference.IsFeatureExtractorPinned", false),
     AdapterIndex("Inference.AdapterIndex", 0),
     ModelId("Inference.ModelId"),
     StateChanged(_events)
@@ -45,6 +46,7 @@ namespace winrt::Unpaint
     IsSafeModeEnabled.ValueChanged(no_revoke, event_handler{ this, &UnpaintState::OnStateChanged });
     IsSafetyCheckerEnabled.ValueChanged(no_revoke, event_handler{ this, &UnpaintState::OnStateChanged });
     IsDenoiserPinned.ValueChanged(no_revoke, event_handler{ this, &UnpaintState::OnStateChanged });
+    IsFeatureExtractorPinned.ValueChanged(no_revoke, event_handler{ this, &UnpaintState::OnStateChanged });
     AdapterIndex.ValueChanged(no_revoke, event_handler{ this, &UnpaintState::OnStateChanged });
     ModelId.ValueChanged(no_revoke, event_handler{ this, &UnpaintState::OnStateChanged });
 
