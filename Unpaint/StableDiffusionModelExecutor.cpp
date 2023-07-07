@@ -129,13 +129,14 @@ namespace winrt::Unpaint
 
   void StableDiffusionModelExecutor::EnsureEnvironment(std::string_view modelId)
   {
-    if (!_onnxEnvironment || _onnxEnvironment->DeviceId != int32_t(*_unpaintState->AdapterIndex) || _modelId != modelId)
+    if (!_onnxEnvironment || (*_onnxEnvironment)->DeviceId != int32_t(*_unpaintState->AdapterIndex) || _modelId != modelId)
     {
       _textEmbedder.reset();
       _denoiser.reset();
 
-      _onnxEnvironment = make_unique<OnnxEnvironment>(_modelRepository->Root() / modelId);
-      _onnxEnvironment->DeviceId = *_unpaintState->AdapterIndex;
+      auto host = dependencies.resolve<OnnxHost>();
+      _onnxEnvironment = make_unique<OnnxEnvironment>(host, _modelRepository->Root() / modelId);
+      (*_onnxEnvironment)->DeviceId = *_unpaintState->AdapterIndex;
       _modelId = modelId;
       _modelFiles = _modelRepository->GetModelFiles(modelId);
 

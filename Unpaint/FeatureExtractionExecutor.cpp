@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "FeatureExtractionExecutor.h"
 
+using namespace Axodox::Infrastructure;
 using namespace Axodox::MachineLearning;
 using namespace Axodox::Threading;
 using namespace std;
@@ -42,7 +43,8 @@ namespace winrt::Unpaint
     async.update_state("Loading feature extractor...");
     if (!_environment) 
     {
-      _environment = make_unique<OnnxEnvironment>(ApplicationData::Current().LocalCacheFolder().Path().c_str());
+      auto host = dependencies.resolve<OnnxHost>();
+      _environment = make_unique<OnnxEnvironment>(host, ApplicationData::Current().LocalCacheFolder().Path().c_str());
     }
 
     _featureExtractor.reset();
