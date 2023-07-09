@@ -30,13 +30,15 @@
 
       <TextBlock TextWrapping="Wrap">Unpaint is an execution engine for <Hyperlink NavigateUri="https://stability.ai/stablediffusion">Stable Diffusion</Hyperlink> based image synthesis models provided in the <Hyperlink NavigateUri="https://onnx.ai/">ONNX</Hyperlink> format. You can manage your models below.</TextBlock>
 
+      <!-- Install a new model -->
       <local:SettingControl Icon="&#xe710;" Title="Install a new model" Subtitle="Experiment with various moduls to get different results.">
         <StackPanel Orientation="Horizontal" Grid.Column="1" Spacing="6">
           <Button FontFamily="{StaticResource SymbolThemeFontFamily}" Content="&#xe8b7;" ToolTipService.ToolTip="Import model from disk" Click="{x:Bind ViewModel.ImportModelFromDiskAsync}" FontSize="24" Padding="12"/>
           <Button FontFamily="{StaticResource SymbolThemeFontFamily}" Content="&#xebd3;" ToolTipService.ToolTip="Import model from HuggingFace" Click="{x:Bind ViewModel.ImportModelFromHuggingFaceAsync}" FontSize="24" Padding="12"/>
         </StackPanel>
       </local:SettingControl>
-
+            
+      <!-- Manage installed models -->
       <local:SettingControl Icon="&#xe74c;" Title="Manage installed models" Subtitle="Remove unused models to free up space." Orientation="Vertical">
         <StackPanel>
           <Grid Margin="0,6,0,0">
@@ -63,6 +65,13 @@
         </StackPanel>
       </local:SettingControl>
 
+      <!-- Additional models -->
+      <local:SettingControl Icon="&#xe7b8;" Title="Additional tools" Subtitle="Install additional tools.">
+        <StackPanel Orientation="Horizontal" Grid.Column="1" Spacing="6">
+          <Button FontFamily="{StaticResource SymbolThemeFontFamily}" Content="&#xe945;" ToolTipService.ToolTip="Configure ControlNet models" Click="{x:Bind ViewModel.OpenControlNetSettingsAsync}" FontSize="24" Padding="12"/>
+        </StackPanel>
+      </local:SettingControl>
+      
       <!-- Footer -->
       <Button HorizontalAlignment="Center" Content="Continue" Click="{x:Bind ViewModel.Continue}" IsEnabled="{x:Bind ViewModel.CanContinue, Mode=OneWay}"/>
     </StackPanel>    

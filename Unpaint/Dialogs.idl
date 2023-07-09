@@ -5,7 +5,7 @@ namespace Unpaint
   [default_interface]
   runtimeclass DownloadModelDialog : Windows.UI.Xaml.Controls.ContentDialog
   {
-    DownloadModelDialog(String modelId);
+    DownloadModelDialog();
 
     DownloadModelViewModel ViewModel{ get; };
   }
@@ -24,5 +24,13 @@ namespace Unpaint
     ImportLocalModelDialog();
 
     ImportLocalModelViewModel ViewModel{ get; };
+  }
+
+  [default_interface]
+  runtimeclass ControlNetModelsDialog : Windows.UI.Xaml.Controls.ContentDialog
+  {
+    ControlNetModelsDialog();
+
+    ControlNetModelsViewModel ViewModel{ get; };
   }
 }

@@ -209,7 +209,7 @@
         </FlipView.ItemTemplate>
       </FlipView>
 
-      <TextBlock Grid.Column="1" Style="{StaticResource ImagePlaceholderStyle}" Visibility="{x:Bind ViewModel.Project.SelectedImage, Converter={StaticResource IsNullConverter}, Mode=OneWay}">
+      <TextBlock Grid.Column="1" Style="{StaticResource ImagePlaceholderStyle}" Visibility="{x:Bind ViewModel.Project.SelectedImage, Converter={StaticResource IsNullConverter}, Mode=OneWay}" IsHitTestVisible="False">
         <Run FontWeight="Bold" FontSize="20">No Output Image</Run>
         <LineBreak/>
         <LineBreak/>
@@ -223,14 +223,17 @@
         <local:MaskEditor x:Name="InputMaskEditor"
                           MaskResolution="{x:Bind ViewModel.InputResolution, Mode=OneWay}"
                           MaskImage="{x:Bind ViewModel.InputMask, Mode=TwoWay}">
-          <Image Source="{x:Bind ViewModel.InputImage, Converter={StaticResource StorageFileToImageSourceConverter}, Mode=OneWay}"/>
+          <Grid>
+            <Image Source="{x:Bind ViewModel.InputImage, Converter={StaticResource StorageFileToImageSourceConverter}, Mode=OneWay}"/>
+            <Image Source="{x:Bind ViewModel.FeatureMask, Mode=OneWay}"/>
+          </Grid>
         </local:MaskEditor>
 
         <Button Margin="6,0,-36,0" Width="30" Height="30" HorizontalAlignment="Right" VerticalAlignment="Center" Content="&#xe76b;" FontFamily="{StaticResource SymbolThemeFontFamily}" Padding="0"
                 Click="{x:Bind ViewModel.UseCurrentImageAsInput}" IsEnabled="{x:Bind ViewModel.Project.HasImageSelected, Mode=OneWay}" ToolTipService.ToolTip="Use current image as input"/>
       </Grid>
 
-      <TextBlock Grid.Column="0" Style="{StaticResource ImagePlaceholderStyle}" Visibility="{x:Bind ViewModel.InputImage, Converter={StaticResource IsNullConverter}, Mode=OneWay}">
+      <TextBlock Grid.Column="0" Style="{StaticResource ImagePlaceholderStyle}" Visibility="{x:Bind ViewModel.InputImage, Converter={StaticResource IsNullConverter}, Mode=OneWay}" IsHitTestVisible="False">
         <Run FontWeight="Bold" FontSize="20">No Input Image</Run>
         <LineBreak/>
         <LineBreak/>
@@ -294,14 +297,25 @@
           <!-- Denoising strength -->
           <Slider Grid.Column="1" Minimum="0" Maximum="1" SmallChange="0.01" LargeChange="0.1" StepFrequency="0.01" VerticalAlignment="Center" Margin="6,-10"
                   Value="{x:Bind ViewModel.DenoisingStrength, Mode=TwoWay}"/>
-          <FontIcon Grid.Column="2" FontFamily="{StaticResource SymbolThemeFontFamily}" FontSize="20" Glyph="&#xf4a5;" VerticalAlignment="Center" Margin="6,-10,0,-10">
-            <ToolTipService.ToolTip>
-              <StackPanel>
-                <TextBlock Text="Denoising strength" FontWeight="Bold"/>
-                <TextBlock Text="Defines how much the original image can be changed to fit the prompt." TextWrapping="WrapWholeWords"/>
-              </StackPanel>
-            </ToolTipService.ToolTip>
-          </FontIcon>
+
+          <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="6">
+            <FontIcon FontFamily="{StaticResource SymbolThemeFontFamily}" FontSize="20" Glyph="&#xf4a5;" VerticalAlignment="Center" Margin="6,0,0,0">
+              <ToolTipService.ToolTip>
+                <StackPanel>
+                  <TextBlock Text="Denoising strength" FontWeight="Bold"/>
+                  <TextBlock Text="Defines how much the original image can be changed to fit the prompt." TextWrapping="WrapWholeWords"/>
+                </StackPanel>
+              </ToolTipService.ToolTip>
+            </FontIcon>
+
+            <Button FontFamily="{StaticResource SymbolThemeFontFamily}" FontSize="20" Content="&#xe945;" Style="{StaticResource FlatButtonStyle}">
+              <Button.Flyout>
+                <Flyout>
+                  <local:ControlNetOptionsView/>
+                </Flyout>
+              </Button.Flyout>
+            </Button>
+          </StackPanel>          
         </Grid>
         
         <!-- Mode selector -->

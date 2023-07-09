@@ -191,7 +191,7 @@ namespace winrt::Unpaint::implementation
     return std::format(L"{} / {}", _selectedImageIndex + 1, _images.Size()).c_str();
   }
 
-  fire_and_forget ProjectViewModel::AddImage(winrt::Windows::Storage::StorageFile const& file)
+  fire_and_forget ProjectViewModel::AddImage(winrt::Windows::Storage::StorageFile file)
   {
     auto lifetime = get_strong();
     apartment_context context{};

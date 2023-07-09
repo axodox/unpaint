@@ -2,6 +2,7 @@
 #include "InferenceViewModel.g.h"
 #include "ModelRepository.h"
 #include "StableDiffusionModelExecutor.h"
+#include "FeatureExtractionExecutor.h"
 #include "ImageRepository.h"
 #include "UnpaintState.h"
 #include "Infrastructure/Events.h"
@@ -40,6 +41,8 @@ namespace winrt::Unpaint::implementation
     Windows::Graphics::Imaging::SoftwareBitmap InputMask();
     void InputMask(Windows::Graphics::Imaging::SoftwareBitmap const& value);
 
+    Windows::UI::Xaml::Media::ImageSource FeatureMask();
+
     bool IsAutoGenerationEnabled();
     bool HasSafetyCheckFailed();
 
@@ -60,6 +63,7 @@ namespace winrt::Unpaint::implementation
     std::shared_ptr<UnpaintState> _unpaintState;
     std::shared_ptr<ModelRepository> _modelRepository;
     std::shared_ptr<StableDiffusionModelExecutor> _modelExecutor;
+    std::shared_ptr<FeatureExtractionExecutor> _featureExtractor;
     std::shared_ptr<ImageRepository> _imageRepository;
     std::shared_ptr<DeviceInformation> _deviceInformation;
 
@@ -78,6 +82,7 @@ namespace winrt::Unpaint::implementation
     Windows::Storage::StorageFile _inputImage;
     Windows::Graphics::Imaging::BitmapSize _inputResolution;
     Windows::Graphics::Imaging::SoftwareBitmap _inputMask;
+    Windows::UI::Xaml::Media::ImageSource _featureMask;
 
     bool _isAutoGenerationEnabled;
     bool _hasSafetyCheckFailed;

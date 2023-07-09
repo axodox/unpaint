@@ -57,4 +57,12 @@ namespace Unpaint
     PromptEditorView();
     PromptEditorViewModel ViewModel{ get; };
   }
+
+  [default_interface]
+  runtimeclass ControlNetOptionsView : Windows.UI.Xaml.Controls.UserControl
+  {
+    ControlNetOptionsView();
+
+    ControlNetOptionsViewModel ViewModel{ get; };
+  }
 }

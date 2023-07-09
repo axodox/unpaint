@@ -39,6 +39,7 @@ namespace winrt::Unpaint::implementation
     _unpaintState(dependencies.resolve<UnpaintState>()),
     _modelRepository(dependencies.resolve<ModelRepository>()),
     _modelExecutor(dependencies.resolve<StableDiffusionModelExecutor>()),
+    _featureExtractor(dependencies.resolve<FeatureExtractionExecutor>()),
     _imageRepository(dependencies.resolve<ImageRepository>()),
     _navigationService(dependencies.resolve<INavigationService>()),
     _deviceInformation(dependencies.resolve<DeviceInformation>()),
@@ -48,6 +49,7 @@ namespace winrt::Unpaint::implementation
     _progress(0),
     _inputImage(nullptr),
     _inputMask(nullptr),
+    _featureMask(nullptr),
     _inputResolution({ 0, 0 }),
     _isAutoGenerationEnabled(false),
     _safetyStrikes(0)
@@ -165,6 +167,9 @@ namespace winrt::Unpaint::implementation
     _inputImage = value;
     _propertyChanged(*this, PropertyChangedEventArgs(L"InputImage"));
 
+    _featureMask = nullptr;
+    _propertyChanged(*this, PropertyChangedEventArgs(L"FeatureMask"));
+
     //Update resolution
     auto image = TextureData::FromBuffer(try_read_file(value ? value.Path().c_str() : L""));
     _inputResolution = image ? BitmapSize{ image.Width, image.Height } : BitmapSize{ 0, 0 };
@@ -187,6 +192,11 @@ namespace winrt::Unpaint::implementation
 
     _inputMask = value;
     _propertyChanged(*this, PropertyChangedEventArgs(L"InputMask"));
+  }
+
+  Windows::UI::Xaml::Media::ImageSource InferenceViewModel::FeatureMask()
+  {
+    return _featureMask;
   }
 
   bool InferenceViewModel::IsAutoGenerationEnabled()
@@ -231,20 +241,27 @@ namespace winrt::Unpaint::implementation
       .BatchSize = _unpaintState->IsBatchGenerationEnabled ? *_unpaintState->BatchSize : 1,
       .IsSafeModeEnabled = _unpaintState->IsSafeModeEnabled,
       .IsSafetyCheckerEnabled = _unpaintState->IsSafetyCheckerEnabled,
-      .ModelId = _unpaintState->ModelId
+      .ModelId = _unpaintState->ModelId      
     };
 
+    filesystem::path inputPath;
     if (*_unpaintState->InferenceMode == InferenceMode::Modify)
     {
-      if (_project.HasImageSelected())
+      if (_inputImage) inputPath = _inputImage.Path().c_str();
+      else if (_project.HasImageSelected()) inputPath = _project.SelectedImage().Path().c_str();
+      
+      if (!inputPath.empty())
       {
-        task.InputImage = _inputImage ? _inputImage.Path().c_str() : _project.SelectedImage().Path().c_str();
+        task.InputImage = TextureData::FromBuffer(try_read_file(inputPath));
         task.InputMask = TextureData::FromSoftwareBitmap(_inputMask);
       }
       else
       {
         task.Mode = InferenceMode::Create;
       }
+
+      task.ControlNetMode = _unpaintState->ControlNetMode;
+      task.ConditioningScale = _unpaintState->ConditioningScale;
     }
 
     //Run inference
@@ -261,6 +278,40 @@ namespace winrt::Unpaint::implementation
       Status(status);
       });
 
+    //Feature extraction
+    if (*_unpaintState->InferenceMode == InferenceMode::Modify && !task.ControlNetMode.empty() && task.InputImage)
+    {
+      auto annotatorMode = FeatureExtractionExecutor::ParseExtractionMode(task.ControlNetMode);
+      if (*_unpaintState->IsAnnotatorEnabled && annotatorMode != FeatureExtractionMode::Unknown)
+      {
+        task.InputCondition = _featureExtractor->ExtractFeatures(task.InputImage, annotatorMode, asyncOperation).ToFormat(DXGI_FORMAT_B8G8R8A8_UNORM_SRGB);
+      }
+      else
+      {
+        task.InputCondition = TextureData(task.InputImage);
+      }
+    }
+
+    //Update UI
+    co_await callerContext;
+    
+    if (task.InputCondition)
+    {
+      auto featureBitmap = task.InputCondition.ToSoftwareBitmap();
+
+      SoftwareBitmapSource featureBitmapSource;
+      co_await featureBitmapSource.SetBitmapAsync(featureBitmap);
+      _featureMask = featureBitmapSource;
+      _propertyChanged(*this, PropertyChangedEventArgs(L"FeatureMask"));
+    }
+    else
+    {
+      _featureMask = nullptr;
+    }
+
+    co_await resume_background();
+
+    //Stable Diffusion inference
     auto results = _modelExecutor->TryRunInference(task, asyncOperation);
 
     //Update UI

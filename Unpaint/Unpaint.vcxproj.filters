@@ -43,6 +43,12 @@
     <Page Include="PromptEditorView.xaml">
       <Filter>Views\Components</Filter>
     </Page>
+    <Page Include="ControlNetModelsDialog.xaml">
+      <Filter>Dialogs</Filter>
+    </Page>
+    <Page Include="ControlNetOptionsView.xaml">
+      <Filter>Views\Components</Filter>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Midl Include="Views.idl">
@@ -150,6 +156,18 @@
     <ClCompile Include="ProjectViewModel.cpp">
       <Filter>View Models\Components</Filter>
     </ClCompile>
+    <ClCompile Include="ControlNetModelsViewModel.cpp">
+      <Filter>View Models</Filter>
+    </ClCompile>
+    <ClCompile Include="ControlNetRepository.cpp">
+      <Filter>Models</Filter>
+    </ClCompile>
+    <ClCompile Include="ControlNetOptionsViewModel.cpp">
+      <Filter>View Models\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="FeatureExtractionExecutor.cpp">
+      <Filter>Models</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\Wide310x150Logo.scale-200.png">
@@ -203,6 +221,54 @@
     <Image Include="Showcase\2023-06-03 20-57-48.png">
       <Filter>Showcase</Filter>
     </Image>
+    <Image Include="Assets\controlnet\canny_input.png">
+      <Filter>Assets\ControlNet</Filter>
+    </Image>
+    <Image Include="Assets\controlnet\canny_output.png">
+      <Filter>Assets\ControlNet</Filter>
+    </Image>
+    <Image Include="Assets\controlnet\depth_input.png">
+      <Filter>Assets\ControlNet</Filter>
+    </Image>
+    <Image Include="Assets\controlnet\depth_output.png">
+      <Filter>Assets\ControlNet</Filter>
+    </Image>
+    <Image Include="Assets\controlnet\hed_input.png">
+      <Filter>Assets\ControlNet</Filter>
+    </Image>
+    <Image Include="Assets\controlnet\hed_output.png">
+      <Filter>Assets\ControlNet</Filter>
+    </Image>
+    <Image Include="Assets\controlnet\mlsd_input.png">
+      <Filter>Assets\ControlNet</Filter>
+    </Image>
+    <Image Include="Assets\controlnet\normal_input.png">
+      <Filter>Assets\ControlNet</Filter>
+    </Image>
+    <Image Include="Assets\controlnet\mlsd_output.png">
+      <Filter>Assets\ControlNet</Filter>
+    </Image>
+    <Image Include="Assets\controlnet\normal_output.png">
+      <Filter>Assets\ControlNet</Filter>
+    </Image>
+    <Image Include="Assets\controlnet\openpose_input.png">
+      <Filter>Assets\ControlNet</Filter>
+    </Image>
+    <Image Include="Assets\controlnet\openpose_output.png">
+      <Filter>Assets\ControlNet</Filter>
+    </Image>
+    <Image Include="Assets\controlnet\scribble_input.png">
+      <Filter>Assets\ControlNet</Filter>
+    </Image>
+    <Image Include="Assets\controlnet\scribble_output.png">
+      <Filter>Assets\ControlNet</Filter>
+    </Image>
+    <Image Include="Assets\controlnet\seg_input.png">
+      <Filter>Assets\ControlNet</Filter>
+    </Image>
+    <Image Include="Assets\controlnet\seg_output.png">
+      <Filter>Assets\ControlNet</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Assets">
@@ -240,6 +306,9 @@
     </Filter>
     <Filter Include="View Models\Components">
       <UniqueIdentifier>{6a1fdbb4-7ba1-492b-8a09-61f37e6c2b8a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Assets\ControlNet">
+      <UniqueIdentifier>{51f8d795-d32a-4bbb-a744-80abc666f0fc}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -356,6 +425,18 @@
     </ClInclude>
     <ClInclude Include="ProjectViewModel.h">
       <Filter>View Models\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="ControlNetModelsViewModel.h">
+      <Filter>View Models</Filter>
+    </ClInclude>
+    <ClInclude Include="ControlNetRepository.h">
+      <Filter>Models</Filter>
+    </ClInclude>
+    <ClInclude Include="ControlNetOptionsViewModel.h">
+      <Filter>View Models\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="FeatureExtractionExecutor.h">
+      <Filter>Models</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

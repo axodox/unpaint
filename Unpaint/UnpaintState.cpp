@@ -13,6 +13,7 @@ namespace winrt::Unpaint
     IsSafeModeEnabled("Inference.IsSafeModeEnabled", true),
     IsSafetyCheckerEnabled("Inference.IsSafetyCheckerEnabled", true),
     IsDenoiserPinned("Inference.IsDenoiserPinned", !_deviceInformation->IsDeviceXbox()),
+    IsFeatureExtractorPinned("Inference.IsFeatureExtractorPinned", false),
     AdapterIndex("Inference.AdapterIndex", 0),
     ModelId("Inference.ModelId"),
     StateChanged(_events)
@@ -35,12 +36,17 @@ namespace winrt::Unpaint
     SamplingSteps.ValueChanged(no_revoke, event_handler{ this, &UnpaintState::OnStateChanged });
     RandomSeed.ValueChanged(no_revoke, event_handler{ this, &UnpaintState::OnStateChanged });
     IsSeedFrozen.ValueChanged(no_revoke, event_handler{ this, &UnpaintState::OnStateChanged });
+    IsControlNetEnabled.ValueChanged(no_revoke, event_handler{ this, &UnpaintState::OnStateChanged });
+    ControlNetMode.ValueChanged(no_revoke, event_handler{ this, &UnpaintState::OnStateChanged });
+    IsAnnotatorEnabled.ValueChanged(no_revoke, event_handler{ this, &UnpaintState::OnStateChanged });
+    ConditioningScale.ValueChanged(no_revoke, event_handler{ this, &UnpaintState::OnStateChanged });
 
     HasShownShowcaseView.ValueChanged(no_revoke, event_handler{ this, &UnpaintState::OnStateChanged });
     HasShownWelcomeView.ValueChanged(no_revoke, event_handler{ this, &UnpaintState::OnStateChanged });
     IsSafeModeEnabled.ValueChanged(no_revoke, event_handler{ this, &UnpaintState::OnStateChanged });
     IsSafetyCheckerEnabled.ValueChanged(no_revoke, event_handler{ this, &UnpaintState::OnStateChanged });
     IsDenoiserPinned.ValueChanged(no_revoke, event_handler{ this, &UnpaintState::OnStateChanged });
+    IsFeatureExtractorPinned.ValueChanged(no_revoke, event_handler{ this, &UnpaintState::OnStateChanged });
     AdapterIndex.ValueChanged(no_revoke, event_handler{ this, &UnpaintState::OnStateChanged });
     ModelId.ValueChanged(no_revoke, event_handler{ this, &UnpaintState::OnStateChanged });
 

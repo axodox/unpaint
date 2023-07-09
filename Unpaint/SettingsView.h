@@ -7,6 +7,8 @@ namespace winrt::Unpaint::implementation
   {
     SettingsViewModel ViewModel();
 
+    
+
   private:
     SettingsViewModel _viewModel;
   };

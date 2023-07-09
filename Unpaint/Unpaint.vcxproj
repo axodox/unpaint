@@ -108,6 +108,17 @@
     <ClInclude Include="BooleanInverter.h" />
     <ClInclude Include="BooleanSwitchConverter.h" />
     <ClInclude Include="BooleanToGridLengthConverter.h" />
+    <ClInclude Include="ControlNetModelsDialog.h">
+      <DependentUpon>ControlNetModelsDialog.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </ClInclude>
+    <ClInclude Include="ControlNetModelsViewModel.h" />
+    <ClInclude Include="ControlNetOptionsView.h">
+      <DependentUpon>ControlNetOptionsView.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </ClInclude>
+    <ClInclude Include="ControlNetOptionsViewModel.h" />
+    <ClInclude Include="ControlNetRepository.h" />
     <ClInclude Include="DeviceInformation.h" />
     <ClInclude Include="DownloadModelDialog.h">
       <DependentUpon>DownloadModelDialog.xaml</DependentUpon>
@@ -115,6 +126,7 @@
     </ClInclude>
     <ClInclude Include="DownloadModelViewModel.h" />
     <ClInclude Include="EqualsConverter.h" />
+    <ClInclude Include="FeatureExtractionExecutor.h" />
     <ClInclude Include="ImageMetadata.h" />
     <ClInclude Include="ImportHuggingFaceModelDialog.h">
       <DependentUpon>ImportHuggingFaceModelDialog.xaml</DependentUpon>
@@ -197,6 +209,12 @@
     <Page Include="CommonResources.xaml">
       <DeploymentContent>true</DeploymentContent>
     </Page>
+    <Page Include="ControlNetModelsDialog.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="ControlNetOptionsView.xaml">
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="DownloadModelDialog.xaml">
       <SubType>Designer</SubType>
     </Page>
@@ -244,6 +262,22 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\checkerboard.png" />
+    <Image Include="Assets\controlnet\canny_input.png" />
+    <Image Include="Assets\controlnet\canny_output.png" />
+    <Image Include="Assets\controlnet\depth_input.png" />
+    <Image Include="Assets\controlnet\depth_output.png" />
+    <Image Include="Assets\controlnet\hed_input.png" />
+    <Image Include="Assets\controlnet\hed_output.png" />
+    <Image Include="Assets\controlnet\mlsd_input.png" />
+    <Image Include="Assets\controlnet\mlsd_output.png" />
+    <Image Include="Assets\controlnet\normal_input.png" />
+    <Image Include="Assets\controlnet\normal_output.png" />
+    <Image Include="Assets\controlnet\openpose_input.png" />
+    <Image Include="Assets\controlnet\openpose_output.png" />
+    <Image Include="Assets\controlnet\scribble_input.png" />
+    <Image Include="Assets\controlnet\scribble_output.png" />
+    <Image Include="Assets\controlnet\seg_input.png" />
+    <Image Include="Assets\controlnet\seg_output.png" />
     <Image Include="Assets\LockScreenLogo.scale-200.png" />
     <Image Include="Assets\SplashScreen.scale-200.png" />
     <Image Include="Assets\Square150x150Logo.scale-200.png" />
@@ -265,6 +299,17 @@
     <ClCompile Include="BooleanInverter.cpp" />
     <ClCompile Include="BooleanSwitchConverter.cpp" />
     <ClCompile Include="BooleanToGridLengthConverter.cpp" />
+    <ClCompile Include="ControlNetModelsDialog.cpp">
+      <DependentUpon>ControlNetModelsDialog.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </ClCompile>
+    <ClCompile Include="ControlNetModelsViewModel.cpp" />
+    <ClCompile Include="ControlNetOptionsView.cpp">
+      <DependentUpon>ControlNetOptionsView.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </ClCompile>
+    <ClCompile Include="ControlNetOptionsViewModel.cpp" />
+    <ClCompile Include="ControlNetRepository.cpp" />
     <ClCompile Include="DeviceInformation.cpp" />
     <ClCompile Include="DownloadModelDialog.cpp">
       <DependentUpon>DownloadModelDialog.xaml</DependentUpon>
@@ -272,6 +317,7 @@
     </ClCompile>
     <ClCompile Include="DownloadModelViewModel.cpp" />
     <ClCompile Include="EqualsConverter.cpp" />
+    <ClCompile Include="FeatureExtractionExecutor.cpp" />
     <ClCompile Include="ImageMetadata.cpp" />
     <ClCompile Include="ImageRepository.cpp" />
     <ClCompile Include="ImportHuggingFaceModelDialog.cpp">
@@ -381,8 +427,8 @@
     <Import Project="..\packages\Microsoft.ML.OnnxRuntime.DirectML.1.15.0\build\native\Microsoft.ML.OnnxRuntime.DirectML.targets" Condition="Exists('..\packages\Microsoft.ML.OnnxRuntime.DirectML.1.15.0\build\native\Microsoft.ML.OnnxRuntime.DirectML.targets')" />
     <Import Project="..\packages\Microsoft.Windows.CppWinRT.2.0.230524.4\build\native\Microsoft.Windows.CppWinRT.targets" Condition="Exists('..\packages\Microsoft.Windows.CppWinRT.2.0.230524.4\build\native\Microsoft.Windows.CppWinRT.targets')" />
     <Import Project="..\packages\Win2D.uwp.1.26.0\build\native\Win2D.uwp.targets" Condition="Exists('..\packages\Win2D.uwp.1.26.0\build\native\Win2D.uwp.targets')" />
-    <Import Project="..\packages\Axodox.Common.1.0.21\build\native\Axodox.Common.targets" Condition="Exists('..\packages\Axodox.Common.1.0.21\build\native\Axodox.Common.targets')" />
-    <Import Project="..\packages\Axodox.MachineLearning.1.0.24\build\native\Axodox.MachineLearning.targets" Condition="Exists('..\packages\Axodox.MachineLearning.1.0.24\build\native\Axodox.MachineLearning.targets')" />
+    <Import Project="..\packages\Axodox.Common.1.0.29\build\native\Axodox.Common.targets" Condition="Exists('..\packages\Axodox.Common.1.0.29\build\native\Axodox.Common.targets')" />
+    <Import Project="..\packages\Axodox.MachineLearning.1.0.28\build\native\Axodox.MachineLearning.targets" Condition="Exists('..\packages\Axodox.MachineLearning.1.0.28\build\native\Axodox.MachineLearning.targets')" />
   </ImportGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
@@ -398,7 +444,7 @@
     <Error Condition="!Exists('..\packages\Microsoft.Windows.CppWinRT.2.0.230524.4\build\native\Microsoft.Windows.CppWinRT.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Windows.CppWinRT.2.0.230524.4\build\native\Microsoft.Windows.CppWinRT.props'))" />
     <Error Condition="!Exists('..\packages\Microsoft.Windows.CppWinRT.2.0.230524.4\build\native\Microsoft.Windows.CppWinRT.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Windows.CppWinRT.2.0.230524.4\build\native\Microsoft.Windows.CppWinRT.targets'))" />
     <Error Condition="!Exists('..\packages\Win2D.uwp.1.26.0\build\native\Win2D.uwp.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Win2D.uwp.1.26.0\build\native\Win2D.uwp.targets'))" />
-    <Error Condition="!Exists('..\packages\Axodox.Common.1.0.21\build\native\Axodox.Common.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Axodox.Common.1.0.21\build\native\Axodox.Common.targets'))" />
-    <Error Condition="!Exists('..\packages\Axodox.MachineLearning.1.0.24\build\native\Axodox.MachineLearning.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Axodox.MachineLearning.1.0.24\build\native\Axodox.MachineLearning.targets'))" />
+    <Error Condition="!Exists('..\packages\Axodox.Common.1.0.29\build\native\Axodox.Common.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Axodox.Common.1.0.29\build\native\Axodox.Common.targets'))" />
+    <Error Condition="!Exists('..\packages\Axodox.MachineLearning.1.0.28\build\native\Axodox.MachineLearning.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Axodox.MachineLearning.1.0.28\build\native\Axodox.MachineLearning.targets'))" />
   </Target>
 </Project>

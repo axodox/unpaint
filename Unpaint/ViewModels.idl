@@ -3,6 +3,7 @@ namespace Unpaint
   interface INavigationService
   {
     void NavigateToView(Windows.UI.Xaml.Interop.TypeName viewType);
+    void OpenUri(Windows.Foundation.Uri uri);
 
     Boolean IsPointerOverTitleBar{ get; };
     event Windows.Foundation.EventHandler<Boolean> IsPointerOverTitleBarChanged;
@@ -52,12 +53,16 @@ namespace Unpaint
     void Continue();
 
     void OpenUri(Windows.Foundation.Uri uri);
+    void OpenControlNetSettingsAsync();
   }
 
   [default_interface]
   runtimeclass DownloadModelViewModel : Windows.UI.Xaml.Data.INotifyPropertyChanged
   {
-    DownloadModelViewModel(String modelId);
+    DownloadModelViewModel();
+
+    void DownloadStableDiffusionModelAsync(String modelId);
+    void EnsureControlNetModelsAsync(IVector<String> modeIds);
 
     Double Progress{ get; };
     String StatusMessage{ get; };
@@ -88,6 +93,7 @@ namespace Unpaint
     Windows.Storage.StorageFile InputImage;
     Windows.Graphics.Imaging.BitmapSize InputResolution{ get; };
     Windows.Graphics.Imaging.SoftwareBitmap InputMask;
+    Windows.UI.Xaml.Media.ImageSource FeatureMask{ get; };
 
     Boolean IsAutoGenerationEnabled{ get; };
     Boolean HasSafetyCheckFailed{ get; };
@@ -210,5 +216,47 @@ namespace Unpaint
     void CopyToClipboard();
     void SaveImageAs();
     void DeleteImage();    
+  }
+
+  struct ControlNetModeViewModel
+  {
+    String Id;
+    String Name;
+    String ShortName;
+    String Description;
+    String ExampleInput;
+    String ExampleOutput;
+  };
+
+  [default_interface]
+  runtimeclass ControlNetModelsViewModel : Windows.UI.Xaml.Data.INotifyPropertyChanged
+  {
+    ControlNetModelsViewModel();
+
+    IObservableVector<ControlNetModeViewModel> Modes{ get; };
+
+    IVector<String> SelectedModes;
+
+    Boolean IsSelected(String modeId);
+    void IsSelected(String modeId, Boolean value);
+  }
+
+  [default_interface]
+  runtimeclass ControlNetOptionsViewModel : Windows.UI.Xaml.Data.INotifyPropertyChanged
+  {
+    ControlNetOptionsViewModel();
+
+    Boolean IsAvailable{ get; };
+    IObservableVector<ControlNetModeViewModel> Modes{ get; };
+
+    Boolean IsEnabled;
+    Int32 SelectedModeIndex;
+
+    Single ConditioningScale;
+
+    Boolean IsAnnotatorAvailable{ get; };
+    Boolean IsAnnotatorEnabled;
+
+    void InstallModes();
   }
 }
