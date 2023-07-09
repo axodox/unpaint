@@ -79,7 +79,7 @@ namespace winrt::Unpaint
         inputs.InputMask = LoadMask(task, sourceRect, targetRect, async);
 
         auto [imageTexture, conditionTexture] = LoadImage(task, sourceRect, targetRect, async);
-        if (task.InputImage && task.DenoisingStrength < 1.f)
+        if (task.InputImage && (task.DenoisingStrength < 1.f || task.InputMask))
         {
           targetTexture = TextureData{ task.InputImage };
           inputs.InputImage = EncodeVAE(Tensor::FromTextureData(imageTexture, ColorNormalization::LinearPlusMinusOne), async);

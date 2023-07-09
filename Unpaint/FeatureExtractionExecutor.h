@@ -9,7 +9,8 @@ namespace winrt::Unpaint
     Unknown,
     Canny,
     Hed,
-    Depth
+    Depth,
+    OpenPose
   };
 
   class FeatureExtractionExecutor

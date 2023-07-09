@@ -12,7 +12,8 @@ namespace winrt::Unpaint
   const std::unordered_map<std::string, std::vector<std::string>> ControlNetRepository::_annotators = {
     { "canny", { "canny.onnx" } },
     { "depth", { "depth.onnx" } },
-    { "hed", { "hed.onnx" } }
+    { "hed", { "hed.onnx" } },
+    { "openpose", { "openpose.onnx" } }
   };
 
   std::vector<ControlNetModeViewModel> ControlNetRepository::Modes()

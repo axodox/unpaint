@@ -46,6 +46,7 @@ namespace winrt::Unpaint
     if (text == "canny") return FeatureExtractionMode::Canny;
     if (text == "hed") return FeatureExtractionMode::Hed;
     if (text == "depth") return FeatureExtractionMode::Depth;
+    if (text == "openpose") return FeatureExtractionMode::OpenPose;
 
     return FeatureExtractionMode::Unknown;
   }
@@ -74,6 +75,9 @@ namespace winrt::Unpaint
       break;
     case FeatureExtractionMode::Depth:
       _featureExtractor = make_unique<DepthEstimator>(*_environment);
+      break;
+    case FeatureExtractionMode::OpenPose:
+      _featureExtractor = make_unique<PoseEstimator>(*_environment);
       break;
     default:
       throw logic_error("Feature extraction mode not implemented!");
