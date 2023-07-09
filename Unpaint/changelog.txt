@@ -6,6 +6,8 @@ Added:
 - Acknowledgements
 - Licensing info
 - Added model share links
+- Added ControlNet support
+- Added canny, HED, depth and OpenPose feature extractors
 
 Fixed:
 - Bright color scheme now work in the title bar

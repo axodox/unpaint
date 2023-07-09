@@ -219,7 +219,7 @@
       </TextBlock>
 
       <!-- Input image -->
-      <Grid x:Name="InputImageView"  Grid.Column="0" Visibility="{x:Bind IsInputPaneVisible, Mode=OneWay}" AllowDrop="True" DragOver="OnImageDragOver" Drop="OnImageDrop">
+      <Grid x:Name="InputImageView"  Grid.Column="0" Visibility="{x:Bind IsInputPaneVisible, Mode=OneWay}" AllowDrop="True" DragOver="OnImageDragOver" Drop="OnImageDrop" Background="Transparent">
         <local:MaskEditor x:Name="InputMaskEditor"
                           MaskResolution="{x:Bind ViewModel.InputResolution, Mode=OneWay}"
                           MaskImage="{x:Bind ViewModel.InputMask, Mode=TwoWay}">
