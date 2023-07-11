@@ -15,4 +15,4 @@ Fixed:
 - New projects are now properly selected on creation
 - Opening a link no longer disables the titlebar controls
 - When a model is deleted another model is selected automatically
-- Controlnet options no longer crash the app
+- ControlNet options no longer crash the app
