@@ -40,7 +40,7 @@ namespace winrt::Unpaint::implementation
 
   bool ControlNetOptionsViewModel::IsAvailable()
   {
-    return _modes.Size() > 1;
+    return _modes.Size() > 0;
   }
 
   Windows::Foundation::Collections::IObservableVector<Unpaint::ControlNetModeViewModel> ControlNetOptionsViewModel::Modes()
