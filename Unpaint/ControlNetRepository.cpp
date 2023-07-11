@@ -89,6 +89,10 @@ namespace winrt::Unpaint
     _controlnetRoot((ApplicationData::Current().LocalCacheFolder().Path() + L"\\controlnet").c_str()),
     _annotatorRoot((ApplicationData::Current().LocalCacheFolder().Path() + L"\\annotators").c_str())
   {
+    std::error_code ec;
+    filesystem::create_directories(_controlnetRoot, ec);
+    filesystem::create_directories(_annotatorRoot, ec);
+
     Refresh();
   }
 
