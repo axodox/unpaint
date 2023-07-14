@@ -9,6 +9,7 @@
 #include "Storage/FileIO.h"
 #include "Threading/AsyncOperation.h"
 #include "StringMapper.h"
+#include "Infrastructure/Win32.h"
 
 using namespace Axodox::Collections;
 using namespace Axodox::Graphics;
@@ -154,13 +155,18 @@ namespace winrt::Unpaint::implementation
     //Copy to temp for later use
     if (value)
     {
-      filesystem::path targetPath{ value.Path().c_str() };
+      auto temporaryFolder = ApplicationData::Current().TemporaryFolder();
+
+      auto targetName = filesystem::path{ value.Name().c_str() };
 
       error_code ec;
-      if (value && !filesystem::exists(targetPath, ec))
+      auto targetPath = filesystem::path{ temporaryFolder.Path().c_str() } / targetName;
+      if (filesystem::exists(targetPath, ec))
       {
-        value = co_await value.CopyAsync(ApplicationData::Current().TemporaryFolder(), value.Name().c_str(), NameCollisionOption::ReplaceExisting);
+        targetName = format(L"{}-{}{}", targetName.stem().c_str(), to_hstring(make_guid()), targetName.extension().c_str()).c_str();
       }
+
+      value = co_await value.CopyAsync(temporaryFolder, targetName.c_str(), NameCollisionOption::ReplaceExisting);
     }
 
     //Update input image
