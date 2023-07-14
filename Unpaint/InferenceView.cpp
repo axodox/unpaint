@@ -2,6 +2,7 @@
 #include "InferenceView.h"
 #include "InferenceView.g.cpp"
 #include "Infrastructure/WinRtDependencies.h"
+#include "Infrastructure/Text.h"
 
 using namespace Axodox::Infrastructure;
 using namespace std;
@@ -15,6 +16,8 @@ using namespace winrt::Windows::UI::Xaml::Data;
 
 namespace winrt::Unpaint::implementation
 {
+  const std::set<std::wstring> InferenceView::_imageExtensions{ L".bmp", L".png", L".gif", L".jpg", L".jxr", L".jpeg", L".webp", L".tif", L".tiff" };
+
   InferenceView::InferenceView() :
     _navigationService(dependencies.resolve<INavigationService>()),
     _isPointerOverStatusBar(false),
@@ -88,24 +91,46 @@ namespace winrt::Unpaint::implementation
     OutputImagesView().AllowDrop(true);
   }
 
-  void InferenceView::OnImageDragOver(Windows::Foundation::IInspectable const& /*sender*/, Windows::UI::Xaml::DragEventArgs const& eventArgs)
+  fire_and_forget InferenceView::OnImageDragOver(Windows::Foundation::IInspectable const& /*sender*/, Windows::UI::Xaml::DragEventArgs eventArgs)
   {
-    if (!eventArgs.DataView().Contains(StandardDataFormats::StorageItems())) return;
-
-    eventArgs.AcceptedOperation(DataPackageOperation::Copy);
-  }
-
-  fire_and_forget InferenceView::OnImageDrop(Windows::Foundation::IInspectable const& sender, Windows::UI::Xaml::DragEventArgs const& eventArgs)
-  {
-    const auto& dataView = eventArgs.DataView();
+    auto dataView = eventArgs.DataView();
     if (!dataView.Contains(StandardDataFormats::StorageItems())) co_return;
 
+    auto lifetime = get_strong();
+    auto deferral = eventArgs.GetDeferral();
+    auto items = co_await dataView.GetStorageItemsAsync();
+    
+    for (const auto& item : items)
+    {
+      auto file = item.try_as<StorageFile>();
+      if (!file) continue;
+
+      auto extension = to_lower(filesystem::path{ file.Name().c_str() }.extension().c_str());
+      if (_imageExtensions.contains(extension))
+      {
+        eventArgs.AcceptedOperation(DataPackageOperation::Copy);
+        break;
+      }
+    }
+
+    deferral.Complete();
+  }
+
+  fire_and_forget InferenceView::OnImageDrop(Windows::Foundation::IInspectable const& sender, Windows::UI::Xaml::DragEventArgs eventArgs)
+  {
+    auto dataView = eventArgs.DataView();
+    if (!dataView.Contains(StandardDataFormats::StorageItems())) co_return;
+
+    auto lifetime = get_strong();
     auto isOutput = sender == OutputImagesView();
     auto items = co_await dataView.GetStorageItemsAsync();
     for (const auto& item : items)
     {
       auto file = item.try_as<StorageFile>();
       if (!file) continue;
+
+      auto extension = to_lower(filesystem::path{ file.Name().c_str() }.extension().c_str());
+      if (!_imageExtensions.contains(extension)) continue;
 
       if (isOutput)
       {

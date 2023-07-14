@@ -20,8 +20,8 @@ namespace winrt::Unpaint::implementation
     void OnOutputImageDragStarting(Windows::UI::Xaml::UIElement const& sender, Windows::UI::Xaml::DragStartingEventArgs const& eventArgs);
     void OnOutputImageDropCompleted(Windows::UI::Xaml::UIElement const& sender, Windows::UI::Xaml::DropCompletedEventArgs const& eventArgs);
 
-    void OnImageDragOver(Windows::Foundation::IInspectable const& sender, Windows::UI::Xaml::DragEventArgs const& eventArgs);
-    fire_and_forget OnImageDrop(Windows::Foundation::IInspectable const& sender, Windows::UI::Xaml::DragEventArgs const& eventArgs);
+    fire_and_forget OnImageDragOver(Windows::Foundation::IInspectable const& sender, Windows::UI::Xaml::DragEventArgs eventArgs);
+    fire_and_forget OnImageDrop(Windows::Foundation::IInspectable const& sender, Windows::UI::Xaml::DragEventArgs eventArgs);
 
     void OnFirstImageInvoked(Windows::UI::Xaml::Input::KeyboardAccelerator const& sender, Windows::UI::Xaml::Input::KeyboardAcceleratorInvokedEventArgs const& args);
     void OnPreviousImageInvoked(Windows::UI::Xaml::Input::KeyboardAccelerator const& sender, Windows::UI::Xaml::Input::KeyboardAcceleratorInvokedEventArgs const& args);
@@ -32,6 +32,8 @@ namespace winrt::Unpaint::implementation
     void PropertyChanged(event_token const& token);
 
   private:
+    static const std::set<std::wstring> _imageExtensions;
+
     event<Windows::UI::Xaml::Data::PropertyChangedEventHandler> _propertyChanged;
     INavigationService _navigationService;
 
