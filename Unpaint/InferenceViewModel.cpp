@@ -169,6 +169,18 @@ namespace winrt::Unpaint::implementation
       value = co_await value.CopyAsync(temporaryFolder, targetName.c_str(), NameCollisionOption::ReplaceExisting);
     }
 
+    //Try parse file
+    TextureData image;
+    try
+    {
+      image = TextureData::FromBuffer(read_file(value ? value.Path().c_str() : L""));
+      if (!image) co_return;
+    }
+    catch (...)
+    {
+      co_return;
+    }
+
     //Update input image
     _inputImage = value;
     _propertyChanged(*this, PropertyChangedEventArgs(L"InputImage"));
@@ -176,9 +188,8 @@ namespace winrt::Unpaint::implementation
     _featureMask = nullptr;
     _propertyChanged(*this, PropertyChangedEventArgs(L"FeatureMask"));
 
-    //Update resolution
-    auto image = TextureData::FromBuffer(try_read_file(value ? value.Path().c_str() : L""));
-    _inputResolution = image ? BitmapSize{ image.Width, image.Height } : BitmapSize{ 0, 0 };
+    //Update resolution    
+    _inputResolution = BitmapSize{ image.Width, image.Height };
     _propertyChanged(*this, PropertyChangedEventArgs(L"InputResolution"));
   }
 

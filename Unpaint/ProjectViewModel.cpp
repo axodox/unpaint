@@ -205,8 +205,7 @@ namespace winrt::Unpaint::implementation
       texture = TextureData::FromBuffer(buffer);
     }
     catch (...)
-    {
-    }
+    { }
 
     co_await context;
 
