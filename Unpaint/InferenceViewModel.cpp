@@ -9,6 +9,7 @@
 #include "Storage/FileIO.h"
 #include "Threading/AsyncOperation.h"
 #include "StringMapper.h"
+#include "Infrastructure/Win32.h"
 
 using namespace Axodox::Collections;
 using namespace Axodox::Graphics;
@@ -154,13 +155,30 @@ namespace winrt::Unpaint::implementation
     //Copy to temp for later use
     if (value)
     {
-      filesystem::path targetPath{ value.Path().c_str() };
+      auto temporaryFolder = ApplicationData::Current().TemporaryFolder();
+
+      auto targetName = filesystem::path{ value.Name().c_str() };
 
       error_code ec;
-      if (value && !filesystem::exists(targetPath, ec))
+      auto targetPath = filesystem::path{ temporaryFolder.Path().c_str() } / targetName;
+      if (filesystem::exists(targetPath, ec))
       {
-        value = co_await value.CopyAsync(ApplicationData::Current().TemporaryFolder(), value.Name().c_str(), NameCollisionOption::ReplaceExisting);
+        targetName = format(L"{}-{}{}", targetName.stem().c_str(), to_hstring(make_guid()), targetName.extension().c_str()).c_str();
       }
+
+      value = co_await value.CopyAsync(temporaryFolder, targetName.c_str(), NameCollisionOption::ReplaceExisting);
+    }
+
+    //Try parse file
+    TextureData image;
+    try
+    {
+      image = TextureData::FromBuffer(read_file(value ? value.Path().c_str() : L""));
+      if (!image) co_return;
+    }
+    catch (...)
+    {
+      co_return;
     }
 
     //Update input image
@@ -170,9 +188,8 @@ namespace winrt::Unpaint::implementation
     _featureMask = nullptr;
     _propertyChanged(*this, PropertyChangedEventArgs(L"FeatureMask"));
 
-    //Update resolution
-    auto image = TextureData::FromBuffer(try_read_file(value ? value.Path().c_str() : L""));
-    _inputResolution = image ? BitmapSize{ image.Width, image.Height } : BitmapSize{ 0, 0 };
+    //Update resolution    
+    _inputResolution = BitmapSize{ image.Width, image.Height };
     _propertyChanged(*this, PropertyChangedEventArgs(L"InputResolution"));
   }
 
