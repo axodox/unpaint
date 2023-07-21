@@ -57,5 +57,7 @@ namespace Unpaint
   runtimeclass IsNullConverter : [default] Windows.UI.Xaml.Data.IValueConverter
   {
     IsNullConverter();
+
+    Boolean IsNegating;
   }
 }

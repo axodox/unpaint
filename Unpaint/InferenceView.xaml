@@ -17,6 +17,7 @@
     <local:BooleanToGridLengthConverter x:Key="BooleanToGridLengthConverter"/>
     <local:StorageFileToImageSourceConverter x:Key="StorageFileToImageSourceConverter"/>
     <local:IsNullConverter x:Key="IsNullConverter"/>
+    <local:IsNullConverter x:Key="IsNotNullConverter" IsNegating="True"/>
     <local:BooleanSwitchConverter x:Key="BooleanToPaneSpacingConverter">
       <local:BooleanSwitchConverter.TrueValue>
         <x:Double>42</x:Double>
@@ -222,7 +223,8 @@
       <Grid x:Name="InputImageView"  Grid.Column="0" Visibility="{x:Bind IsInputPaneVisible, Mode=OneWay}" AllowDrop="True" DragOver="OnImageDragOver" Drop="OnImageDrop" Background="Transparent">
         <local:MaskEditor x:Name="InputMaskEditor"
                           MaskResolution="{x:Bind ViewModel.InputResolution, Mode=OneWay}"
-                          MaskImage="{x:Bind ViewModel.InputMask, Mode=TwoWay}">
+                          MaskImage="{x:Bind ViewModel.InputMask, Mode=TwoWay}"
+                          Visibility="{x:Bind ViewModel.InputImage, Converter={StaticResource IsNotNullConverter}, Mode=OneWay}">
           <Grid>
             <Image Source="{x:Bind ViewModel.InputImage, Converter={StaticResource StorageFileToImageSourceConverter}, Mode=OneWay}"/>
             <Image Source="{x:Bind ViewModel.FeatureMask, Mode=OneWay}"/>
