@@ -2,15 +2,17 @@
 
 ![an image showing a windowed application where the left side shows a painter's workshop with a canvas selected, while the right side shows the same image, but with the selected canvas replaced with a variation of Mona Lisa](screenshot.png "The in-painting view in Unpaint")
 
+![an image showing a windowed application where the left side shows a depth map of a flying bird, while the right side shows similarly shaped tropical bird](controlnet.png "Running ControlNet image generation inside Unpaint")
+
 > New: [Unpaint demonstration on Xbox consoles](https://github.com/axodox/unpaint/wiki/Running-Unpaint-on-the-Xbox-Series-consoles), see it on [YouTube](https://www.youtube.com/watch?v=CWhoRcQttCM).
 
-This repository contains a fully C++ implementation of Stable Diffusion-based image synthesis tool called Unpaint. It supports txt2img, img2img and inpainting pipelines and the safety checker. This solution does not depend on Python and runs the entire image generation process in a single process, making deployments significantly simpler and smaller, essentially consisting of a few executable and library files (~30MB), and the model weights (~2.5GB / model). Using the library it is possible to integrate Stable Diffusion into almost any application, which can import C++ or C functions.
+This repository contains a fully C++ implementation of Stable Diffusion-based image synthesis tool called Unpaint. It supports basic and ControlNet enhanced implementations of txt2img, img2img, inpainting pipelines and the safety checker. This solution does not depend on Python and runs the entire image generation process in a single process, making deployments significantly simpler and smaller, essentially consisting of a few executable and library files (~30MB), and the model weights (~2.5GB / model). Using the library it is possible to integrate Stable Diffusion into almost any application, which can import C++ or C functions.
 
 For technical details please check the page of the C++ Stable Diffusion library which Unpaint is based on [here](https://github.com/axodox/axodox-machinelearning).
 
 # System requirements
 
-The application uses DirectML, so it should in theory work with all major GPU vendors, however for now it has only been tested on Windows 11 with an NVidia GPU. We encourage you to try it with different hardware and [raise issues](https://github.com/axodox/unpaint/issues) on this page if you have problems. Make sure to install the latest Windows updates and especially the latest GPU drivers, as Unpaints benefits from Microsoft's recent Build conference [announced optimizations](https://devblogs.microsoft.com/directx/dml-stable-diffusion/) greatly.
+The application uses DirectML and it supports current GPUs of NVidia and AMD, but should work on other DirectML capable hardware as well. We encourage you to try it with different hardware and [raise issues](https://github.com/axodox/unpaint/issues) on this page if you have problems. Make sure to install the latest Windows updates and especially the latest GPU drivers, as Unpaints benefits from Microsoft's recent Build conference [announced optimizations](https://devblogs.microsoft.com/directx/dml-stable-diffusion/) greatly.
 
 > Please note that ONNX based pipelines are not yet necessarily as optimized as with using pytorch and CUDA directly, however with latest drivers they are pretty close.
 
@@ -32,6 +34,10 @@ To install the app the *first time* follow these steps:
 **If you feel unsafe consider using [SignTool](https://learn.microsoft.com/en-us/dotnet/framework/tools/signtool-exe) to resign the Unpaint package** with your own certificate (you need to import your own one as well), you can refer to the end of [this](https://github.com/axodox/unpaint/blob/main/build_app.ps1) file on how to do it.
 
 After this just open the `.msix` file and should install fine and start the app.
+
+# Installing models
+
+To use Unpaint you will need to install at least one image generation model. You can install models from your hard drive, or HuggingFace. We have created a handy tutorial on how to convert existing models, you can find it [here](https://github.com/axodox/unpaint/wiki/Model-import).
 
 # Building the project
 
