@@ -98,5 +98,7 @@ namespace winrt::Unpaint
     Axodox::MachineLearning::Tensor RunStableDiffusion(const StableDiffusionInferenceTask& task, const StableDiffusionInputs& inputs, Axodox::Threading::async_operation_source& async);
     Axodox::MachineLearning::Tensor DecodeVAE(const Axodox::MachineLearning::Tensor& latentImage, Axodox::Threading::async_operation_source& async);
     void RunSafetyCheck(std::vector<Axodox::Graphics::TextureData>& results, Axodox::Threading::async_operation_source& async);
+
+    void CreateControlNetInpaintCondition(Axodox::MachineLearning::Tensor& condition, const Axodox::Graphics::TextureData& mask, const Axodox::Graphics::Rect& targetRect);
   };
 }

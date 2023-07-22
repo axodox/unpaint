@@ -52,7 +52,7 @@ namespace winrt::Unpaint
     }
   }
 
-  std::vector<Axodox::Graphics::TextureData> StableDiffusionModelExecutor::TryRunInference(const StableDiffusionInferenceTask& task, Axodox::Threading::async_operation& operation)
+  std::vector<Axodox::Graphics::TextureData> StableDiffusionModelExecutor::TryRunInference(const StableDiffusionInferenceTask& rawTask, Axodox::Threading::async_operation& operation)
   {
     //Set up async source
     lock_guard lock(_mutex);
@@ -60,6 +60,11 @@ namespace winrt::Unpaint
 
     async_operation_source async;
     operation.set_source(async);
+
+    auto task = rawTask;
+    if (task.InputImage) task.InputImage = task.InputImage.Resize(task.Resolution.x, task.Resolution.y);
+    if (task.InputMask) task.InputMask = task.InputMask.Resize(task.Resolution.x, task.Resolution.y);
+    if (task.InputCondition) task.InputCondition = task.InputCondition.Resize(task.Resolution.x, task.Resolution.y);
 
     try
     {
@@ -88,6 +93,11 @@ namespace winrt::Unpaint
         if (task.InputCondition)
         {
           inputs.ConditionImage = Tensor::FromTextureData(conditionTexture, ColorNormalization::LinearZeroToOne);
+
+          if (task.ControlNetMode == "inpaint" && task.InputMask)
+          {
+            CreateControlNetInpaintCondition(inputs.ConditionImage, task.InputMask, targetRect);
+          }
         }
       }
 
@@ -101,7 +111,7 @@ namespace winrt::Unpaint
       if (task.InputMask && (sourceRect || targetRect))
       {
         if (!targetRect) targetRect = Rect::FromSize(targetTexture.Size());
-                
+
         for (auto& output : outputs)
         {
           if (!sourceRect) sourceRect = Rect::FromSize(output.Size());
@@ -352,6 +362,35 @@ namespace winrt::Unpaint
       {
         async.update_state(NAN, "Unsafe image encountered.");
         image = {};
+      }
+    }
+  }
+
+  void StableDiffusionModelExecutor::CreateControlNetInpaintCondition(Axodox::MachineLearning::Tensor& condition, const Axodox::Graphics::TextureData& mask, const Axodox::Graphics::Rect& targetRect)
+  {
+    auto localMask = mask
+      .GetTexture(targetRect)
+      .UniformResize(uint32_t(condition.Shape[3]), uint32_t(condition.Shape[2]));
+    
+    auto pConditionR = condition.AsPointer<float>(0, 0);
+    auto pConditionG = condition.AsPointer<float>(0, 1);
+    auto pConditionB = condition.AsPointer<float>(0, 2);
+    for (auto row = 0u; row < localMask.Height; row++)
+    {
+      auto pMask = localMask.Row<uint8_t>(row);
+      for (auto column = 0u; column < localMask.Width; column++)
+      {
+        if (*pMask > 127)
+        {
+          *pConditionR = -1.f;
+          *pConditionG = -1.f;
+          *pConditionB = -1.f;
+        }
+
+        pMask++;
+        pConditionR++;
+        pConditionG++;
+        pConditionB++;
       }
     }
   }

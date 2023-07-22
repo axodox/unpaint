@@ -277,7 +277,7 @@ namespace winrt::Unpaint::implementation
         task.Mode = InferenceMode::Create;
       }
 
-      task.ControlNetMode = _unpaintState->ControlNetMode;
+      task.ControlNetMode = _unpaintState->IsControlNetEnabled ? *_unpaintState->ControlNetMode : "";
       task.ConditioningScale = _unpaintState->ConditioningScale;
     }
 

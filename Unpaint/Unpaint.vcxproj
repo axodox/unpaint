@@ -268,6 +268,8 @@
     <Image Include="Assets\controlnet\depth_output.png" />
     <Image Include="Assets\controlnet\hed_input.png" />
     <Image Include="Assets\controlnet\hed_output.png" />
+    <Image Include="Assets\controlnet\inpaint_input.png" />
+    <Image Include="Assets\controlnet\inpaint_output.png" />
     <Image Include="Assets\controlnet\mlsd_input.png" />
     <Image Include="Assets\controlnet\mlsd_output.png" />
     <Image Include="Assets\controlnet\normal_input.png" />

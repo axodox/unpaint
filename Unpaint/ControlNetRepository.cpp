@@ -76,6 +76,13 @@ namespace winrt::Unpaint
       .Description = L"Generates images based on an ADE20K segmentation protocol image."
       });
 
+    results.push_back(ControlNetModeViewModel{
+     .Id = L"inpaint",
+     .Name = L"Inpainting",
+     .ShortName = L"Inpaint",
+     .Description = L"Generates images based on an existing image."
+      });
+
     for (auto& result : results)
     {
       result.ExampleInput = format(L"ms-appx:///Assets/controlnet/{}_input.png", result.Id);

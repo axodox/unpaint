@@ -269,6 +269,8 @@
     <Image Include="Assets\controlnet\seg_output.png">
       <Filter>Assets\ControlNet</Filter>
     </Image>
+    <Image Include="Assets\controlnet\inpaint_input.png" />
+    <Image Include="Assets\controlnet\inpaint_output.png" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Assets">
