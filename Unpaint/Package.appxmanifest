@@ -38,6 +38,6 @@
   </Applications>
   <Capabilities>
     <Capability Name="internetClient" />
-    <rescap:Capability Name="expandedResources" />
+    <!--<rescap:Capability Name="expandedResources" />-->
   </Capabilities>
 </Package>
