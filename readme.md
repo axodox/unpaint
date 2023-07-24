@@ -18,6 +18,8 @@ The application uses DirectML and it supports current GPUs of NVidia and AMD, bu
 
 # How to install the app?
 
+> [Unpaint is now available in the Microsoft Store](https://www.microsoft.com/store/productId/9N25M770896D), if you do not need the latest dev builds, please install it from there.
+
 You can find the app installers on the [releases page](https://github.com/axodox/unpaint/releases). 
 
 To install the app the *first time* follow these steps:
@@ -29,7 +31,7 @@ To install the app the *first time* follow these steps:
 - Select `Trusted Root Certification Authorities` and click `OK`
 - Click `Next` and then `Finish`
 
-> This installs Unpaint's self-signed security certificate which is required by the new MSIX installer pipeline. As the project grows I will likely purchase a proper paid certificate, but it is around 250USD/yr, and I am doing free work here... Windows Store could be a solution as well, which I am looking into. 
+This installs Unpaint's self-signed security certificate which is required by the new MSIX installer pipeline for test builds, this is not needed if you install the app from the store.
  
 **If you feel unsafe consider using [SignTool](https://learn.microsoft.com/en-us/dotnet/framework/tools/signtool-exe) to resign the Unpaint package** with your own certificate (you need to import your own one as well), you can refer to the end of [this](https://github.com/axodox/unpaint/blob/main/build_app.ps1) file on how to do it.
 
