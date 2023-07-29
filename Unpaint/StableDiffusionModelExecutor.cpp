@@ -61,10 +61,16 @@ namespace winrt::Unpaint
     async_operation_source async;
     operation.set_source(async);
 
+    auto targetResolution = Size::Zero;
+    if (rawTask.InputImage) targetResolution = rawTask.InputImage.Size();
+    else if (rawTask.InputCondition) targetResolution = rawTask.InputCondition.Size();
+    else if (rawTask.InputMask) targetResolution = rawTask.InputMask.Size();
+    else targetResolution = { int(rawTask.Resolution.x), int(rawTask.Resolution.y) };
+
     auto task = rawTask;
-    if (task.InputImage) task.InputImage = task.InputImage.Resize(task.Resolution.x, task.Resolution.y);
-    if (task.InputMask) task.InputMask = task.InputMask.Resize(task.Resolution.x, task.Resolution.y);
-    if (task.InputCondition) task.InputCondition = task.InputCondition.Resize(task.Resolution.x, task.Resolution.y);
+    if (task.InputImage) task.InputImage = task.InputImage.Resize(targetResolution.Width, targetResolution.Height);
+    if (task.InputMask) task.InputMask = task.InputMask.Resize(targetResolution.Width, targetResolution.Height);
+    if (task.InputCondition) task.InputCondition = task.InputCondition.Resize(targetResolution.Width, targetResolution.Height);
 
     try
     {
