@@ -1,6 +1,6 @@
 ﻿#pragma once
 #include "SettingsViewModel.g.h"
-#include "UnpaintOptions.h"
+#include "UnpaintState.h"
 
 namespace winrt::Unpaint::implementation
 {
@@ -29,7 +29,7 @@ namespace winrt::Unpaint::implementation
 
   private:
     INavigationService _navigationService;
-    std::shared_ptr<UnpaintOptions> _unpaintOptions;
+    std::shared_ptr<UnpaintState> _unpaintState;
 
     Windows::Foundation::Collections::IObservableVector<AdapterViewModel> _adapters;
   };

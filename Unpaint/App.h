@@ -1,6 +1,5 @@
 ﻿#pragma once
 #include "App.xaml.g.h"
-
 #include "SizeToStringConverter.h"
 #include "IsNanToBooleanConverter.h"
 #include "NanToZeroConverter.h"
@@ -11,9 +10,9 @@
 #include "StorageFileToImageSourceConverter.h"
 #include "BooleanSwitchConverter.h"
 #include "IsNullConverter.h"
-#include "UnpaintOptions.h"
 #include "ModelRepository.h"
 #include "DeviceInformation.h"
+#include "UnpaintState.h"
 
 namespace winrt::Unpaint::implementation
 {
@@ -27,6 +26,7 @@ namespace winrt::Unpaint::implementation
     void OnSuspending(IInspectable const&, Windows::ApplicationModel::SuspendingEventArgs const&);
     void OnNavigationFailed(IInspectable const&, Windows::UI::Xaml::Navigation::NavigationFailedEventArgs const&);
 
+    void OpenUri(Windows::Foundation::Uri const& uri);
     void NavigateToView(Windows::UI::Xaml::Interop::TypeName viewType);
 
     bool IsPointerOverTitleBar();
@@ -35,7 +35,7 @@ namespace winrt::Unpaint::implementation
     void IsPointerOverTitleBarChanged(event_token const& token) noexcept;
 
   private:
-    std::shared_ptr<UnpaintOptions> _unpaintOptions;
+    std::shared_ptr<UnpaintState> _unpaintState;
     std::shared_ptr<ModelRepository> _modelRepository;
     std::shared_ptr<DeviceInformation> _deviceInformation;
     Windows::UI::Xaml::Controls::Frame _frame;

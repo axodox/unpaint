@@ -14,7 +14,7 @@ namespace winrt::Unpaint::implementation
 {
   SettingsViewModel::SettingsViewModel() :
     _navigationService(dependencies.resolve<INavigationService>()),
-    _unpaintOptions(dependencies.resolve<UnpaintOptions>()),
+    _unpaintState(dependencies.resolve<UnpaintState>()),
     _adapters(single_threaded_observable_vector<AdapterViewModel>())
   { 
     //Populate adapter list
@@ -40,32 +40,32 @@ namespace winrt::Unpaint::implementation
 
   bool SettingsViewModel::IsSafeModeEnabled()
   {
-    return _unpaintOptions->IsSafeModeEnabled();
+    return _unpaintState->IsSafeModeEnabled;
   }
 
   void SettingsViewModel::IsSafeModeEnabled(bool value)
   {
-    _unpaintOptions->IsSafeModeEnabled(value);
+    _unpaintState->IsSafeModeEnabled = value;
   }
 
   bool SettingsViewModel::IsSafetyCheckerEnabled()
   {
-    return _unpaintOptions->IsSafetyCheckerEnabled();
+    return _unpaintState->IsSafetyCheckerEnabled;
   }
 
   void SettingsViewModel::IsSafetyCheckerEnabled(bool value)
   {
-    _unpaintOptions->IsSafetyCheckerEnabled(value);
+    _unpaintState->IsSafetyCheckerEnabled = value;
   }
 
   bool SettingsViewModel::IsDenoiserPinned()
   {
-    return _unpaintOptions->IsDenoiserPinned();
+    return _unpaintState->IsDenoiserPinned;
   }
 
   void SettingsViewModel::IsDenoiserPinned(bool value)
   {
-    _unpaintOptions->IsDenoiserPinned(value);
+    _unpaintState->IsDenoiserPinned = value;
   }
 
   hstring SettingsViewModel::Version()
@@ -81,12 +81,12 @@ namespace winrt::Unpaint::implementation
 
   int32_t SettingsViewModel::SelectedAdapterIndex()
   {
-    return _unpaintOptions->AdapterIndex();
+    return _unpaintState->AdapterIndex;
   }
 
   void SettingsViewModel::SelectedAdapterIndex(int32_t value)
   {
-    _unpaintOptions->AdapterIndex(value);
+    _unpaintState->AdapterIndex = value;
   }
   
   void SettingsViewModel::Continue()

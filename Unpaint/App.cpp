@@ -29,7 +29,7 @@ App::App() :
 {
   set_thread_name("* ui");
   dependencies.add<INavigationService>(*this);
-  _unpaintOptions = dependencies.resolve<UnpaintOptions>();
+  _unpaintState = dependencies.resolve<UnpaintState>();
   _modelRepository = dependencies.resolve<ModelRepository>();
   _deviceInformation = dependencies.resolve<DeviceInformation>();
 
@@ -69,10 +69,7 @@ void App::Activate(Windows::ApplicationModel::Activation::IActivatedEventArgs ev
   auto protocolActivatedEventArgs = eventArgs.try_as<ProtocolActivatedEventArgs>();
   if (protocolActivatedEventArgs)
   {
-    NavigateToView(xaml_typename<Unpaint::InferenceView>());
-
-    auto inferenceView = _frame.Content().try_as<Unpaint::InferenceView>();
-    if (inferenceView) inferenceView.ViewModel().OpenUri(protocolActivatedEventArgs.Uri());
+    OpenUri(protocolActivatedEventArgs.Uri());
   }
 
   auto coreWindow = CoreWindow::GetForCurrentThread();
@@ -135,16 +132,34 @@ void App::OnNavigationFailed(IInspectable const&, NavigationFailedEventArgs cons
   throw hresult_error(E_FAIL, hstring(L"Failed to load Page ") + e.SourcePageType().Name);
 }
 
+void winrt::Unpaint::implementation::App::OpenUri(Windows::Foundation::Uri const& uri)
+{
+  if (uri.Host() == L"inference")
+  {
+    NavigateToView(xaml_typename<Unpaint::InferenceView>());
+
+    auto inferenceView = _frame.Content().try_as<Unpaint::InferenceView>();
+    if (inferenceView) inferenceView.ViewModel().OpenUri(uri);
+  }
+  else if (uri.Host() == L"models")
+  {
+    NavigateToView(xaml_typename<Unpaint::ModelsView>());
+
+    auto inferenceView = _frame.Content().try_as<Unpaint::ModelsView>();
+    if (inferenceView) inferenceView.ViewModel().OpenUri(uri);
+  }
+}
+
 void App::NavigateToView(Windows::UI::Xaml::Interop::TypeName viewType)
 {
   auto window = Window::Current();
   window.SetTitleBar(nullptr);
 
-  if (!_unpaintOptions->HasShownShowcaseView())
+  if (!*_unpaintState->HasShownShowcaseView)
   {
     viewType = xaml_typename<Unpaint::ShowcaseView>();
   }
-  else if (!_unpaintOptions->HasShownWelcomeView())
+  else if (!*_unpaintState->HasShownWelcomeView)
   {
     viewType = xaml_typename<Unpaint::WelcomeView>();
   }

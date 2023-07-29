@@ -3,19 +3,16 @@
 #include "DownloadModelViewModel.g.cpp"
 #include "Infrastructure/DependencyContainer.h"
 #include "ModelRepository.h"
+#include "ControlNetRepository.h"
 
 using namespace Axodox::Infrastructure;
 using namespace Axodox::Threading;
+using namespace std;
 using namespace winrt;
 using namespace winrt::Windows::UI::Xaml::Data;
 
 namespace winrt::Unpaint::implementation
 {
-  DownloadModelViewModel::DownloadModelViewModel(hstring const& modelId)
-  {
-    DownloadModelAsync(modelId);
-  }
-
   double DownloadModelViewModel::Progress()
   {
     return _progress;
@@ -51,7 +48,7 @@ namespace winrt::Unpaint::implementation
     _propertyChanged.remove(token);
   }
 
-  fire_and_forget DownloadModelViewModel::DownloadModelAsync(hstring modelId)
+  fire_and_forget DownloadModelViewModel::DownloadStableDiffusionModelAsync(hstring modelId)
   {
     //Switch to background thread
     auto lifetime = get_strong();
@@ -63,6 +60,25 @@ namespace winrt::Unpaint::implementation
     //Run download
     _downloadOperation.state_changed(no_revoke, event_handler{ this, &DownloadModelViewModel::OnDownloadStateChanged });    
     modelRepository->TryInstallHuggingFaceModel(to_string(modelId), _downloadOperation);
+
+    //Switch to foreground thread
+    co_await _uiContext;
+  }
+
+  fire_and_forget DownloadModelViewModel::EnsureControlNetModelsAsync(Windows::Foundation::Collections::IVector<hstring> const& modeIds)
+  {
+    vector<string> modes;
+    for (const auto& modeId : modeIds) modes.push_back(to_string(modeId));
+
+    //Switch to background thread
+    co_await resume_background();
+
+    //Resolve dependencies
+    auto modelRepository = dependencies.resolve<ControlNetRepository>();
+
+    //Run download
+    _downloadOperation.state_changed(no_revoke, event_handler{ this, &DownloadModelViewModel::OnDownloadStateChanged });
+    modelRepository->TryEnsureModes(modes, _downloadOperation);
 
     //Switch to foreground thread
     co_await _uiContext;

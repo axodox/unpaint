@@ -1,26 +1,65 @@
 #pragma once
-#include "StableDiffusionModelExecutor.h"
+#include "OptionProperty.h"
+#include "DeviceInformation.h"
 
 namespace winrt::Unpaint
 {
-  struct UnpaintState
+  enum class InferenceMode
   {
-    InferenceMode InferenceMode = InferenceMode::Create;
+    Create,
+    Modify
+  };
 
-    winrt::Windows::Graphics::SizeInt32 Resolution;
-    std::string Project;
-    std::string Image;
+  class UnpaintState
+  {
+    Axodox::Infrastructure::event_owner _events;
+    std::shared_ptr<DeviceInformation> _deviceInformation;
 
-    bool IsJumpingToLatestImage = true;
-    bool IsSettingsLocked = true;
+  public:
 
-    hstring PositivePrompt, NegativePrompt;
+#pragma region Transient state
+    OptionProperty<InferenceMode> InferenceMode{ InferenceMode::Create };
 
-    bool IsBatchGenerationEnabled = false;
-    uint32_t BatchSize = 8;
+    OptionProperty<winrt::Windows::Graphics::SizeInt32> Resolution;
+    OptionProperty<std::string> Project;
+    OptionProperty<std::string> Image;
 
-    float GuidanceStrength = 7.f, DenoisingStrength = 0.6f;
-    uint32_t SamplingSteps = 15, RandomSeed = 0;
-    bool IsSeedFrozen = false;
+    OptionProperty<bool> IsJumpingToLatestImage{ true };
+    OptionProperty<bool> IsSettingsLocked{ true };
+
+    OptionProperty<std::string> PositivePrompt, NegativePrompt;
+
+    OptionProperty<bool> IsBatchGenerationEnabled{ false };
+    OptionProperty<uint32_t> BatchSize{ 8 };
+
+    OptionProperty<float> GuidanceStrength{ 7.f }, DenoisingStrength{ 0.6f };
+    OptionProperty<uint32_t> SamplingSteps{ 15 }, RandomSeed{ 0 };
+    OptionProperty<bool> IsSeedFrozen{ false };
+
+    OptionProperty<bool> IsControlNetEnabled;
+    OptionProperty<std::string> ControlNetMode;
+    OptionProperty<bool> IsAnnotatorEnabled;
+    OptionProperty<float> ConditioningScale{ 0.9f };
+#pragma endregion
+
+#pragma region Persistent state
+    PersistentOptionProperty<bool> HasShownShowcaseView;
+    PersistentOptionProperty<bool> HasShownWelcomeView;
+
+    PersistentOptionProperty<bool> IsSafeModeEnabled;
+    PersistentOptionProperty<bool> IsSafetyCheckerEnabled;
+
+    PersistentOptionProperty<bool> IsDenoiserPinned;
+    PersistentOptionProperty<bool> IsFeatureExtractorPinned;
+    PersistentOptionProperty<uint32_t> AdapterIndex;
+    PersistentOptionProperty<std::string> ModelId;
+#pragma endregion
+
+    Axodox::Infrastructure::event_publisher<OptionPropertyBase*> StateChanged;
+
+    UnpaintState();
+
+  private:
+    void OnStateChanged(OptionPropertyBase* property);
   };
 }

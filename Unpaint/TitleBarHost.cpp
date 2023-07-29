@@ -49,8 +49,13 @@ namespace winrt::Unpaint::implementation
 
   void TitleBarHost::OnTitleBarLoaded(Windows::Foundation::IInspectable const& sender, Windows::UI::Xaml::RoutedEventArgs const& /*eventArgs*/)
   {
+    auto titleBar = sender.try_as<UIElement>();
     auto window = Window::Current();
-    window.SetTitleBar(sender.try_as<UIElement>());
+    window.SetTitleBar(titleBar);
+
+    _windowActivatedRevoker = window.Activated(auto_revoke, [=](auto&, auto&) {
+      window.SetTitleBar(titleBar);
+      });
 
     auto coreTitleBar = CoreApplication::GetCurrentView().TitleBar();
     coreTitleBar.ExtendViewIntoTitleBar(true);
@@ -75,7 +80,7 @@ namespace winrt::Unpaint::implementation
     _pointerMovedRevoker = coreWindow.PointerMoved(auto_revoke, [=](auto&, PointerEventArgs const& eventArgs) {
       auto verticalPosition = eventArgs.CurrentPoint().Position().Y;
       auto isPointerOverTitleBar = verticalPosition > 0.f && verticalPosition < coreTitleBar.Height();
-
+      
       if (isPointerOverTitleBar == _isPointerOverTitleBar) return;
 
       _isPointerOverTitleBar = isPointerOverTitleBar;

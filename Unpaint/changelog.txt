@@ -5,7 +5,14 @@ Added:
 - Model conversion guide
 - Acknowledgements
 - Licensing info
+- Added model share links
+- Added ControlNet support
+- Added canny, HED, depth and OpenPose feature extractors
 
 Fixed:
 - Bright color scheme now work in the title bar
 - Blinking output image
+- New projects are now properly selected on creation
+- Opening a link no longer disables the titlebar controls
+- When a model is deleted another model is selected automatically
+- ControlNet options no longer crash the app
