@@ -17,7 +17,7 @@
   </ContentDialog.Resources>
 
   <StackPanel Spacing="12">
-    <TextBlock TextWrapping="Wrap">You can import Stable Diffusion models from <Hyperlink NavigateUri="https://huggingface.co">HuggingFace.co</Hyperlink> below. Please note that only ONNX models are supported by Unpaint.</TextBlock>
+    <TextBlock TextWrapping="Wrap">You can import Stable Diffusion models from <Hyperlink NavigateUri="https://huggingface.co/models?library=onnx&amp;other=stable-diffusion&amp;other=unpaint">HuggingFace.co</Hyperlink> below. Please note that only ONNX models are supported by Unpaint.</TextBlock>
     
     <Grid ColumnSpacing="12">
       <Grid.ColumnDefinitions>
