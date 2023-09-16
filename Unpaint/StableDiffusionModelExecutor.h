@@ -49,7 +49,7 @@ namespace winrt::Unpaint
       Axodox::MachineLearning::Tensor InputImage;
       Axodox::MachineLearning::Tensor ConditionImage;
       Axodox::MachineLearning::Tensor InputMask;
-      Axodox::MachineLearning::ScheduledTensor TextEmbeddings;
+      Axodox::MachineLearning::TextEmbedding TextEmbeddings;
     };
 
     struct ModelFile
@@ -84,7 +84,7 @@ namespace winrt::Unpaint
     uint32_t _stepCount;
     bool _isSafeModeEnabled;
     std::string _positivePrompt, _negativePrompt;
-    Axodox::MachineLearning::ScheduledTensor _textEmbedding;
+    std::optional<Axodox::MachineLearning::TextEmbedding> _textEmbedding;
 
     Axodox::MachineLearning::Tensor _inputImage, _inputLatent;
 
@@ -94,7 +94,7 @@ namespace winrt::Unpaint
     std::pair<Axodox::Graphics::TextureData, Axodox::Graphics::TextureData> LoadImage(const StableDiffusionInferenceTask& task, Axodox::Graphics::Rect& sourceRect, Axodox::Graphics::Rect& targetRect, Axodox::Threading::async_operation_source& async);
     Axodox::MachineLearning::Tensor LoadMask(const StableDiffusionInferenceTask& task, Axodox::Graphics::Rect& sourceRect, Axodox::Graphics::Rect& targetRect, Axodox::Threading::async_operation_source& async);
     Axodox::MachineLearning::Tensor EncodeVAE(const Axodox::MachineLearning::Tensor& colorImage, Axodox::Threading::async_operation_source& async);
-    Axodox::MachineLearning::ScheduledTensor CreateTextEmbeddings(const StableDiffusionInferenceTask& task, Axodox::Threading::async_operation_source& async);
+    Axodox::MachineLearning::TextEmbedding CreateTextEmbeddings(const StableDiffusionInferenceTask& task, Axodox::Threading::async_operation_source& async);
     Axodox::MachineLearning::Tensor RunStableDiffusion(const StableDiffusionInferenceTask& task, const StableDiffusionInputs& inputs, Axodox::Threading::async_operation_source& async);
     Axodox::MachineLearning::Tensor DecodeVAE(const Axodox::MachineLearning::Tensor& latentImage, Axodox::Threading::async_operation_source& async);
     void RunSafetyCheck(std::vector<Axodox::Graphics::TextureData>& results, Axodox::Threading::async_operation_source& async);

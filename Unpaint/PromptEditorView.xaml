@@ -29,7 +29,7 @@
       <ToolTipService.ToolTip>
         <StackPanel>
           <TextBlock Text="Positive prompt" FontWeight="Bold"/>
-          <TextBlock Text="Describe what you would like to see on the image. You can control the attention (like this:1.2). You may also restrict a part of the prompt to certain samples, like this: [at the beginning &lt; 0.2], [0.8 &lt; at the end] or [0.2 &lt; in the middle &lt; 0.8]." TextWrapping="WrapWholeWords"/>
+          <TextBlock Text="Describe what you would like to see on the image. You can control the attention (like this:1.2). You may also restrict a part of the prompt to certain samples, like this: [at the beginning &lt; 0.2], [0.8 &lt; at the end] or [0.2 &lt; in the middle &lt; 0.8]. It is also possible to combine multiple prompts for example: apple:2|cherry." TextWrapping="WrapWholeWords"/>
         </StackPanel>
       </ToolTipService.ToolTip>
     </TextBox>

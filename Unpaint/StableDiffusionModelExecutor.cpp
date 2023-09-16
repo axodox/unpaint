@@ -166,7 +166,7 @@ namespace winrt::Unpaint
       _stepCount = 0;
       _positivePrompt.clear();
       _negativePrompt.clear();
-      _textEmbedding.clear();
+      _textEmbedding.reset();
 
       _inputImage = {};
       _inputLatent = {};
@@ -256,10 +256,10 @@ namespace winrt::Unpaint
     return _inputLatent;
   }
 
-  Axodox::MachineLearning::ScheduledTensor StableDiffusionModelExecutor::CreateTextEmbeddings(const StableDiffusionInferenceTask& task, Axodox::Threading::async_operation_source& async)
+  Axodox::MachineLearning::TextEmbedding StableDiffusionModelExecutor::CreateTextEmbeddings(const StableDiffusionInferenceTask& task, Axodox::Threading::async_operation_source& async)
   {
     //Check if the prompt has changed
-    if (!_textEmbedding.empty() && _positivePrompt == task.PositivePrompt && _negativePrompt == task.NegativePrompt && task.SamplingSteps == _stepCount && _isSafeModeEnabled == task.IsSafeModeEnabled) return _textEmbedding;
+    if (_textEmbedding && _positivePrompt == task.PositivePrompt && _negativePrompt == task.NegativePrompt && task.SamplingSteps == _stepCount && _isSafeModeEnabled == task.IsSafeModeEnabled) return *_textEmbedding;
 
     //Load embedder
     async.update_state(NAN, "Loading text embedder...");
@@ -271,18 +271,26 @@ namespace winrt::Unpaint
     auto encodedPositivePrompt = _textEmbedder->SchedulePrompt(task.PositivePrompt, task.SamplingSteps);
 
     //Concatenate negative and position prompts
-    _textEmbedding.resize(task.SamplingSteps);
+    TextEmbedding textEmbbedding{};
+    textEmbbedding.Weights.reserve(encodedNegativePrompt[0].Weights.size() + encodedPositivePrompt[0].Weights.size());
+    for (auto weight : encodedNegativePrompt[0].Weights) textEmbbedding.Weights.push_back(-weight);
+    for (auto weight : encodedPositivePrompt[0].Weights) textEmbbedding.Weights.push_back(weight);
+
+    ScheduledTensor tensor{ task.SamplingSteps };
     trivial_map<pair<void*, void*>, shared_ptr<Tensor>> embeddingBuffer;
     for (auto i = 0u; i < task.SamplingSteps; i++)
     {
-      auto& concatenatedTensor = embeddingBuffer[{ encodedNegativePrompt[i].get(), encodedPositivePrompt[i].get() }];
+      auto& concatenatedTensor = embeddingBuffer[{ encodedNegativePrompt[i].Tensor.get(), encodedPositivePrompt[i].Tensor.get() }];
       if (!concatenatedTensor)
       {
-        concatenatedTensor = make_shared<Tensor>(encodedNegativePrompt[i]->Concat(*encodedPositivePrompt[i]));
+        concatenatedTensor = make_shared<Tensor>(encodedNegativePrompt[i].Tensor->Concat(*encodedPositivePrompt[i].Tensor));
       }
 
-      _textEmbedding[i] = concatenatedTensor;
+      tensor[i] = concatenatedTensor;
     }
+
+    textEmbbedding.Tensor = move(tensor);
+    _textEmbedding = move(textEmbbedding);
 
     //Update cache key
     _positivePrompt = task.PositivePrompt;
@@ -292,7 +300,7 @@ namespace winrt::Unpaint
 
     //Return result
     async.update_state("Text embedding created.");
-    return _textEmbedding;
+    return *_textEmbedding;
   }
 
   Axodox::MachineLearning::Tensor StableDiffusionModelExecutor::RunStableDiffusion(const StableDiffusionInferenceTask& task, const StableDiffusionInputs& inputs, Axodox::Threading::async_operation_source& async)
