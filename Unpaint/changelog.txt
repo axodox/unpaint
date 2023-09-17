@@ -9,6 +9,7 @@ Added:
 - ControlNet support
 - Canny, HED, depth and OpenPose feature extractors
 - Prompt mixing
+- Paste input image from clipboard
 
 Fixed:
 - Bright color scheme now work in the title bar

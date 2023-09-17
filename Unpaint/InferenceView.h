@@ -17,6 +17,8 @@ namespace winrt::Unpaint::implementation
     bool IsInputPaneVisible();
     void ToggleInputPane();
 
+    fire_and_forget PasteFromClipboard();
+
     void OnOutputImageDragStarting(Windows::UI::Xaml::UIElement const& sender, Windows::UI::Xaml::DragStartingEventArgs const& eventArgs);
     void OnOutputImageDropCompleted(Windows::UI::Xaml::UIElement const& sender, Windows::UI::Xaml::DropCompletedEventArgs const& eventArgs);
 

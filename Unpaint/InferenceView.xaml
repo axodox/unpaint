@@ -286,15 +286,21 @@
           </Grid.ColumnDefinitions>
 
           <!-- Open input pane -->
-          <Button Grid.Column="0" FontFamily="{StaticResource SymbolThemeFontFamily}" FontSize="20" Content="&#xe91b;" Style="{StaticResource FlatButtonStyle}"
-                  Click="{x:Bind ToggleInputPane}">
-            <ToolTipService.ToolTip>
-              <StackPanel>
-                <TextBlock Text="Input image" FontWeight="Bold"/>
-                <TextBlock Text="Open the input pane to define inputs, or use the current image." TextWrapping="WrapWholeWords"/>
-              </StackPanel>
-            </ToolTipService.ToolTip>
-          </Button>
+          <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="6">
+            <Button FontFamily="{StaticResource SymbolThemeFontFamily}" FontSize="20" Content="&#xe91b;" 
+                    Style="{StaticResource FlatButtonStyle}" Click="{x:Bind ToggleInputPane}">
+              <ToolTipService.ToolTip>
+                <StackPanel>
+                  <TextBlock Text="Input image" FontWeight="Bold"/>
+                  <TextBlock Text="Open the input pane to define inputs, or use the current image." TextWrapping="WrapWholeWords"/>
+                </StackPanel>
+              </ToolTipService.ToolTip>
+            </Button>
+
+            <Button FontFamily="{StaticResource SymbolThemeFontFamily}" FontSize="20" Content="&#xe77f;" 
+                    Style="{StaticResource FlatButtonStyle}" Click="{x:Bind PasteFromClipboard}"
+                    ToolTipService.ToolTip="Paste input image from clipboard"/>
+          </StackPanel>          
           
           <!-- Denoising strength -->
           <Slider Grid.Column="1" Minimum="0" Maximum="1" SmallChange="0.01" LargeChange="0.1" StepFrequency="0.01" VerticalAlignment="Center" Margin="6,-10"
@@ -311,6 +317,12 @@
             </FontIcon>
 
             <Button FontFamily="{StaticResource SymbolThemeFontFamily}" FontSize="20" Content="&#xe945;" Style="{StaticResource FlatButtonStyle}">
+              <ToolTipService.ToolTip>
+                <StackPanel>
+                  <TextBlock Text="ControlNet options" FontWeight="Bold"/>
+                  <TextBlock Text="Use additional inputs to control image generation." TextWrapping="WrapWholeWords"/>
+                </StackPanel>
+              </ToolTipService.ToolTip>
               <Button.Flyout>
                 <Flyout>
                   <local:ControlNetOptionsView/>

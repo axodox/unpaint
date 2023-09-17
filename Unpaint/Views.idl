@@ -35,6 +35,8 @@ namespace Unpaint
 
     Boolean IsInputPaneVisible{ get; };
     void ToggleInputPane();
+    
+    void PasteFromClipboard();
   }
 
   [default_interface]
