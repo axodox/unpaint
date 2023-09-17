@@ -5,9 +5,11 @@ Added:
 - Model conversion guide
 - Acknowledgements
 - Licensing info
-- Added model share links
-- Added ControlNet support
-- Added canny, HED, depth and OpenPose feature extractors
+- Model share links
+- ControlNet support
+- Canny, HED, depth and OpenPose feature extractors
+- Prompt mixing
+- Paste input image from clipboard
 
 Fixed:
 - Bright color scheme now work in the title bar

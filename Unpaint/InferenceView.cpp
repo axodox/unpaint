@@ -3,8 +3,11 @@
 #include "InferenceView.g.cpp"
 #include "Infrastructure/WinRtDependencies.h"
 #include "Infrastructure/Text.h"
+#include "Storage/FileIO.h"
 
 using namespace Axodox::Infrastructure;
+using namespace Axodox::Graphics;
+using namespace Axodox::Storage;
 using namespace std;
 using namespace winrt;
 using namespace winrt::Windows::ApplicationModel::Core;
@@ -64,14 +67,62 @@ namespace winrt::Unpaint::implementation
     _isInputPaneVisible = !_isInputPaneVisible;
     _propertyChanged(*this, PropertyChangedEventArgs(L"IsInputPaneVisible"));
 
-    const auto& viewModel = _viewModel;
-    if (_isInputPaneVisible && !viewModel.InputImage())
+    if (_isInputPaneVisible && !_viewModel.InputImage())
     {
-      viewModel.InputImage(viewModel.Project().SelectedImage());
+      _viewModel.InputImage(_viewModel.Project().SelectedImage());
     }
     else
     {
-      viewModel.InputImage(nullptr);
+      _viewModel.InputImage(nullptr);
+    }
+  }
+
+  fire_and_forget InferenceView::PasteFromClipboard()
+  {
+    bool isSuccessful = false;
+
+    auto dataPackageView = Clipboard::GetContent();
+    if (dataPackageView.Contains(StandardDataFormats::Bitmap()))
+    {
+      auto bitmap = co_await dataPackageView.GetBitmapAsync();
+      auto stream = co_await bitmap.OpenReadAsync();
+
+      IBuffer buffer = Buffer{ uint32_t(stream.Size()) };
+      buffer = co_await stream.ReadAsync(buffer, uint32_t(stream.Size()), InputStreamOptions::None);
+
+      auto texture = TextureData::FromBuffer({ buffer.data(), buffer.Length() });
+      auto bytes = texture.ToBuffer();
+
+      filesystem::path targetFolder{ ApplicationData::Current().LocalCacheFolder().Path().c_str() };
+      auto targetPath = targetFolder / L"clipboard.png";
+      if (try_write_file(targetPath, bytes))
+      {
+        _viewModel.InputImage(co_await StorageFile::GetFileFromPathAsync(targetPath.c_str()));
+        isSuccessful = true;
+      }
+    }
+
+    if (dataPackageView.Contains(StandardDataFormats::StorageItems()))
+    {
+      auto storageItems = co_await dataPackageView.GetStorageItemsAsync();
+      for (const auto& item : storageItems)
+      {
+        auto file = item.try_as<StorageFile>();
+        if (!file) continue;
+
+        auto extension = to_lower(filesystem::path{ file.Name().c_str() }.extension().c_str());
+        if (_imageExtensions.contains(extension))
+        {
+          _viewModel.InputImage(file);
+          isSuccessful = true;
+          break;
+        }
+      }
+    }
+
+    if (isSuccessful && !_isInputPaneVisible)
+    {
+      ToggleInputPane();
     }
   }
 
