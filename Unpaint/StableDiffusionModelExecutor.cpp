@@ -277,13 +277,13 @@ namespace winrt::Unpaint
     for (auto weight : encodedPositivePrompt[0].Weights) textEmbbedding.Weights.push_back(weight);
 
     ScheduledTensor tensor{ task.SamplingSteps };
-    trivial_map<pair<void*, void*>, shared_ptr<Tensor>> embeddingBuffer;
+    trivial_map<pair<void*, void*>, shared_ptr<EncodedText>> embeddingBuffer;
     for (auto i = 0u; i < task.SamplingSteps; i++)
     {
       auto& concatenatedTensor = embeddingBuffer[{ encodedNegativePrompt[i].Tensor.get(), encodedPositivePrompt[i].Tensor.get() }];
       if (!concatenatedTensor)
       {
-        concatenatedTensor = make_shared<Tensor>(encodedNegativePrompt[i].Tensor->Concat(*encodedPositivePrompt[i].Tensor));
+        concatenatedTensor = make_shared<EncodedText>(encodedNegativePrompt[i].Tensor->Concat(*encodedPositivePrompt[i].Tensor));
       }
 
       tensor[i] = concatenatedTensor;
