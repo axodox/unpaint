@@ -23,6 +23,7 @@ namespace winrt::Unpaint
     std::string Name;
     std::string Website;
     std::string AccessToken;
+    bool IsXL;
 
     auto operator<=>(const ModelInfo&) const = default;
     bool operator<(const ModelInfo&) const = default;

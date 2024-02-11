@@ -53,6 +53,7 @@ namespace winrt::Unpaint
     PersistentOptionProperty<bool> IsFeatureExtractorPinned;
     PersistentOptionProperty<uint32_t> AdapterIndex;
     PersistentOptionProperty<std::string> ModelId;
+    PersistentOptionProperty<Axodox::MachineLearning::StableDiffusionSchedulerKind> Scheduler;
 #pragma endregion
 
     Axodox::Infrastructure::event_publisher<OptionPropertyBase*> StateChanged;

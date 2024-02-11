@@ -330,7 +330,8 @@ namespace winrt::Unpaint
       .TextEmbeddings = inputs.TextEmbeddings,
       .LatentInput = inputs.InputImage,
       .MaskInput = inputs.InputMask,
-      .DenoisingStrength = task.Mode == InferenceMode::Modify ? task.DenoisingStrength : 1.f
+      .DenoisingStrength = task.Mode == InferenceMode::Modify ? task.DenoisingStrength : 1.f,
+      .Scheduler = task.Scheduler
     };
 
     async.update_state("Running denoiser...");
@@ -366,8 +367,11 @@ namespace winrt::Unpaint
 
   void StableDiffusionModelExecutor::RunSafetyCheck(std::vector<Axodox::Graphics::TextureData>& images, Axodox::Threading::async_operation_source& async)
   {
+    static const char* safetyCheckedId = "safety_checker\\model.onnx";
+    if (!_modelFiles.contains(safetyCheckedId)) return;
+
     async.update_state(NAN, "Loading safety checker...");
-    SafetyChecker safetyChecker{ *_onnxEnvironment, GetModelFile("safety_checker\\model.onnx") };
+    SafetyChecker safetyChecker{ *_onnxEnvironment, GetModelFile(safetyCheckedId) };
 
     async.update_state(NAN, "Checking safety...");
     for (auto& image : images)

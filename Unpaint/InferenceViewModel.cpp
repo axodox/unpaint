@@ -53,7 +53,8 @@ namespace winrt::Unpaint::implementation
     _featureMask(nullptr),
     _inputResolution({ 0, 0 }),
     _isAutoGenerationEnabled(false),
-    _safetyStrikes(0)
+    _safetyStrikes(0),
+    _modelChangedSubscription(_unpaintState->ModelId.ValueChanged(event_handler{ this, &InferenceViewModel::OnModelChanged }))
   { }
 
   ProjectViewModel InferenceViewModel::Project()
@@ -72,6 +73,12 @@ namespace winrt::Unpaint::implementation
 
     _unpaintState->InferenceMode = static_cast<InferenceMode>(value);
     _propertyChanged(*this, PropertyChangedEventArgs(L"SelectedModeIndex"));
+  }
+
+  bool InferenceViewModel::IsModeSelectable()
+  {
+    auto model = _modelRepository->GetModel(*_unpaintState->ModelId);
+    return model && !model->IsXL;
   }
 
   bool InferenceViewModel::IsSettingsLocked()
@@ -250,6 +257,7 @@ namespace winrt::Unpaint::implementation
       .Mode = _unpaintState->InferenceMode,
       .PositivePrompt = _unpaintState->PositivePrompt->empty() ? StableDiffusionInferenceTask::PositivePromptPlaceholder : *_unpaintState->PositivePrompt,
       .NegativePrompt = _unpaintState->NegativePrompt->empty() ? StableDiffusionInferenceTask::NegativePromptPlaceholder : *_unpaintState->NegativePrompt,
+      .Scheduler = _unpaintState->Scheduler,
       .Resolution = { uint32_t(_unpaintState->Resolution->Width), uint32_t(_unpaintState->Resolution->Height) },
       .GuidanceStrength = _unpaintState->GuidanceStrength,
       .DenoisingStrength = _unpaintState->DenoisingStrength,
@@ -258,7 +266,7 @@ namespace winrt::Unpaint::implementation
       .BatchSize = _unpaintState->IsBatchGenerationEnabled ? *_unpaintState->BatchSize : 1,
       .IsSafeModeEnabled = _unpaintState->IsSafeModeEnabled,
       .IsSafetyCheckerEnabled = _unpaintState->IsSafetyCheckerEnabled,
-      .ModelId = _unpaintState->ModelId      
+      .ModelId = _unpaintState->ModelId
     };
 
     filesystem::path inputPath;
@@ -460,5 +468,15 @@ namespace winrt::Unpaint::implementation
   void InferenceViewModel::PropertyChanged(event_token const& token)
   {
     _propertyChanged.remove(token);
+  }
+
+  void InferenceViewModel::OnModelChanged(OptionPropertyBase* /*option*/)
+  {
+    if (!IsModeSelectable())
+    {
+      SelectedModeIndex(0);
+    }
+
+    _propertyChanged(*this, PropertyChangedEventArgs(L"IsModeSelectable"));
   }
 }

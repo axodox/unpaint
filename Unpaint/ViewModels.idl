@@ -27,6 +27,7 @@ namespace Unpaint
     String Id;
     String Name;
     String Uri;
+    Boolean IsXL;
   };
 
   [default_interface]
@@ -81,6 +82,7 @@ namespace Unpaint
     ProjectViewModel Project{ get; };
 
     Int32 SelectedModeIndex;
+    Boolean IsModeSelectable{ get; };
 
     Boolean IsSettingsLocked;
     Boolean IsJumpingToLatestImage;
@@ -162,6 +164,9 @@ namespace Unpaint
 
     IObservableVector<ModelViewModel> Models{ get; };
     Int32 SelectedModelIndex;
+
+    IObservableVector<String> Schedulers{ get; };
+    Int32 SelectedSchedulerIndex;
 
     IObservableVector<Windows.Graphics.SizeInt32> Resolutions{ get; };
     Int32 SelectedResolutionIndex;
