@@ -427,10 +427,10 @@
     <Import Project="..\packages\Microsoft.Web.WebView2.1.0.1774.30\build\native\Microsoft.Web.WebView2.targets" Condition="Exists('..\packages\Microsoft.Web.WebView2.1.0.1774.30\build\native\Microsoft.Web.WebView2.targets')" />
     <Import Project="..\packages\Microsoft.Windows.CppWinRT.2.0.230524.4\build\native\Microsoft.Windows.CppWinRT.targets" Condition="Exists('..\packages\Microsoft.Windows.CppWinRT.2.0.230524.4\build\native\Microsoft.Windows.CppWinRT.targets')" />
     <Import Project="..\packages\Win2D.uwp.1.26.0\build\native\Win2D.uwp.targets" Condition="Exists('..\packages\Win2D.uwp.1.26.0\build\native\Win2D.uwp.targets')" />
-    <Import Project="..\packages\Axodox.Common.1.0.31\build\native\Axodox.Common.targets" Condition="Exists('..\packages\Axodox.Common.1.0.31\build\native\Axodox.Common.targets')" />
     <Import Project="..\packages\Axodox.MachineLearning.1.0.32\build\native\Axodox.MachineLearning.targets" Condition="Exists('..\packages\Axodox.MachineLearning.1.0.32\build\native\Axodox.MachineLearning.targets')" />
     <Import Project="..\packages\Microsoft.AI.DirectML.1.12.1\build\Microsoft.AI.DirectML.targets" Condition="Exists('..\packages\Microsoft.AI.DirectML.1.12.1\build\Microsoft.AI.DirectML.targets')" />
     <Import Project="..\packages\Microsoft.ML.OnnxRuntime.DirectML.1.16.1\build\native\Microsoft.ML.OnnxRuntime.DirectML.targets" Condition="Exists('..\packages\Microsoft.ML.OnnxRuntime.DirectML.1.16.1\build\native\Microsoft.ML.OnnxRuntime.DirectML.targets')" />
+    <Import Project="..\packages\Axodox.Common.1.0.40\build\native\Axodox.Common.targets" Condition="Exists('..\packages\Axodox.Common.1.0.40\build\native\Axodox.Common.targets')" />
   </ImportGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
@@ -442,11 +442,11 @@
     <Error Condition="!Exists('..\packages\Microsoft.Windows.CppWinRT.2.0.230524.4\build\native\Microsoft.Windows.CppWinRT.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Windows.CppWinRT.2.0.230524.4\build\native\Microsoft.Windows.CppWinRT.props'))" />
     <Error Condition="!Exists('..\packages\Microsoft.Windows.CppWinRT.2.0.230524.4\build\native\Microsoft.Windows.CppWinRT.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Windows.CppWinRT.2.0.230524.4\build\native\Microsoft.Windows.CppWinRT.targets'))" />
     <Error Condition="!Exists('..\packages\Win2D.uwp.1.26.0\build\native\Win2D.uwp.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Win2D.uwp.1.26.0\build\native\Win2D.uwp.targets'))" />
-    <Error Condition="!Exists('..\packages\Axodox.Common.1.0.31\build\native\Axodox.Common.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Axodox.Common.1.0.31\build\native\Axodox.Common.targets'))" />
     <Error Condition="!Exists('..\packages\Axodox.MachineLearning.1.0.32\build\native\Axodox.MachineLearning.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Axodox.MachineLearning.1.0.32\build\native\Axodox.MachineLearning.targets'))" />
     <Error Condition="!Exists('..\packages\Microsoft.AI.DirectML.1.12.1\build\Microsoft.AI.DirectML.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.AI.DirectML.1.12.1\build\Microsoft.AI.DirectML.props'))" />
     <Error Condition="!Exists('..\packages\Microsoft.AI.DirectML.1.12.1\build\Microsoft.AI.DirectML.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.AI.DirectML.1.12.1\build\Microsoft.AI.DirectML.targets'))" />
     <Error Condition="!Exists('..\packages\Microsoft.ML.OnnxRuntime.DirectML.1.16.1\build\native\Microsoft.ML.OnnxRuntime.DirectML.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.ML.OnnxRuntime.DirectML.1.16.1\build\native\Microsoft.ML.OnnxRuntime.DirectML.props'))" />
     <Error Condition="!Exists('..\packages\Microsoft.ML.OnnxRuntime.DirectML.1.16.1\build\native\Microsoft.ML.OnnxRuntime.DirectML.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.ML.OnnxRuntime.DirectML.1.16.1\build\native\Microsoft.ML.OnnxRuntime.DirectML.targets'))" />
+    <Error Condition="!Exists('..\packages\Axodox.Common.1.0.40\build\native\Axodox.Common.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Axodox.Common.1.0.40\build\native\Axodox.Common.targets'))" />
   </Target>
 </Project>
