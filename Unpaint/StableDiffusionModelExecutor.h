@@ -21,6 +21,7 @@ namespace winrt::Unpaint
     InferenceMode Mode;
 
     std::string PositivePrompt, NegativePrompt;
+    Axodox::MachineLearning::StableDiffusionSchedulerKind Scheduler;
     DirectX::XMUINT2 Resolution;
 
     float GuidanceStrength;

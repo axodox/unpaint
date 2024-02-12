@@ -277,13 +277,13 @@ namespace winrt::Unpaint
     for (auto weight : encodedPositivePrompt[0].Weights) textEmbbedding.Weights.push_back(weight);
 
     ScheduledTensor tensor{ task.SamplingSteps };
-    trivial_map<pair<void*, void*>, shared_ptr<Tensor>> embeddingBuffer;
+    trivial_map<pair<void*, void*>, shared_ptr<EncodedText>> embeddingBuffer;
     for (auto i = 0u; i < task.SamplingSteps; i++)
     {
       auto& concatenatedTensor = embeddingBuffer[{ encodedNegativePrompt[i].Tensor.get(), encodedPositivePrompt[i].Tensor.get() }];
       if (!concatenatedTensor)
       {
-        concatenatedTensor = make_shared<Tensor>(encodedNegativePrompt[i].Tensor->Concat(*encodedPositivePrompt[i].Tensor));
+        concatenatedTensor = make_shared<EncodedText>(encodedNegativePrompt[i].Tensor->Concat(*encodedPositivePrompt[i].Tensor));
       }
 
       tensor[i] = concatenatedTensor;
@@ -330,7 +330,8 @@ namespace winrt::Unpaint
       .TextEmbeddings = inputs.TextEmbeddings,
       .LatentInput = inputs.InputImage,
       .MaskInput = inputs.InputMask,
-      .DenoisingStrength = task.Mode == InferenceMode::Modify ? task.DenoisingStrength : 1.f
+      .DenoisingStrength = task.Mode == InferenceMode::Modify ? task.DenoisingStrength : 1.f,
+      .Scheduler = task.Scheduler
     };
 
     async.update_state("Running denoiser...");
@@ -366,8 +367,11 @@ namespace winrt::Unpaint
 
   void StableDiffusionModelExecutor::RunSafetyCheck(std::vector<Axodox::Graphics::TextureData>& images, Axodox::Threading::async_operation_source& async)
   {
+    static const char* safetyCheckedId = "safety_checker\\model.onnx";
+    if (!_modelFiles.contains(safetyCheckedId)) return;
+
     async.update_state(NAN, "Loading safety checker...");
-    SafetyChecker safetyChecker{ *_onnxEnvironment, GetModelFile("safety_checker\\model.onnx") };
+    SafetyChecker safetyChecker{ *_onnxEnvironment, GetModelFile(safetyCheckedId) };
 
     async.update_state(NAN, "Checking safety...");
     for (auto& image : images)

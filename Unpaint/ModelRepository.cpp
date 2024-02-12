@@ -122,11 +122,14 @@ namespace winrt::Unpaint
       auto metadata = try_parse_json<ModelMetadata>(*text);
       if (!metadata) continue;
 
+      auto isXL = filesystem::exists(file.path().parent_path() / "text_encoder_2", ec);
+
       models.emplace(ModelInfo{ 
         *metadata->Id, 
         metadata->Name->empty() ? *metadata->Id : *metadata->Name,
         *metadata->Website,
-        *metadata->AccessToken 
+        *metadata->AccessToken,
+        isXL
       });
     }
 
@@ -192,7 +195,8 @@ namespace winrt::Unpaint
     return ModelViewModel{
       .Id = to_hstring(Id),
       .Name = to_hstring(Name),
-      .Uri = to_hstring(Website)
+      .Uri = to_hstring(Website),
+      .IsXL = IsXL
     };
   }
 }
