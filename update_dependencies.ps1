@@ -9,13 +9,13 @@ foreach ($dependency in $dependencies) {
   foreach ($projectPath in $pluginProjects) {
     # Update project file
     $projectContent = Get-Content -Path $projectPath -Raw
-    $projectContent = $projectContent -replace "\\packages\\$dependency\.([^\\]+)\\", ("\packages\$dependency.$1" + $latestVersion + '\')
+    $projectContent = $projectContent -replace "\\packages\\$dependency\.\d+(\.\d+)+\\", ("\packages\$dependency.$1" + $latestVersion + '\')
     Set-Content -Path $projectPath -Value $projectContent -NoNewline
 
     # Update packages.config
     $configPath = Join-Path (Split-Path $projectPath) 'packages.config'
     $configContent = [xml](Get-Content -Path $configPath)
-    $dependencyNodes = $configContent.SelectNodes("//package[contains(@id, '$dependency')]")
+    $dependencyNodes = $configContent.SelectNodes("//package[@id = '$dependency']")
     foreach ($dependencyNode in $dependencyNodes) {
       $dependencyNode.version = $latestVersion
     }
