@@ -5,6 +5,10 @@ VisualStudioVersion = 17.5.33502.453
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Unpaint", "Unpaint\Unpaint.vcxproj", "{5B947916-7E0D-46A0-9B5C-750941DC587A}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Axodox.MachineLearning.Shared", "..\axodox-machinelearning\Axodox.MachineLearning.Shared\Axodox.MachineLearning.Shared.vcxitems", "{962E7015-1D1B-4CCD-946B-697FCCF51328}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Axodox.MachineLearning.Universal", "..\axodox-machinelearning\Axodox.MachineLearning.Universal\Axodox.MachineLearning.Universal.vcxproj", "{B63B5D82-AD8F-4951-89C5-C16AF90CEDCB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -17,11 +21,19 @@ Global
 		{5B947916-7E0D-46A0-9B5C-750941DC587A}.Release|x64.ActiveCfg = Release|x64
 		{5B947916-7E0D-46A0-9B5C-750941DC587A}.Release|x64.Build.0 = Release|x64
 		{5B947916-7E0D-46A0-9B5C-750941DC587A}.Release|x64.Deploy.0 = Release|x64
+		{B63B5D82-AD8F-4951-89C5-C16AF90CEDCB}.Debug|x64.ActiveCfg = Debug|x64
+		{B63B5D82-AD8F-4951-89C5-C16AF90CEDCB}.Debug|x64.Build.0 = Debug|x64
+		{B63B5D82-AD8F-4951-89C5-C16AF90CEDCB}.Release|x64.ActiveCfg = Release|x64
+		{B63B5D82-AD8F-4951-89C5-C16AF90CEDCB}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {CEE3C5F7-16BB-4E97-ADE8-DC445980E503}
+	EndGlobalSection
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		..\axodox-machinelearning\Axodox.MachineLearning.Shared\Axodox.MachineLearning.Shared.vcxitems*{962e7015-1d1b-4ccd-946b-697fccf51328}*SharedItemsImports = 9
+		..\axodox-machinelearning\Axodox.MachineLearning.Shared\Axodox.MachineLearning.Shared.vcxitems*{b63b5d82-ad8f-4951-89c5-c16af90cedcb}*SharedItemsImports = 4
 	EndGlobalSection
 EndGlobal
