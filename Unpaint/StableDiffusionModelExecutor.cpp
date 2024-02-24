@@ -362,7 +362,7 @@ namespace winrt::Unpaint
     VaeDecoder vaeDecoder{ *_onnxEnvironment, GetModelFile("vae_decoder\\model.onnx") };
 
     async.update_state("Decoding latent image...");
-    return vaeDecoder.DecodeVae(latentImage);
+    return vaeDecoder.DecodeVae(latentImage, &async);
   }
 
   void StableDiffusionModelExecutor::RunSafetyCheck(std::vector<Axodox::Graphics::TextureData>& images, Axodox::Threading::async_operation_source& async)
