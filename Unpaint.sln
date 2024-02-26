@@ -5,10 +5,6 @@ VisualStudioVersion = 17.5.33502.453
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Unpaint", "Unpaint\Unpaint.vcxproj", "{5B947916-7E0D-46A0-9B5C-750941DC587A}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Axodox.MachineLearning.Shared", "..\axodox-machinelearning\Axodox.MachineLearning.Shared\Axodox.MachineLearning.Shared.vcxitems", "{962E7015-1D1B-4CCD-946B-697FCCF51328}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Axodox.MachineLearning.Universal", "..\axodox-machinelearning\Axodox.MachineLearning.Universal\Axodox.MachineLearning.Universal.vcxproj", "{B63B5D82-AD8F-4951-89C5-C16AF90CEDCB}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
