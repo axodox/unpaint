@@ -3,7 +3,7 @@
 #include "InferenceOptionsViewModel.g.cpp"
 
 using namespace Axodox::Infrastructure;
-using namespace Axodox::MachineLearning;
+using namespace Axodox::MachineLearning::Imaging::StableDiffusion::Schedulers;
 using namespace winrt::Windows::Graphics;
 using namespace winrt::Windows::UI::Xaml::Data;
 

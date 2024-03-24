@@ -148,6 +148,7 @@
       <DependentUpon>MaskEditor.xaml</DependentUpon>
       <SubType>Code</SubType>
     </ClInclude>
+    <ClInclude Include="OnnxHost.h" />
     <ClInclude Include="OptionProperty.h" />
     <ClInclude Include="ProjectViewModel.h" />
     <ClInclude Include="PromptEditorView.h">
@@ -348,6 +349,7 @@
       <DependentUpon>MaskEditor.xaml</DependentUpon>
       <SubType>Code</SubType>
     </ClCompile>
+    <ClCompile Include="OnnxHost.cpp" />
     <ClCompile Include="ProjectViewModel.cpp" />
     <ClCompile Include="PromptEditorView.cpp">
       <DependentUpon>PromptEditorView.xaml</DependentUpon>

@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "ControlNetRepository.h"
 
-using namespace Axodox::Web;
+using namespace Axodox::MachineLearning::Web;
 using namespace std;
 using namespace winrt::Windows::Storage;
 

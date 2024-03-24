@@ -2,7 +2,7 @@
 #include "ImportHuggingFaceModelViewModel.h"
 #include "ImportHuggingFaceModelViewModel.g.cpp"
 
-using namespace Axodox::Web;
+using namespace Axodox::MachineLearning::Web;
 using namespace winrt::Windows::UI::Xaml::Data;
 
 namespace winrt::Unpaint::implementation

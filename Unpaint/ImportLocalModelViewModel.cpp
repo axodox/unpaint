@@ -4,7 +4,7 @@
 #include "Storage/UwpStorage.h"
 
 using namespace Axodox::Storage;
-using namespace Axodox::Web;
+using namespace Axodox::MachineLearning::Web;
 using namespace std;
 using namespace winrt::Windows::Storage;
 using namespace winrt::Windows::Storage::Pickers;

@@ -20,7 +20,7 @@ namespace winrt::Unpaint::implementation
     hstring _modelId, _status;
     bool _isValid = false;
 
-    Axodox::Web::HuggingFaceClient _huggingFaceClient;
+    Axodox::MachineLearning::Web::HuggingFaceClient _huggingFaceClient;
   };
 }
 namespace winrt::Unpaint::factory_implementation
