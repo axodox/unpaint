@@ -1,5 +1,5 @@
 #pragma once
-#include "pch.h"
+#include "UnpaintState.h"
 
 namespace winrt::Unpaint
 {
@@ -15,7 +15,11 @@ namespace winrt::Unpaint
 		Axodox::MachineLearning::Sessions::OnnxSessionParameters ParametersFromFile(const winrt::Windows::Storage::StorageFile& file) const;
 
 	private:
+		std::shared_ptr<UnpaintState> _state;
 		std::shared_ptr<Axodox::MachineLearning::Sessions::OnnxEnvironment> _environment;
 		std::shared_ptr<Axodox::MachineLearning::Executors::OnnxExecutor> _executor;
+		Axodox::Infrastructure::event_subscription _adapterIndexChangedSubscription;
+
+		void OnAdapterIndexChanged(OptionPropertyBase*);
 	};
 }
