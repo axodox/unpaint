@@ -3,6 +3,7 @@
 
 using namespace Axodox::Infrastructure;
 using namespace Axodox::MachineLearning;
+using namespace Axodox::MachineLearning::Imaging::StableDiffusion::Schedulers;
 using namespace winrt::Windows::Graphics;
 
 namespace winrt::Unpaint

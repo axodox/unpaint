@@ -39,4 +39,14 @@
 #include "winrt/Microsoft.Graphics.Canvas.UI.Xaml.h"
 
 #define USE_DIRECTX
+#include "Include/Axodox.Collections.h"
+#include "Include/Axodox.Infrastructure.h"
 #include "Include/Axodox.MachineLearning.h"
+#include "Include/Axodox.MachineLearning.Executors.h"
+#include "Include/Axodox.MachineLearning.Sessions.h"
+#include "Include/Axodox.MachineLearning.Imaging.Annotators.h"
+#include "Include/Axodox.MachineLearning.Imaging.StableDiffusion.h"
+#include "Include/Axodox.MachineLearning.Text.Prompts.h"
+#include "Include/Axodox.MachineLearning.Web.h"
+#include "Include/Axodox.Storage.h"
+#include "Include/Axodox.Threading.h"

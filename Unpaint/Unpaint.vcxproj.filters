@@ -168,6 +168,9 @@
     <ClCompile Include="FeatureExtractionExecutor.cpp">
       <Filter>Models</Filter>
     </ClCompile>
+    <ClCompile Include="OnnxHost.cpp">
+      <Filter>Models</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\Wide310x150Logo.scale-200.png">
@@ -438,6 +441,9 @@
       <Filter>View Models\Components</Filter>
     </ClInclude>
     <ClInclude Include="FeatureExtractionExecutor.h">
+      <Filter>Models</Filter>
+    </ClInclude>
+    <ClInclude Include="OnnxHost.h">
       <Filter>Models</Filter>
     </ClInclude>
   </ItemGroup>
