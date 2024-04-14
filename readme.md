@@ -58,7 +58,7 @@ Development environment
 Once you have Visual Studio, for the first build follow these steps:
 
 - Clone the repo with `git clone https://github.com/axodox/unpaint`
-- Open `Unpaing.sln` with Visual Studio
+- Open `Unpaint.sln` with Visual Studio
   - If Visual Studio prompts you that you still need to install something, then follow its instructions
   - You could also get a prompt to enable `Developer Mode` in Windows, which you can do in the `Settings` app
 - Open the `Config` folder in the `Unpaint` project in `Solution Explorer`, and double click `Package.appxmanifest`
