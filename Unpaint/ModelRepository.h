@@ -4,6 +4,7 @@
 #include "Threading/AsyncOperation.h"
 #include "winrt/Unpaint.h"
 #include "UnpaintState.h"
+#include "OnnxHost.h"
 
 namespace winrt::Unpaint
 {
@@ -23,6 +24,7 @@ namespace winrt::Unpaint
     std::string Name;
     std::string Website;
     std::string AccessToken;
+    bool IsXL;
 
     auto operator<=>(const ModelInfo&) const = default;
     bool operator<(const ModelInfo&) const = default;
@@ -57,5 +59,19 @@ namespace winrt::Unpaint
     std::filesystem::path _root;
     std::set<ModelInfo> _models;
     std::shared_ptr<UnpaintState> _unpaintState;
+  };
+
+  class StableDiffusionStorageFileMapSessionParameters : public Axodox::MachineLearning::Imaging::StableDiffusion::StableDiffusionSessionParameters
+  {
+  public:
+    StableDiffusionStorageFileMapSessionParameters(
+      const std::shared_ptr<OnnxHost>& host,
+      const std::unordered_map<std::string, Windows::Storage::StorageFile>& files);
+
+  protected:
+    virtual std::unique_ptr<Axodox::MachineLearning::Sessions::OnnxModelSource> ResolveModel(std::string_view type) const override;
+
+  private:
+    std::unordered_map<std::string, Windows::Storage::StorageFile> _files;
   };
 }

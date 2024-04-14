@@ -1,19 +1,12 @@
 #include "pch.h"
 #include "StableDiffusionModelExecutor.h"
-#include "Infrastructure/BitwiseOperations.h"
-#include "Infrastructure/DependencyContainer.h"
-#include "Storage/FileIO.h"
-#include "Storage/UwpStorage.h"
-#include "MachineLearning/VaeEncoder.h"
-#include "MachineLearning/VaeDecoder.h"
-#include "MachineLearning/SafetyChecker.h"
-#include "Threading/Parallel.h"
-#include "Collections/Hasher.h"
 
 using namespace Axodox::Collections;
 using namespace Axodox::Graphics;
 using namespace Axodox::Infrastructure;
 using namespace Axodox::MachineLearning;
+using namespace Axodox::MachineLearning::Imaging::StableDiffusion;
+using namespace Axodox::MachineLearning::Sessions;
 using namespace Axodox::Storage;
 using namespace Axodox::Threading;
 using namespace DirectX;
@@ -30,6 +23,7 @@ namespace winrt::Unpaint
     _unpaintState(dependencies.resolve<UnpaintState>()),
     _modelRepository(dependencies.resolve<ModelRepository>()),
     _controlnetRepository(dependencies.resolve<ControlNetRepository>()),
+    _onnxhost(dependencies.resolve<OnnxHost>()),
     _stepCount(0),
     _isSafeModeEnabled(true)
   { }
@@ -38,9 +32,11 @@ namespace winrt::Unpaint
   {
     try
     {
+      thread_name_context threadName{ "* validate prompt" };
+
       lock_guard lock(_mutex);
       EnsureEnvironment(modelId);
-      if (!_textEmbedder) _textEmbedder = make_unique<TextEmbedder>(*_onnxEnvironment, app_folder(), GetModelFile("text_encoder\\model.onnx"));
+      if (!_textEmbedder) _textEmbedder = make_unique<TextEmbedder>(*_sessionParameters);
 
       if (isSafeModeEnabled) prompt = _safetyFilter + prompt;
 
@@ -55,9 +51,9 @@ namespace winrt::Unpaint
   std::vector<Axodox::Graphics::TextureData> StableDiffusionModelExecutor::TryRunInference(const StableDiffusionInferenceTask& rawTask, Axodox::Threading::async_operation& operation)
   {
     //Set up async source
-    lock_guard lock(_mutex);
     thread_name_context threadName{ "* inference" };
 
+    lock_guard lock(_mutex);
     async_operation_source async;
     operation.set_source(async);
 
@@ -152,40 +148,21 @@ namespace winrt::Unpaint
 
   void StableDiffusionModelExecutor::EnsureEnvironment(std::string_view modelId)
   {
-    if (!_onnxEnvironment || (*_onnxEnvironment)->DeviceId != int32_t(*_unpaintState->AdapterIndex) || _modelId != modelId)
-    {
-      _textEmbedder.reset();
-      _denoiser.reset();
+    if (_modelId == modelId) return;
 
-      auto host = dependencies.resolve<OnnxHost>();
-      _onnxEnvironment = make_unique<OnnxEnvironment>(host, _modelRepository->Root() / modelId);
-      (*_onnxEnvironment)->DeviceId = *_unpaintState->AdapterIndex;
-      _modelId = modelId;
-      _modelFiles = _modelRepository->GetModelFiles(modelId);
+    _textEmbedder.reset();
+    _denoiser.reset();
 
-      _stepCount = 0;
-      _positivePrompt.clear();
-      _negativePrompt.clear();
-      _textEmbedding.reset();
+    _modelId = modelId;
+    _sessionParameters = make_unique<StableDiffusionStorageFileMapSessionParameters>(_onnxhost, _modelRepository->GetModelFiles(modelId));
 
-      _inputImage = {};
-      _inputLatent = {};
-    }
-  }
+    _stepCount = 0;
+    _positivePrompt.clear();
+    _negativePrompt.clear();
+    _textEmbedding.reset();
 
-  StableDiffusionModelExecutor::ModelFile StableDiffusionModelExecutor::GetModelFile(const std::string& fileId) const
-  {
-    auto file = _modelFiles.at(fileId);
-
-    ModelFile result;
-    result.ModelPath = filesystem::path(file.Path().c_str());
-    
-    if (!wstring(file.Path().c_str()).starts_with(_modelRepository->Root().c_str()))
-    {
-      result.ModelData = read_file(file);
-    }
-
-    return result;
+    _inputImage = {};
+    _inputLatent = {};
   }
 
   std::pair<Axodox::Graphics::TextureData, Axodox::Graphics::TextureData> StableDiffusionModelExecutor::LoadImage(const StableDiffusionInferenceTask& task, Axodox::Graphics::Rect& sourceRect, Axodox::Graphics::Rect& targetRect, Axodox::Threading::async_operation_source& async)
@@ -199,7 +176,7 @@ namespace winrt::Unpaint
       imageTexture = imageTexture.GetTexture(targetRect);
       conditionTexture = conditionTexture.GetTexture(targetRect);
     }
-    
+
     if (imageTexture.Width != task.Resolution.x || imageTexture.Height != task.Resolution.y)
     {
       imageTexture = imageTexture.UniformResize(task.Resolution.x, task.Resolution.y, &sourceRect);
@@ -247,7 +224,7 @@ namespace winrt::Unpaint
     if (colorImage == _inputImage && _inputLatent) return _inputLatent;
 
     async.update_state(NAN, "Loading VAE encoder...");
-    VaeEncoder vaeEncoder{ *_onnxEnvironment, GetModelFile("vae_encoder\\model.onnx") };
+    VaeEncoder vaeEncoder{ *_sessionParameters };
 
     async.update_state("Encoding color image...");
     _inputLatent = vaeEncoder.EncodeVae(colorImage);
@@ -256,14 +233,14 @@ namespace winrt::Unpaint
     return _inputLatent;
   }
 
-  Axodox::MachineLearning::TextEmbedding StableDiffusionModelExecutor::CreateTextEmbeddings(const StableDiffusionInferenceTask& task, Axodox::Threading::async_operation_source& async)
+  Axodox::MachineLearning::Imaging::StableDiffusion::TextEmbedding StableDiffusionModelExecutor::CreateTextEmbeddings(const StableDiffusionInferenceTask& task, Axodox::Threading::async_operation_source& async)
   {
     //Check if the prompt has changed
     if (_textEmbedding && _positivePrompt == task.PositivePrompt && _negativePrompt == task.NegativePrompt && task.SamplingSteps == _stepCount && _isSafeModeEnabled == task.IsSafeModeEnabled) return *_textEmbedding;
 
     //Load embedder
     async.update_state(NAN, "Loading text embedder...");
-    if (!_textEmbedder) _textEmbedder = make_unique<TextEmbedder>(*_onnxEnvironment, app_folder(), GetModelFile("text_encoder\\model.onnx"));
+    if (!_textEmbedder) _textEmbedder = make_unique<TextEmbedder>(*_sessionParameters);
 
     //Parse and schedule prompt
     async.update_state("Creating text embedding...");
@@ -277,13 +254,13 @@ namespace winrt::Unpaint
     for (auto weight : encodedPositivePrompt[0].Weights) textEmbbedding.Weights.push_back(weight);
 
     ScheduledTensor tensor{ task.SamplingSteps };
-    trivial_map<pair<void*, void*>, shared_ptr<Tensor>> embeddingBuffer;
+    trivial_map<pair<void*, void*>, shared_ptr<EncodedText>> embeddingBuffer;
     for (auto i = 0u; i < task.SamplingSteps; i++)
     {
       auto& concatenatedTensor = embeddingBuffer[{ encodedNegativePrompt[i].Tensor.get(), encodedPositivePrompt[i].Tensor.get() }];
       if (!concatenatedTensor)
       {
-        concatenatedTensor = make_shared<Tensor>(encodedNegativePrompt[i].Tensor->Concat(*encodedPositivePrompt[i].Tensor));
+        concatenatedTensor = make_shared<EncodedText>(encodedNegativePrompt[i].Tensor->Concat(*encodedPositivePrompt[i].Tensor));
       }
 
       tensor[i] = concatenatedTensor;
@@ -307,15 +284,16 @@ namespace winrt::Unpaint
   {
     async.update_state(NAN, "Loading denoiser...");
     auto denoiserType = inputs.ConditionImage ? ImageDiffusionInfererKind::ControlNet : ImageDiffusionInfererKind::StableDiffusion;
-    if (!_denoiser || _denoiser->Type() != denoiserType)
+    if (!_denoiser || _denoiser->Type() != denoiserType || _controlnetId != task.ControlNetMode)
     {
       switch (denoiserType)
       {
       case ImageDiffusionInfererKind::StableDiffusion:
-        _denoiser = make_unique<StableDiffusionInferer>(*_onnxEnvironment, GetModelFile("unet\\model.onnx"));
+        _denoiser = make_unique<StableDiffusionInferer>(*_sessionParameters);
         break;
       case ImageDiffusionInfererKind::ControlNet:
-        _denoiser = make_unique<ControlNetInferer>(*_onnxEnvironment, _controlnetRepository->Root(), GetModelFile("controlnet\\model.onnx"));
+        _denoiser = make_unique<ControlNetInferer>(_onnxhost->ParametersFromFile(_controlnetRepository->Root() / (task.ControlNetMode + ".onnx")), *_sessionParameters);
+        _controlnetId = task.ControlNetMode;
         break;
       }
     }
@@ -330,7 +308,8 @@ namespace winrt::Unpaint
       .TextEmbeddings = inputs.TextEmbeddings,
       .LatentInput = inputs.InputImage,
       .MaskInput = inputs.InputMask,
-      .DenoisingStrength = task.Mode == InferenceMode::Modify ? task.DenoisingStrength : 1.f
+      .DenoisingStrength = task.Mode == InferenceMode::Modify ? task.DenoisingStrength : 1.f,
+      .Scheduler = task.Scheduler
     };
 
     async.update_state("Running denoiser...");
@@ -344,7 +323,6 @@ namespace winrt::Unpaint
     {
       ControlNetOptions controlNetOptions{ stableDiffusionOptions };
       controlNetOptions.ConditionInput = inputs.ConditionImage;
-      controlNetOptions.ConditionType = task.ControlNetMode;
       controlNetOptions.ConditioningScale = task.ConditioningScale;
 
       result = static_cast<ControlNetInferer*>(_denoiser.get())->RunInference(controlNetOptions, &async);
@@ -358,16 +336,18 @@ namespace winrt::Unpaint
   Axodox::MachineLearning::Tensor StableDiffusionModelExecutor::DecodeVAE(const Axodox::MachineLearning::Tensor& latentImage, Axodox::Threading::async_operation_source& async)
   {
     async.update_state(NAN, "Loading VAE decoder...");
-    VaeDecoder vaeDecoder{ *_onnxEnvironment, GetModelFile("vae_decoder\\model.onnx") };
+    VaeDecoder vaeDecoder{ _sessionParameters->VaeDecoder() };
 
     async.update_state("Decoding latent image...");
-    return vaeDecoder.DecodeVae(latentImage);
+    return vaeDecoder.DecodeVae(latentImage, &async);
   }
 
   void StableDiffusionModelExecutor::RunSafetyCheck(std::vector<Axodox::Graphics::TextureData>& images, Axodox::Threading::async_operation_source& async)
   {
+    if (!_sessionParameters->SafetyChecker()) return;
+
     async.update_state(NAN, "Loading safety checker...");
-    SafetyChecker safetyChecker{ *_onnxEnvironment, GetModelFile("safety_checker\\model.onnx") };
+    SafetyChecker safetyChecker{ *_sessionParameters };
 
     async.update_state(NAN, "Checking safety...");
     for (auto& image : images)
@@ -385,7 +365,7 @@ namespace winrt::Unpaint
     auto localMask = mask
       .GetTexture(targetRect)
       .UniformResize(uint32_t(condition.Shape[3]), uint32_t(condition.Shape[2]));
-    
+
     auto pConditionR = condition.AsPointer<float>(0, 0);
     auto pConditionG = condition.AsPointer<float>(0, 1);
     auto pConditionB = condition.AsPointer<float>(0, 2);
@@ -428,17 +408,5 @@ namespace winrt::Unpaint
     *result.ModelId = ModelId;
 
     return result;
-  }
-
-  StableDiffusionModelExecutor::ModelFile::operator Axodox::MachineLearning::ModelSource() const
-  {
-    if (ModelData.empty())
-    {
-      return ModelPath;
-    }
-    else
-    {
-      return ModelData;
-    }
   }
 }

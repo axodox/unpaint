@@ -3,6 +3,7 @@
 #include "InferenceOptionsViewModel.g.cpp"
 
 using namespace Axodox::Infrastructure;
+using namespace Axodox::MachineLearning::Imaging::StableDiffusion::Schedulers;
 using namespace winrt::Windows::Graphics;
 using namespace winrt::Windows::UI::Xaml::Data;
 
@@ -14,6 +15,7 @@ namespace winrt::Unpaint::implementation
     _modelRepository(dependencies.resolve<ModelRepository>()),
     _deviceInformation(dependencies.resolve<DeviceInformation>()),
     _models(single_threaded_observable_vector<ModelViewModel>()),
+    _schedulers(single_threaded_observable_vector<hstring>()),
     _resolutions(single_threaded_observable_vector<SizeInt32>()),
     _selectedResolutionIndex(1),
     _selectedModelIndex(0),
@@ -21,6 +23,10 @@ namespace winrt::Unpaint::implementation
   {
     //Initialize models
     OnModelChanged();
+
+    //Initialize schedulers
+    _schedulers.Append(L"Euler A");
+    _schedulers.Append(L"DPM++ 2M Karras");
 
     //Initialize resolutions
     _resolutions.Append(SizeInt32{ 1024, 1024 });
@@ -46,6 +52,24 @@ namespace winrt::Unpaint::implementation
     _selectedModelIndex = value;
     if (value != -1) _unpaintState->ModelId = to_string(_models.GetAt(value).Id);
     _propertyChanged(*this, PropertyChangedEventArgs(L"SelectedModelIndex"));
+  }
+
+  winrt::Windows::Foundation::Collections::IObservableVector<winrt::hstring> InferenceOptionsViewModel::Schedulers()
+  {
+    return _schedulers;
+  }
+
+  int32_t InferenceOptionsViewModel::SelectedSchedulerIndex()
+  {
+    return int32_t(*_unpaintState->Scheduler);
+  }
+
+  void InferenceOptionsViewModel::SelectedSchedulerIndex(int32_t value)
+  {
+    if (value == SelectedSchedulerIndex()) return;
+
+    _unpaintState->Scheduler = StableDiffusionSchedulerKind(value);
+    _propertyChanged(*this, PropertyChangedEventArgs(L"SelectedSchedulerIndex"));
   }
 
   winrt::Windows::Foundation::Collections::IObservableVector<winrt::Windows::Graphics::SizeInt32> InferenceOptionsViewModel::Resolutions()

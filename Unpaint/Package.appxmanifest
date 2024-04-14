@@ -5,7 +5,7 @@
          xmlns:uap7="http://schemas.microsoft.com/appx/manifest/uap/windows10/7"
          xmlns:uap8="http://schemas.microsoft.com/appx/manifest/uap/windows10/8"
          IgnorableNamespaces="uap uap7 uap8 mp">
-  <Identity Name="10315Axodox.Unpaint" Publisher="CN=FF258EBB-588C-4B1D-B2A4-8EE2A896DDA8" Version="1.0.38.0" />
+  <Identity Name="10315Axodox.Unpaint" Publisher="CN=FF258EBB-588C-4B1D-B2A4-8EE2A896DDA8" Version="1.1.39.0" />
   <mp:PhoneIdentity PhoneProductId="d24ab499-a630-4050-b6aa-021692ff9742" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
   <Properties>
     <DisplayName>Unpaint</DisplayName>

@@ -14,6 +14,11 @@ namespace winrt::Unpaint::implementation
     int32_t SelectedModelIndex();
     void SelectedModelIndex(int32_t value);
 
+    winrt::Windows::Foundation::Collections::IObservableVector<winrt::hstring> Schedulers();
+
+    int32_t SelectedSchedulerIndex();
+    void SelectedSchedulerIndex(int32_t value);
+    
     winrt::Windows::Foundation::Collections::IObservableVector<winrt::Windows::Graphics::SizeInt32> Resolutions();
     
     int32_t SelectedResolutionIndex();
@@ -50,6 +55,8 @@ namespace winrt::Unpaint::implementation
 
     Windows::Foundation::Collections::IObservableVector<ModelViewModel> _models;
     int32_t _selectedModelIndex;
+
+    Windows::Foundation::Collections::IObservableVector<hstring> _schedulers;
 
     Windows::Foundation::Collections::IObservableVector<Windows::Graphics::SizeInt32> _resolutions;
     int32_t _selectedResolutionIndex;

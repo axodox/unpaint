@@ -1,16 +1,12 @@
 #include "pch.h"
 #include "ModelRepository.h"
-#include "Infrastructure/DependencyContainer.h"
-#include "Infrastructure/Text.h"
-#include "Storage/FileIO.h"
-#include "Storage/UwpStorage.h"
-#include "Web/HuggingFaceClient.h"
 
 using namespace Axodox::Infrastructure;
 using namespace Axodox::Json;
 using namespace Axodox::Storage;
 using namespace Axodox::Threading;
-using namespace Axodox::Web;
+using namespace Axodox::MachineLearning::Web;
+using namespace Axodox::MachineLearning::Sessions;
 using namespace std;
 using namespace winrt::Windows::Storage;
 using namespace winrt::Windows::Storage::AccessCache;
@@ -122,11 +118,14 @@ namespace winrt::Unpaint
       auto metadata = try_parse_json<ModelMetadata>(*text);
       if (!metadata) continue;
 
+      auto isXL = filesystem::exists(file.path().parent_path() / "text_encoder_2", ec);
+
       models.emplace(ModelInfo{ 
         *metadata->Id, 
         metadata->Name->empty() ? *metadata->Id : *metadata->Name,
         *metadata->Website,
-        *metadata->AccessToken 
+        *metadata->AccessToken,
+        isXL
       });
     }
 
@@ -192,7 +191,19 @@ namespace winrt::Unpaint
     return ModelViewModel{
       .Id = to_hstring(Id),
       .Name = to_hstring(Name),
-      .Uri = to_hstring(Website)
+      .Uri = to_hstring(Website),
+      .IsXL = IsXL
     };
+  }
+
+  StableDiffusionStorageFileMapSessionParameters::StableDiffusionStorageFileMapSessionParameters(const std::shared_ptr<OnnxHost>& host, const std::unordered_map<std::string, Windows::Storage::StorageFile>& files) :
+    StableDiffusionSessionParameters(host->Environment(), host->Executor()),
+    _files(files)
+  { }
+
+  std::unique_ptr<Axodox::MachineLearning::Sessions::OnnxModelSource> StableDiffusionStorageFileMapSessionParameters::ResolveModel(std::string_view type) const
+  {
+    auto it = _files.find(string{ type } + "\\model.onnx");
+    return it != _files.end() ? OnnxModelSource::FromStorageFile(it->second) : nullptr;
   }
 }

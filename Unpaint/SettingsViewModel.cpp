@@ -30,12 +30,9 @@ namespace winrt::Unpaint::implementation
 
   bool SettingsViewModel::AreUnsafeOptionsEnabled()
   {
-#ifdef NDEBUG
-    //Sorry mates I do not trust you this much...
-    return false;
-#else
-    return true;
-#endif
+#pragma warning(suppress: 4996)
+    auto devMode = getenv("UNPAINT_DEV");
+    return devMode && strcmp(devMode, "1") == 0;
   }
 
   bool SettingsViewModel::IsSafeModeEnabled()

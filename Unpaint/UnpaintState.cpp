@@ -2,6 +2,8 @@
 #include "UnpaintState.h"
 
 using namespace Axodox::Infrastructure;
+using namespace Axodox::MachineLearning;
+using namespace Axodox::MachineLearning::Imaging::StableDiffusion::Schedulers;
 using namespace winrt::Windows::Graphics;
 
 namespace winrt::Unpaint
@@ -16,6 +18,7 @@ namespace winrt::Unpaint
     IsFeatureExtractorPinned("Inference.IsFeatureExtractorPinned", false),
     AdapterIndex("Inference.AdapterIndex", 0),
     ModelId("Inference.ModelId"),
+    Scheduler("Inference.Scheduler", StableDiffusionSchedulerKind::EulerAncestral),
     StateChanged(_events)
   {
     auto deviceInformation = dependencies.resolve<DeviceInformation>();
@@ -49,17 +52,13 @@ namespace winrt::Unpaint
     IsFeatureExtractorPinned.ValueChanged(no_revoke, event_handler{ this, &UnpaintState::OnStateChanged });
     AdapterIndex.ValueChanged(no_revoke, event_handler{ this, &UnpaintState::OnStateChanged });
     ModelId.ValueChanged(no_revoke, event_handler{ this, &UnpaintState::OnStateChanged });
+    Scheduler.ValueChanged(no_revoke, event_handler{ this, &UnpaintState::OnStateChanged });
 
     //Initialize properties
     if (*Resolution == SizeInt32{0, 0})
     {
       Resolution = deviceInformation->IsDeviceXbox() ? SizeInt32{ 512, 512 } : SizeInt32{ 768, 768 };
     }
-
-#ifdef NDEBUG
-    IsSafeModeEnabled = true;
-    IsSafetyCheckerEnabled = true;
-#endif
   }
 
   void UnpaintState::OnStateChanged(OptionPropertyBase* property)

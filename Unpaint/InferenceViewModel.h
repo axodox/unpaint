@@ -19,6 +19,8 @@ namespace winrt::Unpaint::implementation
     int32_t SelectedModeIndex();
     void SelectedModeIndex(int32_t value);
 
+    bool IsModeSelectable();
+
     bool IsSettingsLocked();
     void IsSettingsLocked(bool value);
 
@@ -87,6 +89,10 @@ namespace winrt::Unpaint::implementation
     bool _isAutoGenerationEnabled;
     bool _hasSafetyCheckFailed;
     uint32_t _safetyStrikes;
+
+    Axodox::Infrastructure::event_subscription _modelChangedSubscription;
+
+    void OnModelChanged(OptionPropertyBase* option);
   };
 }
 

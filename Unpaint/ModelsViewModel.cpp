@@ -3,10 +3,9 @@
 #include "ModelsViewModel.g.cpp"
 #include "Infrastructure/WinRtDependencies.h"
 #include "Infrastructure/Win32.h"
-#include "Web/HuggingFaceClient.h"
 
 using namespace Axodox::Infrastructure;
-using namespace Axodox::Web;
+using namespace Axodox::MachineLearning::Web;
 using namespace std;
 using namespace winrt;
 using namespace winrt::Windows::ApplicationModel::DataTransfer;
